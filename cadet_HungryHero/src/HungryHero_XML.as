@@ -10,13 +10,13 @@ package
 	import flash.events.Event;
 	
 	[SWF( width="1024", height="768", backgroundColor="0x002135", frameRate="60" )]
-	public class Cadet_HungryHero_XML extends Sprite
+	public class HungryHero_XML extends Sprite
 	{
 		private var cadetScene:CadetScene;
 		
 		private var cadetFileURL:String = "/HungryHero.cdt2d";
 		
-		public function Cadet_HungryHero_XML()
+		public function HungryHero_XML()
 		{
 			// Required when loading data and assets.
 			var startUpOperation:Cadet2DStartUpOperation = new Cadet2DStartUpOperation(cadetFileURL);

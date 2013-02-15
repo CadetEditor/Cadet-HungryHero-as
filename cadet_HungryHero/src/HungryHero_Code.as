@@ -20,7 +20,7 @@ package
 	import cadet2D.events.SkinEvent;
 	
 	[SWF( width="1024", height="768", backgroundColor="0x002135", frameRate="60" )]
-	public class Cadet_HungryHero_Code extends Sprite
+	public class HungryHero_Code extends Sprite
 	{
 		private var cadetScene:CadetScene;
 		
@@ -41,7 +41,7 @@ package
 		private var midgroundSkin	:ImageSkin;
 		private var foregroundSkin	:ImageSkin;
 		
-		public function Cadet_HungryHero_Code()
+		public function HungryHero_Code()
 		{
 			cadetScene = new CadetScene();
 			
