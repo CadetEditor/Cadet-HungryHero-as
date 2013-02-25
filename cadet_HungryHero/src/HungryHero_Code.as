@@ -8,7 +8,6 @@ package
 	import cadet.events.RendererEvent;
 	
 	import cadet2D.components.behaviours.MouseFollowBehaviour;
-	import cadet2D.components.behaviours.ParallaxBehaviour;
 	import cadet2D.components.core.Entity;
 	import cadet2D.components.renderers.Renderer2D;
 	import cadet2D.components.skins.AbstractSkin2D;
@@ -18,6 +17,14 @@ package
 	import cadet2D.components.textures.TextureComponent;
 	import cadet2D.components.transforms.Transform2D;
 	import cadet2D.events.SkinEvent;
+	
+	import hungryHero.components.behaviours.MagnetBehaviour;
+	import hungryHero.components.behaviours.MoveBehaviour;
+	import hungryHero.components.behaviours.ParallaxBehaviour;
+	import hungryHero.components.behaviours.SpeedUpBehaviour;
+	import hungryHero.components.processes.BackgroundsProcess;
+	import hungryHero.components.processes.GlobalsProcess;
+	import hungryHero.components.processes.ItemsProcess;
 	
 	[SWF( width="1024", height="768", backgroundColor="0x002135", frameRate="60" )]
 	public class HungryHero_Code extends Sprite
@@ -40,6 +47,8 @@ package
 		private var hillsSkin		:ImageSkin;
 		private var midgroundSkin	:ImageSkin;
 		private var foregroundSkin	:ImageSkin;
+		
+		private var heroSkin		:MovieClipSkin;
 		
 		public function HungryHero_Code()
 		{
@@ -69,53 +78,73 @@ package
 			allSpritesAtlas.xml = new XML( xmlStr );
 			cadetScene.children.addItem(allSpritesAtlas);
 			
+			// Add the Global variables
+			var globals:GlobalsProcess = new GlobalsProcess();
+			cadetScene.children.addItem(globals);
+			
+			addBackgrounds();			
+			addHero();
+			addItems();
+			
+			addEventListener( Event.ENTER_FRAME, enterFrameHandler );			
+		}
+		
+		private function addBackgrounds():void
+		{
 			// Add the sky texture to the scene
 			var skyTexture:TextureComponent = new TextureComponent();
 			skyTexture.bitmapData = new SkyAsset().bitmapData;
 			cadetScene.children.addItem(skyTexture);
+			
+			var backgroundsProcess:BackgroundsProcess = new BackgroundsProcess();
+			cadetScene.children.addItem(backgroundsProcess);
 			
 			// Add the sky to the scene
 			var sky:Entity = new Entity();
 			cadetScene.children.addItem(sky);
 			// Add an ImageSkin to the sky Entity
 			skySkin = new ImageSkin();
+			sky.children.addItem(skySkin);
 			skySkin.texture = skyTexture;
 			skySkin.addEventListener(SkinEvent.TEXTURE_VALIDATED, textureValidatedHandler);
-			sky.children.addItem(skySkin);
-
+			
 			// Add the background hills to the scene
 			var hills:Entity = new Entity();
 			cadetScene.children.addItem(hills);
 			// Add an ImageSkin to the hills Entity
 			hillsSkin = new ImageSkin();
+			hills.children.addItem(hillsSkin);
 			hillsSkin.textureAtlas = allSpritesAtlas;
 			hillsSkin.texturesPrefix = "bgLayer2";
 			hillsSkin.y = 290;
 			hillsSkin.addEventListener(SkinEvent.TEXTURE_VALIDATED, textureValidatedHandler);
-			hills.children.addItem(hillsSkin);
 			
 			// Add the midground to the scene
 			var midground:Entity = new Entity();
 			cadetScene.children.addItem(midground);
 			// Add an ImageSkin to the midground Entity
 			midgroundSkin = new ImageSkin();
+			midground.children.addItem(midgroundSkin);	
 			midgroundSkin.textureAtlas = allSpritesAtlas;
 			midgroundSkin.texturesPrefix = "bgLayer3";	
 			midgroundSkin.y = 360;
 			midgroundSkin.addEventListener(SkinEvent.TEXTURE_VALIDATED, textureValidatedHandler);
-			midground.children.addItem(midgroundSkin);			
 			
 			// Add the foreground to the scene
 			var foreground:Entity = new Entity();
 			cadetScene.children.addItem(foreground);
 			// Add an ImageSkin to the foreground Entity
 			foregroundSkin = new ImageSkin();
+			foreground.children.addItem(foregroundSkin);
 			foregroundSkin.textureAtlas = allSpritesAtlas;
 			foregroundSkin.texturesPrefix = "bgLayer4";	
 			foregroundSkin.y = 450;
 			foregroundSkin.addEventListener(SkinEvent.TEXTURE_VALIDATED, textureValidatedHandler);
-			foreground.children.addItem(foregroundSkin);	
-			
+				
+		}
+		
+		private function addHero():void
+		{
 			// Add Hero entity to the scene
 			var hero:Entity = new Entity();
 			cadetScene.children.addItem(hero);
@@ -124,18 +153,66 @@ package
 			transform2D.x = 50;
 			hero.children.addItem(transform2D);
 			// Add an animatable MovieClipSkin
-			var mcSkin:MovieClipSkin = new MovieClipSkin();
-			mcSkin.textureAtlas = allSpritesAtlas;
-			mcSkin.texturesPrefix = "fly_";
-			mcSkin.loop = true;
-			hero.children.addItem(mcSkin);
+			heroSkin = new MovieClipSkin();
+			heroSkin.textureAtlas = allSpritesAtlas;
+			heroSkin.texturesPrefix = "fly_";
+			heroSkin.loop = true;
+			hero.children.addItem(heroSkin);
 			// Add the MouseFollowBehaviour
 			var mouseFollow:MouseFollowBehaviour = new MouseFollowBehaviour();
 			mouseFollow.constrain = MouseFollowBehaviour.CONSTRAIN_X;
 			hero.children.addItem(mouseFollow);
-
+		}
+		
+		private function addItems():void
+		{
+			// Add the Items Entity
+			var itemsEntity:Entity = new Entity();
+			cadetScene.children.addItem(itemsEntity);
 			
-			addEventListener( Event.ENTER_FRAME, enterFrameHandler );			
+			for ( var i:uint = 0; i < 5; i ++ ) {
+				// Add an ImageSkin to the itemsEntity
+				var imageSkin:ImageSkin = new ImageSkin();
+				imageSkin.textureAtlas = allSpritesAtlas;
+				imageSkin.texturesPrefix = "item"+(i+1);
+				itemsEntity.children.addItem(imageSkin);				
+			}
+			
+			// Add the Powerups Entity
+			var powerupsEntity:Entity = new Entity();
+			cadetScene.children.addItem(powerupsEntity);
+			
+			// Add Coffee powerup
+			var powerup:Entity = new Entity();
+			powerupsEntity.children.addItem(powerup);
+			imageSkin = new ImageSkin();
+			powerup.children.addItem(imageSkin);
+			imageSkin.textureAtlas = allSpritesAtlas;
+			imageSkin.texturesPrefix = "item6";
+			var speedUpBehaviour:SpeedUpBehaviour = new SpeedUpBehaviour();
+			powerup.children.addItem(speedUpBehaviour);
+			
+			// Add Mushroom powerup
+			powerup = new Entity();
+			powerupsEntity.children.addItem(powerup);
+			imageSkin = new ImageSkin();
+			powerup.children.addItem(imageSkin);
+			imageSkin.textureAtlas = allSpritesAtlas;
+			imageSkin.texturesPrefix = "item7";
+			var magnetBehaviour:MagnetBehaviour = new MagnetBehaviour();
+			powerup.children.addItem(magnetBehaviour);
+			magnetBehaviour.targetTransform = heroSkin;
+			
+			var itemsProcess:ItemsProcess = new ItemsProcess();
+			cadetScene.children.addItem(itemsProcess);
+			itemsProcess.itemsContainer = itemsEntity;
+			itemsProcess.powerupsContainer = powerupsEntity;
+			itemsProcess.hitTestSkin = heroSkin;
+			//itemsProcess.moveBehaviour = moveBehaviour;
+			
+			var moveBehaviour:MoveBehaviour = new MoveBehaviour();
+			itemsProcess.children.addItem(moveBehaviour);
+			moveBehaviour.angle = 270;
 		}
 		
 		private function textureValidatedHandler( event:SkinEvent ):void

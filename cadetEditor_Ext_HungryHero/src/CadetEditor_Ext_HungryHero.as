@@ -20,8 +20,8 @@ package
 	import flox.app.FloxApp;
 	import flox.app.managers.ResourceManager;
 	
-	import hungryHero.components.behaviours.ItemBehaviour;
-	import hungryHero.components.processes.ItemSpawner;
+	import hungryHero.components.behaviours.ParallaxBehaviour;
+	import hungryHero.components.processes.ItemsProcess;
 	
 	public class CadetEditor_Ext_HungryHero extends Sprite
 	{
@@ -30,10 +30,10 @@ package
 			var resourceManager:ResourceManager = FloxApp.resourceManager;
 			
 			// Behaviours
-			resourceManager.addResource( new ComponentFactory( ItemBehaviour, "Item Behaviour", "Behaviours", CadetEngineIcons.Behaviour, Entity, 1 ) );
-			
+			//resourceManager.addResource( new ComponentFactory( ItemBehaviour, "Item Behaviour", "Behaviours", CadetEngineIcons.Behaviour, Entity, 1 ) );
+			resourceManager.addResource( new ComponentFactory( ParallaxBehaviour, "Parallax", "Behaviours",	CadetEngineIcons.Behaviour, Entity,	1 ) );
 			// Processes
-			resourceManager.addResource( new ComponentFactory( ItemSpawner, "Item Spawner", "Processes", CadetEngineIcons.Process ) );
+			resourceManager.addResource( new ComponentFactory( ItemsProcess, "Item Spawner", "Processes", CadetEngineIcons.Process ) );
 		}
 	}
 }

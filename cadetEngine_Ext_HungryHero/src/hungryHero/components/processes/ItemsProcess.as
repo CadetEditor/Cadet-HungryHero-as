@@ -1,28 +1,40 @@
 package hungryHero.components.processes
 {
+	import flash.events.Event;
 	import flash.geom.Rectangle;
+	import flash.utils.Dictionary;
 	import flash.utils.getTimer;
 	
 	import cadet.core.Component;
 	import cadet.core.ComponentContainer;
 	import cadet.core.IComponentContainer;
 	import cadet.core.ISteppableComponent;
+	import cadet.util.ComponentUtil;
 	
+	import cadet2D.components.core.Entity;
 	import cadet2D.components.renderers.Renderer2D;
 	import cadet2D.components.skins.AbstractSkin2D;
 	import cadet2D.components.skins.ImageSkin;
+	import cadet2D.components.skins.MovieClipSkin;
 	
+	import hungryHero.components.behaviours.IMoveBehaviour;
+	import hungryHero.components.behaviours.IPowerupBehaviour;
 	import hungryHero.pools.Pool;
 
-	public class ItemSpawner extends Component implements ISteppableComponent
+	public class ItemsProcess extends ComponentContainer implements ISteppableComponent
 	{
 		private var _initialised	:Boolean = false;
 		private var items			:Array;
 		private var powerups		:Array;
+		private var allItems		:Array;
+		private var powerupsTable	:Dictionary;
+		private var activePowerups	:Array;
 		
 		public var renderer			:Renderer2D;
+		public var globals			:GlobalsProcess;
 	
 		private var itemsPool		:Pool;
+		//private var powerupsPool	:Pool;
 		
 		private var itemsToAnimate:Vector.<AbstractSkin2D>;
 		private var itemsToAnimateLength:uint = 0;
@@ -90,9 +102,18 @@ package hungryHero.components.processes
 		private var _itemsContainer			:IComponentContainer;
 		private var _powerupsContainer		:IComponentContainer;
 		
-		public function ItemSpawner()
+		private var _moveBehaviour			:IMoveBehaviour;
+		
+		[Serializable][Inspectable( priority="52" )]
+		public var defaultMoveBehaviour		:IMoveBehaviour;
+		
+		public function ItemsProcess()
 		{
 			items = [];
+			powerups = [];
+			allItems = [];
+			powerupsTable = new Dictionary();
+			activePowerups = [];
 			
 			// Initialize items-to-animate vector.
 			itemsToAnimate = new Vector.<AbstractSkin2D>();
@@ -102,6 +123,8 @@ package hungryHero.components.processes
 		override protected function addedToScene():void
 		{
 			addSceneReference(Renderer2D, "renderer");
+			addSceneReference(GlobalsProcess, "globals");
+			addChildReference(IMoveBehaviour, "defaultMoveBehaviour");
 		}
 		
 		override protected function removedFromScene():void
@@ -153,6 +176,11 @@ package hungryHero.components.processes
 		
 		public function step( dt:Number ):void
 		{
+			if ( globals ) {
+				playerSpeed = globals.playerSpeed;
+			}
+			
+			
 			calculateElapsed();
 			
 			if (!renderer || !renderer.viewport) return;
@@ -176,6 +204,7 @@ package hungryHero.components.processes
 			
 			// Animate elements.
 			updateItems();
+			updatePowerups();
 //			animateObstacles();
 //			animateEatParticles();
 //			animateWindParticles();
@@ -185,6 +214,33 @@ package hungryHero.components.processes
 		}
 		
 		private function initialise():void
+		{
+			createItemsPool();
+			createPowerupsPool();
+			
+			gameArea = new Rectangle(0, 0, renderer.viewport.stage.stageWidth, renderer.viewport.stage.stageHeight);
+			
+			// Reset item pattern styling.
+			pattern = 1;
+			patternPosY = gameArea.top;
+			patternStep = 15;
+			patternDirection = 1;
+			patternGap = 20;
+			patternGapCount = 0;
+			patternChange = 100;
+			patternLength = 50;
+			patternOnce = true;
+			
+			_initialised = true;
+			
+			if (!moveBehaviour) {
+				moveBehaviour = defaultMoveBehaviour;
+			}
+			
+			//scene.children.addItem(_moveItemBehaviour);
+		}
+		
+		private function createItemsPool():void
 		{
 			if (!_itemsContainer) {
 				_itemsContainer = parentComponent;
@@ -206,29 +262,47 @@ package hungryHero.components.processes
 			
 			itemsPool = new Pool(itemCreate, itemClean);
 			
-			gameArea = new Rectangle(0, 0, renderer.viewport.stage.stageWidth, renderer.viewport.stage.stageHeight);
+			allItems = items;
+		}
+		
+		private function createPowerupsPool():void
+		{
+			if (!_powerupsContainer) {
+				_powerupsContainer = parentComponent;
+			}
 			
-			// Reset item pattern styling.
-			pattern = 1;
-			patternPosY = gameArea.top;
-			patternStep = 15;
-			patternDirection = 1;
-			patternGap = 20;
-			patternGapCount = 0;
-			patternChange = 100;
-			patternLength = 50;
-			patternOnce = true;
+			for ( var i:uint = 0; i < _powerupsContainer.children.length; i ++ ) 
+			{
+				var child:Component = _powerupsContainer.children[i];
+				
+				if (!child is Entity) continue;
+				
+				var entity:Entity = Entity(child);
+				var skin:ImageSkin = ComponentUtil.getChildOfType(entity, ImageSkin);
+				var behaviour:IPowerupBehaviour = ComponentUtil.getChildOfType(entity, IPowerupBehaviour);
+				if ( skin && behaviour ) {	
+					powerups.push( skin );
+					powerupsTable[skin.texturesPrefix] = behaviour;
+				}
+			}
 			
-			_initialised = true;
+			for ( i = 0; i < powerups.length; i ++ ) {
+				child = powerups[i];
+				child.parentComponent.children.removeItem(child);
+			}
+			
+			allItems = items.concat(powerups);
+			
+			//powerupsPool = new Pool(itemCreate, itemClean);
 		}
 		
 		private function itemCreate():AbstractSkin2D
 		{
-			var skin:AbstractSkin2D = new ImageSkin();//items[0];
+			var skin:MovieClipSkin = new MovieClipSkin();
 			
 			if (!skin) return null;
 			
-			var newSkin:ImageSkin = ImageSkin(skin.clone());
+			var newSkin:MovieClipSkin = MovieClipSkin(skin.clone());
 			_itemsContainer.children.addItem(newSkin);
 			
 			newSkin.x = renderer.viewport.stage.stageWidth;
@@ -242,21 +316,6 @@ package hungryHero.components.processes
 		{
 			
 		}
-		
-/*		private function entityIsItem( entity:Component ):Boolean
-		{
-			if ( entity is ComponentContainer ) {
-				var container:ComponentContainer = ComponentContainer(entity);
-				for ( var i:uint = 0; i < container.children.length; i ++ ) {
-					var child:Component = container.children[i];
-					if ( child is ItemBehaviour ) {
-						return true;
-					}
-				}
-			}
-			
-			return false;
-		}*/
 		
 		/**
 		 * Create food pattern after hero travels for some distance.
@@ -320,25 +379,18 @@ package hungryHero.components.processes
 			}
 		}
 		
-		// Note: If ItemSpawner is to support ImageSkin and MovieClip skin, we'll need to check the type of 
-		// randItem and check out either the former or the latter, possibly from seperate pools..?
 		private function checkOutItem(randItem:AbstractSkin2D, x:Number, y:Number):AbstractSkin2D
 		{
-			var itemToTrack:AbstractSkin2D = AbstractSkin2D(itemsPool.checkOut());
+			var itemToTrack:MovieClipSkin = MovieClipSkin(itemsPool.checkOut());
 			
 			if (!itemToTrack) return null;
 			
-			// Note: ASSUMES randItem is IMAGESKIN
-			if ( itemToTrack is ImageSkin ) {
-				var randImgSkin:ImageSkin = ImageSkin(randItem);
-				var imgSkin:ImageSkin = ImageSkin(itemToTrack);
-				imgSkin.texture = randImgSkin.texture;
-				imgSkin.textureAtlas = randImgSkin.textureAtlas;
-				imgSkin.texturesPrefix = randImgSkin.texturesPrefix;
-			}
-/*			else if ( itemToTrack is MovieClipSkin ) {
-
-			}*/
+			// randItem is either MovieClipSkin or ImageSkin (MovieClipSkin extends ImageSkin)
+			var randImgSkin:ImageSkin = ImageSkin(randItem);
+			var imgSkin:MovieClipSkin = MovieClipSkin(itemToTrack);
+			imgSkin.texture = randImgSkin.texture;
+			imgSkin.textureAtlas = randImgSkin.textureAtlas;
+			imgSkin.texturesPrefix = randImgSkin.texturesPrefix;
 			
 			// Reset position of item.
 			itemToTrack.x = renderer.viewport.stage.stageWidth;
@@ -355,7 +407,10 @@ package hungryHero.components.processes
 		{
 			var itemToTrack:AbstractSkin2D;
 			var skin:AbstractSkin2D;
+			// randItem is inputted by user so could be ImageSkin or MovieClipSkin
 			var randItem:AbstractSkin2D = items[Math.round(Math.random() * (items.length-1))];
+			
+			if (!randItem) return;
 					
 			if ( pattern == 1 ) {
 				// Horizontal, creates a single food item, and changes the position of the pattern randomly.
@@ -429,44 +484,43 @@ package hungryHero.components.processes
 					}
 				}
 			} else if ( pattern == 10 || pattern == 11 ) {
-				// Coffee, this item gives you extra speed for a while, and lets you break through obstacles.
-				// Mushroom, this item makes all the food items fly towards the hero for a while.
-				
-				// Set a new random position for the item, making sure it's not too close to the edges of the screen.
-				patternPosY = Math.floor(Math.random() * (gameArea.bottom - gameArea.top + 1)) + gameArea.top;
-				
-				// Checkout item from pool and set the type of item.
-				itemToTrack = checkOutItem(randItem, renderer.viewport.stage.stageWidth, patternPosY);
+				if ( powerups.length > 0 ) {
+					// Coffee, this item gives you extra speed for a while, and lets you break through obstacles.
+					// Mushroom, this item makes all the food items fly towards the hero for a while.
+					randItem = powerups[Math.round(Math.random() * (powerups.length-1))];
+					
+					// Set a new random position for the item, making sure it's not too close to the edges of the screen.
+					patternPosY = Math.floor(Math.random() * (gameArea.bottom - gameArea.top + 1)) + gameArea.top;
+					
+					// Checkout item from pool and set the type of item.
+					itemToTrack = checkOutItem(randItem, renderer.viewport.stage.stageWidth, patternPosY);
+				}
 			}
 		}
 		
 		// animateFoodItems()
 		private function updateItems():void
 		{
-			var itemToTrack:AbstractSkin2D;
+			var itemToTrack:MovieClipSkin;
 			
 			for(var i:uint = 0;i<itemsToAnimateLength;i++)
 			{
 				itemToTrack = itemsToAnimate[i];
 				
 				if (itemToTrack != null)
-				{
-					// If hero has eaten a mushroom, make all the items move towards him.
-/*					if (mushroom > 0 && itemToTrack.foodItemType <= GameConstants.ITEM_TYPE_5)
-					{
-						// Move the item towards the player.
-						itemToTrack.x -= (itemToTrack.x - heroX) * 0.2;
-						itemToTrack.y -= (itemToTrack.y - heroY) * 0.2;
+				{					
+					// If it's a powerup, use the defaultMoveBehaviour
+					if ( powerupsTable[itemToTrack.texturesPrefix] && defaultMoveBehaviour ) {
+						defaultMoveBehaviour.transform = itemToTrack;
+						defaultMoveBehaviour.execute();
+					} else if (moveBehaviour) {
+						moveBehaviour.transform = itemToTrack;
+						moveBehaviour.execute();
 					}
-					else
-					{*/
-						// If hero hasn't eaten a mushroom,
-						// Move the items normally towards the left.
-						itemToTrack.x -= Math.round(playerSpeed * elapsed); 
-//					}
 					
 					// If the item passes outside the screen on the left, remove it (check-in).
 					
+					// If item
 					if (itemToTrack.x < -80)// || gameState == GameConstants.GAME_STATE_OVER)
 					{
 						disposeItemTemporarily(i, itemToTrack);
@@ -480,6 +534,18 @@ package hungryHero.components.processes
 						
 						if (heroItem_sqDist < 5000)
 						{
+							var behaviour:IPowerupBehaviour = powerupsTable[itemToTrack.texturesPrefix];
+							if ( behaviour ) {
+								if ( behaviour is IMoveBehaviour ) {
+									moveBehaviour = IMoveBehaviour(behaviour);
+									moveBehaviour.init();
+								} else {
+									activePowerups.push(behaviour);
+									behaviour.init();
+									behaviour.addEventListener(Event.COMPLETE, powerupCompleteHandler);
+								}
+							}
+							
 							// If hero eats an item, add up the score.
 						/*	if (itemToTrack.foodItemType <= GameConstants.ITEM_TYPE_5)
 							{
@@ -521,7 +587,47 @@ package hungryHero.components.processes
 			}
 		}
 		
-		private function disposeItemTemporarily(animateId:uint, item:AbstractSkin2D):void
+		private function updatePowerups():void
+		{
+			for ( var i:uint = 0; i < activePowerups.length; i ++ ) {
+				var powerup:IPowerupBehaviour = activePowerups[i];
+				powerup.execute();
+			}
+		}
+		
+		private function powerupCompleteHandler(event:Event):void
+		{
+			var behaviour:IPowerupBehaviour = IPowerupBehaviour(event.target);
+			behaviour.removeEventListener(Event.COMPLETE, powerupCompleteHandler);
+			
+			var index:int = activePowerups.indexOf(behaviour);
+			activePowerups.splice(index, 1);
+		}
+		
+		[Serializable][Inspectable( priority="51" )]
+		public function set moveBehaviour( value:IMoveBehaviour ):void
+		{
+			if ( _moveBehaviour ) {
+				_moveBehaviour.removeEventListener( Event.COMPLETE, moveBehaviourCompleterHandler );
+			}
+			_moveBehaviour = value;
+			
+			if ( _moveBehaviour ) {
+				_moveBehaviour.init();
+				_moveBehaviour.addEventListener( Event.COMPLETE, moveBehaviourCompleterHandler );
+			}
+		}
+		public function get moveBehaviour():IMoveBehaviour
+		{
+			return _moveBehaviour;
+		}
+		
+		private function moveBehaviourCompleterHandler( event:Event ):void
+		{
+			moveBehaviour = defaultMoveBehaviour;
+		}
+		
+		private function disposeItemTemporarily(animateId:uint, item:MovieClipSkin):void
 		{
 			itemsToAnimate.splice(animateId, 1);
 			itemsToAnimateLength--;

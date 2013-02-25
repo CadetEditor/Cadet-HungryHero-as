@@ -1,9 +1,14 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <flexLibProperties includeAllClasses="true" useMultiPlatformConfig="false" version="3">
   <includeClasses>
-    <classEntry path="hungryHero.components.processes.ItemSpawner"/>
-    <classEntry path="hungryHero.components.behaviours.ItemBehaviour"/>
     <classEntry path="hungryHero.pools.Pool"/>
+    <classEntry path="hungryHero.components.behaviours.MagnetBehaviour"/>
+    <classEntry path="hungryHero.components.behaviours.ParallaxBehaviour"/>
+    <classEntry path="hungryHero.components.behaviours.IMoveBehaviour"/>
+    <classEntry path="hungryHero.components.processes.GlobalsProcess"/>
+    <classEntry path="hungryHero.components.behaviours.SpeedUpBehaviour"/>
+    <classEntry path="hungryHero.components.behaviours.IPowerupBehaviour"/>
+    <classEntry path="hungryHero.components.processes.BackgroundsProcess"/>
   </includeClasses>
   <includeResources/>
   <namespaceManifests/>
