@@ -1,7 +1,6 @@
 package hungryHero.components.processes
 {
 	import flash.geom.Rectangle;
-	import flash.utils.Dictionary;
 	
 	import cadet.core.Component;
 	import cadet.core.IComponentContainer;
@@ -12,6 +11,7 @@ package hungryHero.components.processes
 	import cadet2D.components.skins.AbstractSkin2D;
 	import cadet2D.components.skins.ImageSkin;
 	import cadet2D.components.skins.MovieClipSkin;
+	import cadet2D.components.transforms.Transform2D;
 	
 	import hungryHero.components.behaviours.ObstacleBehaviour;
 	import hungryHero.pools.Pool;
@@ -19,8 +19,8 @@ package hungryHero.components.processes
 	public class ObstaclesProcess extends Component implements ISteppableComponent
 	{
 		private var _initialised				:Boolean;
-		private var obstacles					:Array;
-		private var obstaclesTable				:Dictionary;
+		private var obstacles					:Vector.<ObstacleBehaviour>;
+		//private var obstaclesTable				:Dictionary;
 		
 		public var globals						:GlobalsProcess;
 		
@@ -39,7 +39,7 @@ package hungryHero.components.processes
 		private var hitObstacle:Number = 0;
 		
 		/** Obstacles to animate. */
-		private var obstaclesToAnimate:Vector.<AbstractSkin2D>;
+		private var obstaclesToAnimate:Vector.<Entity>;
 		
 		/** Obstacles to animate - array length. */		
 		private var obstaclesToAnimateLength:uint = 0;
@@ -56,11 +56,11 @@ package hungryHero.components.processes
 		
 		public function ObstaclesProcess()
 		{
-			obstacles = [];
-			obstaclesTable = new Dictionary();
+			obstacles = new Vector.<ObstacleBehaviour>();
+			//obstaclesTable = new Dictionary();
 			
 			// Initialize items-to-animate vector.
-			obstaclesToAnimate = new Vector.<AbstractSkin2D>();
+			obstaclesToAnimate = new Vector.<Entity>();
 			obstaclesToAnimateLength = 0;
 		}
 		
@@ -130,6 +130,8 @@ package hungryHero.components.processes
 				_obstaclesContainer = parentComponent;
 			}
 			
+			var behaviour:ObstacleBehaviour;
+			
 			for ( var i:uint = 0; i < _obstaclesContainer.children.length; i ++ ) 
 			{
 				var child:Component = _obstaclesContainer.children[i];
@@ -137,63 +139,82 @@ package hungryHero.components.processes
 				if (!child is Entity) continue;
 				
 				var entity:Entity = Entity(child);
-				var skin:ImageSkin = ComponentUtil.getChildOfType(entity, ImageSkin);
-				var behaviour:ObstacleBehaviour = ComponentUtil.getChildOfType(entity, ObstacleBehaviour);
-				if ( skin && behaviour ) {	
-					obstacles.push( skin );
-					obstaclesTable[skin.texturesPrefix] = behaviour;
+				//var skin:ImageSkin = ComponentUtil.getChildOfType(entity, ImageSkin);
+				behaviour = ComponentUtil.getChildOfType(entity, ObstacleBehaviour);
+				if ( behaviour ) {	
+					obstacles.push( behaviour );
 				}
 			}
 			
+			// Remove skins
 			for ( i = 0; i < obstacles.length; i ++ ) {
-				child = obstacles[i];
-				child.parentComponent.children.removeItem(child);
+				behaviour = obstacles[i];
+				var defaultSkin:ImageSkin = behaviour.defaultSkin;
+				var crashSkin:ImageSkin = behaviour.crashSkin;
+				behaviour.parentComponent.children.removeItem(defaultSkin);
+				behaviour.parentComponent.children.removeItem(crashSkin);
 			}
 			
 			obstaclesPool = new Pool(obstacleCreate, obstacleClean, 4, 10);
 		}
 		
-		private function obstacleCreate():AbstractSkin2D
+		private function obstacleCreate():Entity
 		{
 			var gameArea:Rectangle = globals ? globals.gameArea : defaultGameArea;
-			var skin:MovieClipSkin = new MovieClipSkin();
+
+			var obstacle:Entity = new Entity();
+			_obstaclesContainer.children.addItem(obstacle);
+			// Add the default ImageSkin to the obstacle entity
+			var defaultSkin:MovieClipSkin = new MovieClipSkin();
+			obstacle.children.addItem(defaultSkin);
+			// Add the crash ImageSkin to the obstacle entity
+			var crashSkin:MovieClipSkin = new MovieClipSkin();
+			obstacle.children.addItem(crashSkin);
+			// Add the Transform2D to the obstacle entity
+			var transform:Transform2D = new Transform2D();
+			obstacle.children.addItem(transform);
+			// Add the ObstacleBehaviour to the obstacle entity
+			var behaviour:ObstacleBehaviour = new ObstacleBehaviour();
+			obstacle.children.addItem(behaviour);
+			behaviour.defaultSkin = defaultSkin;
+			behaviour.crashSkin = crashSkin;
+			behaviour.transform = transform;
+			//behaviour.init();
 			
-			if (!skin) return null;
-			
-			var newSkin:MovieClipSkin = MovieClipSkin(skin.clone());
-			_obstaclesContainer.children.addItem(newSkin);
-			
-			newSkin.x = gameArea.right;
-			newSkin.y = Math.random() * 400;
-			newSkin.validateNow();
-			
-			return newSkin;
+			return obstacle;
 		}
 		
-		private function obstacleClean(skin:AbstractSkin2D):void
+		private function obstacleClean(obstacle:Entity):void
 		{
 			
 		}
 		
-		private function checkOutItem(randItem:AbstractSkin2D, distance:Number):AbstractSkin2D
+		private function checkOutItem(distance:Number):Entity
 		{
 			var gameArea:Rectangle = globals ? globals.gameArea : defaultGameArea;
-			var itemToTrack:MovieClipSkin = MovieClipSkin(obstaclesPool.checkOut());
+			var itemToTrack:Entity = Entity(obstaclesPool.checkOut());
 			
 			if (!itemToTrack) return null;
 			
 			// randItem is either MovieClipSkin or ImageSkin (MovieClipSkin extends ImageSkin)
-			var randImgSkin:ImageSkin = ImageSkin(randItem);
+/*			var randImgSkin:ImageSkin = ImageSkin(randItem);
 			var imgSkin:MovieClipSkin = MovieClipSkin(itemToTrack);
 			imgSkin.texture = randImgSkin.texture;
 			imgSkin.textureAtlas = randImgSkin.textureAtlas;
-			imgSkin.texturesPrefix = randImgSkin.texturesPrefix;			
+			imgSkin.texturesPrefix = randImgSkin.texturesPrefix;*/			
 			
-			// Possible that texturesPrefix could be the same for different TextureAtlases... Though unlikely.
-			var behaviour:ObstacleBehaviour = obstaclesTable[imgSkin.texturesPrefix];
+			// Get random obstacle
+			var randBehaviour:ObstacleBehaviour = obstacles[Math.round(Math.random() * (obstacles.length-1))];
 			
+			var behaviour:ObstacleBehaviour = ComponentUtil.getChildOfType(itemToTrack, ObstacleBehaviour);
+			// Apply skins
+			behaviour.defaultSkin.textureAtlas = randBehaviour.defaultSkin.textureAtlas;
+			behaviour.defaultSkin.texturesPrefix = randBehaviour.defaultSkin.texturesPrefix;
+			behaviour.crashSkin.textureAtlas = randBehaviour.crashSkin.textureAtlas;
+			behaviour.crashSkin.texturesPrefix = randBehaviour.crashSkin.texturesPrefix;
+			behaviour.init();
 			behaviour.distance = distance;
-			itemToTrack.x = gameArea.right;
+			behaviour.transform.x = gameArea.right;
 			
 			// For only one of the obstacles, make it appear in either the top or bottom of the screen.
 /*			if (_type <= GameConstants.OBSTACLE_TYPE_3)
@@ -201,13 +222,13 @@ package hungryHero.components.processes
 				// Place it on the top of the screen.
 				if (Math.random() > 0.5)
 				{
-					itemToTrack.y = gameArea.top;
+					behaviour.transform.y = gameArea.top;
 					behaviour.position = "top";
 				}
 				else
 				{
 					// Or place it in the bottom of the screen.
-					itemToTrack.y = gameArea.bottom - itemToTrack.height;
+					behaviour.transform.y = gameArea.bottom - behaviour.defaultSkin.height;
 					behaviour.position = "bottom";
 				}
 /*			}
@@ -243,11 +264,11 @@ package hungryHero.components.processes
 			}
 			else if (obstacleGapCount != 0)
 			{
-				var randObstacle:AbstractSkin2D = obstacles[Math.round(Math.random() * (obstacles.length-1))];
+				//var randObstacle:AbstractSkin2D = obstacles[Math.round(Math.random() * (obstacles.length-1))];
 				obstacleGapCount = 0;
 				
 				// Create any one of the obstacles.
-				checkOutItem(randObstacle, Math.random() * 1000 + 1000);
+				checkOutItem(Math.random() * 1000 + 1000);
 			}
 		}
 		
@@ -270,14 +291,13 @@ package hungryHero.components.processes
 		{
 /*			if (!gamePaused)
 			{*/
-				var obstacleToTrack:ImageSkin;
 				var heroRect:Rectangle;
 				var obstacleRect:Rectangle;
 				
 				for (var i:uint = 0; i < obstaclesToAnimateLength ; i ++)
 				{
-					obstacleToTrack = obstaclesToAnimate[i];
-					var behaviour:ObstacleBehaviour = obstaclesTable[obstacleToTrack.texturesPrefix];
+					var obstacleToTrack:Entity = obstaclesToAnimate[i];
+					var behaviour:ObstacleBehaviour = ComponentUtil.getChildOfType(obstacleToTrack, ObstacleBehaviour); 
 					
 					// If the distance is still more than 0, keep reducing its value, without moving the obstacle.
 					if (behaviour.distance > 0 ) 
@@ -295,18 +315,18 @@ package hungryHero.components.processes
 						}
 						
 						// Move the obstacle based on hero's speed.
-						obstacleToTrack.x -= (playerSpeed + behaviour.speed) * elapsed; 
+						behaviour.transform.x -= (playerSpeed + behaviour.speed) * elapsed; 
 					}
 					
 					// If the obstacle passes beyond the screen, remove it.
-					if (obstacleToTrack.x < -obstacleToTrack.width)// || gameState == GameConstants.GAME_STATE_OVER)
+					if (behaviour.transform.x < -behaviour.defaultSkin.width)// || gameState == GameConstants.GAME_STATE_OVER)
 					{
 						disposeObstacleTemporarily(i, obstacleToTrack);
 					}
 					
 					// Collision detection - Check if hero collides with any obstacle.
-					var xDistance:Number = obstacleToTrack.x - hitTestX;
-					var yDistance:Number = obstacleToTrack.y - hitTestY;
+					var xDistance:Number = behaviour.transform.x - hitTestX;
+					var yDistance:Number = behaviour.transform.y - hitTestY;
 					var h:Number = Math.sqrt( xDistance * xDistance + yDistance * yDistance );
 					var hitDistance:Number = hitTestSkin ? hitTestSkin.width / 2 : 100;
 					
@@ -320,8 +340,8 @@ package hungryHero.components.processes
 /*						if (coffee > 0) 
 						{
 							// If hero has a coffee item, break through the obstacle.
-							if (behaviour.position == "bottom") obstacleToTrack.rotation = deg2rad(100);
-							else obstacleToTrack.rotation = deg2rad(-100);
+							if (behaviour.position == "bottom") behaviour.transform.rotation = deg2rad(100);
+							else behaviour.transform.rotation = deg2rad(-100);
 							
 							// Set hit obstacle value.
 							hitObstacle = 30;
@@ -331,8 +351,11 @@ package hungryHero.components.processes
 						}
 						else 
 						{*/
-							if (behaviour.position == "bottom") obstacleToTrack.rotation = deg2rad(70);
-							else obstacleToTrack.rotation = deg2rad(-70);
+							if (behaviour.position == "bottom") {
+								behaviour.transform.rotation = deg2rad(70);
+							} else {
+								behaviour.transform.rotation = deg2rad(-70);
+							}
 							
 							// Otherwise, if hero doesn't have a coffee item, set hit obstacle value.
 							hitObstacle = 30; 
@@ -365,7 +388,7 @@ package hungryHero.components.processes
 /*			}*/
 		}		
 		
-		private function disposeObstacleTemporarily(animateId:uint, obstacle:AbstractSkin2D):void
+		private function disposeObstacleTemporarily(animateId:uint, obstacle:Entity):void
 		{
 			obstaclesToAnimate.splice(animateId, 1);
 			obstaclesToAnimateLength--;

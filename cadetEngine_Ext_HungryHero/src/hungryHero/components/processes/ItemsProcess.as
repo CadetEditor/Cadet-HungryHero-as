@@ -22,11 +22,12 @@ package hungryHero.components.processes
 	public class ItemsProcess extends ComponentContainer implements ISteppableComponent
 	{
 		private var _initialised	:Boolean = false;
-		private var items			:Array;
-		private var powerups		:Array;
-		private var allItems		:Array;
+		private var items			:Vector.<AbstractSkin2D>;
+		private var powerups		:Vector.<AbstractSkin2D>;
+		private var allItems		:Vector.<AbstractSkin2D>;
+		private var activePowerups	:Vector.<IPowerupBehaviour>;
 		private var powerupsTable	:Dictionary;
-		private var activePowerups	:Array;
+		
 		
 //		public var renderer			:Renderer2D;
 		public var globals			:GlobalsProcess;
@@ -88,11 +89,11 @@ package hungryHero.components.processes
 		
 		public function ItemsProcess()
 		{
-			items = [];
-			powerups = [];
-			allItems = [];
+			items = new Vector.<AbstractSkin2D>();
+			powerups = new Vector.<AbstractSkin2D>();
+			allItems = new Vector.<AbstractSkin2D>();
 			powerupsTable = new Dictionary();
-			activePowerups = [];
+			activePowerups = new Vector.<IPowerupBehaviour>();
 			
 			// Initialize items-to-animate vector.
 			itemsToAnimate = new Vector.<AbstractSkin2D>();
@@ -260,11 +261,11 @@ package hungryHero.components.processes
 		private function itemCreate():AbstractSkin2D
 		{
 			var gameArea:Rectangle = globals ? globals.gameArea : defaultGameArea;
-			var skin:MovieClipSkin = new MovieClipSkin();
+//			var skin:MovieClipSkin = new MovieClipSkin();
+//			
+//			if (!skin) return null;
 			
-			if (!skin) return null;
-			
-			var newSkin:MovieClipSkin = MovieClipSkin(skin.clone());
+			var newSkin:MovieClipSkin = new MovieClipSkin();//MovieClipSkin(skin.clone());
 			_itemsContainer.children.addItem(newSkin);
 			
 			newSkin.x = gameArea.right;

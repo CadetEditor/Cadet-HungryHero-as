@@ -225,14 +225,26 @@ package
 			cadetScene.children.addItem(obstaclesEntity);
 			
 			for ( var i:uint = 0; i < 3; i ++ ) {
-				// Add an ImageSkin to the itemsEntity
 				var obstacle:Entity = new Entity();
-				var imageSkin:ImageSkin = new ImageSkin();
-				obstacle.children.addItem(imageSkin);
-				imageSkin.textureAtlas = allSpritesAtlas;
-				imageSkin.texturesPrefix = "obstacle"+(i+1);
+				// Add the default ImageSkin to the obstacle entity
+				var defaultSkin:ImageSkin = new ImageSkin();
+				obstacle.children.addItem(defaultSkin);
+				defaultSkin.textureAtlas = allSpritesAtlas;
+				defaultSkin.texturesPrefix = "obstacle"+(i+1);
+				// Add the crash ImageSkin to the obstacle entity
+				var crashSkin:ImageSkin = new ImageSkin();
+				obstacle.children.addItem(crashSkin);
+				crashSkin.textureAtlas = allSpritesAtlas;
+				crashSkin.texturesPrefix = "obstacle"+(i+1)+"_crash";
+				// Add the Transform2D to the obstacle entity
+				var transform:Transform2D = new Transform2D();
+				obstacle.children.addItem(transform);
+				// Add the ObstacleBehaviour to the obstacle entity
 				var behaviour:ObstacleBehaviour = new ObstacleBehaviour();
 				obstacle.children.addItem(behaviour);
+				behaviour.defaultSkin = defaultSkin;
+				behaviour.crashSkin = crashSkin;
+				// Finally, add the obstacle entity to the container entity
 				obstaclesEntity.children.addItem(obstacle);				
 			}
 			

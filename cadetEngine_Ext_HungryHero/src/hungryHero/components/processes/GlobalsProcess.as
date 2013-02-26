@@ -8,8 +8,6 @@ package hungryHero.components.processes
 	
 	import cadet2D.components.renderers.Renderer2D;
 	
-	import hungryHero.components.behaviours.IMoveBehaviour;
-	
 	public class GlobalsProcess extends Component implements ISteppableComponent
 	{
 		[Serializable][Inspectable(priority="51") ]

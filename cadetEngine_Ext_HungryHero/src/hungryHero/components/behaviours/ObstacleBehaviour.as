@@ -2,6 +2,9 @@ package hungryHero.components.behaviours
 {
 	import cadet.core.Component;
 	
+	import cadet2D.components.skins.ImageSkin;
+	import cadet2D.components.transforms.Transform2D;
+	
 	public class ObstacleBehaviour extends Component
 	{
 		/** Speed of the obstacle. */
@@ -19,9 +22,28 @@ package hungryHero.components.behaviours
 		/** Vertical position of the obstacle. */
 		private var _position:String;
 		
+		[Serializable][Inspectable(priority="50") ]
+		public var defaultSkin	:ImageSkin;
+		[Serializable][Inspectable(priority="51") ]
+		public var crashSkin	:ImageSkin;
+		
+		public var transform	:Transform2D;
+		
 		public function ObstacleBehaviour()
 		{
-			super();
+			
+		}
+		
+		public function init():void
+		{
+			alreadyHit = false;
+			lookOut = true;
+			if (transform)	transform.rotation = 0;
+		}
+		
+		override protected function addedToScene():void
+		{
+			addSiblingReference(Transform2D, "transform");
 		}
 		
 		/**
@@ -54,21 +76,27 @@ package hungryHero.components.behaviours
 		public function get alreadyHit():Boolean { return _alreadyHit; }
 		public function set alreadyHit(value:Boolean):void
 		{
-			_alreadyHit = value;
-			
-			if (value)
-			{
-/*				obstacleCrashImage.visible = true;
-				if (_type == GameConstants.OBSTACLE_TYPE_4)
-				{
-					obstacleAnimation.visible = false;
+			if ( _alreadyHit != value ) {
+				if ( value ) {
+					defaultSkin.visible = false;
+					crashSkin.visible = true;
+	/*				obstacleCrashImage.visible = true;
+					if (_type == GameConstants.OBSTACLE_TYPE_4)
+					{
+						obstacleAnimation.visible = false;
+					}
+					else
+					{
+						obstacleImage.visible = false;
+						Starling.juggler.remove(obstacleAnimation);
+					}*/
+				} else {
+					defaultSkin.visible = true;
+					crashSkin.visible = false;
 				}
-				else
-				{
-					obstacleImage.visible = false;
-					Starling.juggler.remove(obstacleAnimation);
-				}*/
 			}
+			
+			_alreadyHit = value;
 		}
 		
 		/**
@@ -90,6 +118,6 @@ package hungryHero.components.behaviours
 		 * 
 		 */
 		public function get position():String { return _position; }
-		public function set position(value:String):void { _position = value; }		
+		public function set position(value:String):void { _position = value; }
 	}
 }
