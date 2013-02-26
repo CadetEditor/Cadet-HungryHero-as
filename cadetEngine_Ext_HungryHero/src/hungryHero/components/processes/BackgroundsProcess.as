@@ -1,13 +1,13 @@
 package hungryHero.components.processes
 {
-	import cadet.core.ComponentContainer;
+	import cadet.core.Component;
 	import cadet.core.IComponent;
 	import cadet.core.ISteppableComponent;
 	import cadet.util.ComponentUtil;
 	
 	import hungryHero.components.behaviours.ParallaxBehaviour;
 	
-	public class BackgroundsProcess extends ComponentContainer implements ISteppableComponent
+	public class BackgroundsProcess extends Component implements ISteppableComponent
 	{
 		private var _initialised	:Boolean = false;
 		private var _parallaxes		:Vector.<IComponent>;
@@ -50,6 +50,8 @@ package hungryHero.components.processes
 		private function initialise():void
 		{
 			_parallaxes = ComponentUtil.getChildrenOfType(_scene, ParallaxBehaviour, true);
+			
+			_initialised = true;
 		}
 	}
 }

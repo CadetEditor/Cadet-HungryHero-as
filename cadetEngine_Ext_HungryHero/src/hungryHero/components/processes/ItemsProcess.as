@@ -3,7 +3,6 @@ package hungryHero.components.processes
 	import flash.events.Event;
 	import flash.geom.Rectangle;
 	import flash.utils.Dictionary;
-	import flash.utils.getTimer;
 	
 	import cadet.core.Component;
 	import cadet.core.ComponentContainer;
@@ -12,7 +11,6 @@ package hungryHero.components.processes
 	import cadet.util.ComponentUtil;
 	
 	import cadet2D.components.core.Entity;
-	import cadet2D.components.renderers.Renderer2D;
 	import cadet2D.components.skins.AbstractSkin2D;
 	import cadet2D.components.skins.ImageSkin;
 	import cadet2D.components.skins.MovieClipSkin;
@@ -30,21 +28,13 @@ package hungryHero.components.processes
 		private var powerupsTable	:Dictionary;
 		private var activePowerups	:Array;
 		
-		public var renderer			:Renderer2D;
+//		public var renderer			:Renderer2D;
 		public var globals			:GlobalsProcess;
 	
 		private var itemsPool		:Pool;
-		//private var powerupsPool	:Pool;
 		
 		private var itemsToAnimate:Vector.<AbstractSkin2D>;
 		private var itemsToAnimateLength:uint = 0;
-
-		private var gameArea		:Rectangle;
-		
-		/** Time calculation for animation. */
-		private var timePrevious:Number;
-		private var timeCurrent:Number;
-		private var elapsed:Number;
 		
 		// ------------------------------------------------------------------------------------------------------------
 		// ITEM GENERATION
@@ -80,23 +70,8 @@ package hungryHero.components.processes
 		/** Y position for the entire pattern - Used for vertical pattern only. */
 		private var patternPosYstart:Number;
 		
-		/** Hero's current X position. */
-		private var heroX:int;
-		
-		/** Hero's current Y position. */
-		private var heroY:int;
-		
-		/** Collision detection for hero vs items. */
-		private var heroItem_xDist:Number;
-		private var heroItem_yDist:Number;
-		private var heroItem_sqDist:Number;
-		
-		/** Collision detection for hero vs obstacles. */
-		private var heroObstacle_xDist:Number;
-		private var heroObstacle_yDist:Number;
-		private var heroObstacle_sqDist:Number;
-		
-		private var playerSpeed		:int = 650;
+		private var hitTestX:int;
+		private var hitTestY:int;
 		
 		private var _hitTestSkin			:AbstractSkin2D;
 		private var _itemsContainer			:IComponentContainer;
@@ -106,6 +81,10 @@ package hungryHero.components.processes
 		
 		[Serializable][Inspectable( priority="52" )]
 		public var defaultMoveBehaviour		:IMoveBehaviour;
+		
+		private var elapsed					:Number = 0.02;;
+		private var playerSpeed				:int = 650;
+		public var defaultGameArea			:Rectangle = new Rectangle(0, 0, 800, 600);
 		
 		public function ItemsProcess()
 		{
@@ -122,7 +101,7 @@ package hungryHero.components.processes
 		
 		override protected function addedToScene():void
 		{
-			addSceneReference(Renderer2D, "renderer");
+//			addSceneReference(Renderer2D, "renderer");
 			addSceneReference(GlobalsProcess, "globals");
 			addChildReference(IMoveBehaviour, "defaultMoveBehaviour");
 		}
@@ -162,28 +141,14 @@ package hungryHero.components.processes
 			return _powerupsContainer;
 		}
 		
-		private function calculateElapsed():void
-		{
-			// Set the current time as the previous time.
-			timePrevious = timeCurrent;
-			
-			// Get teh new current time.
-			timeCurrent = getTimer(); 
-			
-			// Calcualte the time it takes for a frame to pass, in milliseconds.
-			elapsed = (timeCurrent - timePrevious) * 0.001; 
-		}
-		
 		public function step( dt:Number ):void
 		{
 			if ( globals ) {
 				playerSpeed = globals.playerSpeed;
+				elapsed = globals.elapsed;
 			}
 			
-			
-			calculateElapsed();
-			
-			if (!renderer || !renderer.viewport) return;
+//			if (!renderer || !renderer.viewport) return;
 			
 			if (!_initialised) {
 				initialise();
@@ -192,20 +157,16 @@ package hungryHero.components.processes
 			// Create food items.
 			setItemsPattern();
 			createItemsPattern();
-			
-			// Create obstacles.
-//			initObstacle();
-			
+						
 			// Store the hero's current x and y positions (needed for animations below).
 			if (_hitTestSkin) {
-				heroX = _hitTestSkin.x;//hero.x;
-				heroY = _hitTestSkin.y;//hero.y;
+				hitTestX = _hitTestSkin.x + _hitTestSkin.width/2;//hero.x;
+				hitTestY = _hitTestSkin.y + _hitTestSkin.height/2;//hero.y;
 			}
 			
 			// Animate elements.
 			updateItems();
 			updatePowerups();
-//			animateObstacles();
 //			animateEatParticles();
 //			animateWindParticles();
 			
@@ -218,7 +179,7 @@ package hungryHero.components.processes
 			createItemsPool();
 			createPowerupsPool();
 			
-			gameArea = new Rectangle(0, 0, renderer.viewport.stage.stageWidth, renderer.viewport.stage.stageHeight);
+			var gameArea:Rectangle = globals ? globals.gameArea : defaultGameArea;
 			
 			// Reset item pattern styling.
 			pattern = 1;
@@ -298,6 +259,7 @@ package hungryHero.components.processes
 		
 		private function itemCreate():AbstractSkin2D
 		{
+			var gameArea:Rectangle = globals ? globals.gameArea : defaultGameArea;
 			var skin:MovieClipSkin = new MovieClipSkin();
 			
 			if (!skin) return null;
@@ -305,7 +267,7 @@ package hungryHero.components.processes
 			var newSkin:MovieClipSkin = MovieClipSkin(skin.clone());
 			_itemsContainer.children.addItem(newSkin);
 			
-			newSkin.x = renderer.viewport.stage.stageWidth;
+			newSkin.x = gameArea.right;
 			newSkin.y = Math.random() * 400;
 			newSkin.validateNow();
 			
@@ -381,6 +343,7 @@ package hungryHero.components.processes
 		
 		private function checkOutItem(randItem:AbstractSkin2D, x:Number, y:Number):AbstractSkin2D
 		{
+			var gameArea:Rectangle = globals ? globals.gameArea : defaultGameArea;
 			var itemToTrack:MovieClipSkin = MovieClipSkin(itemsPool.checkOut());
 			
 			if (!itemToTrack) return null;
@@ -393,7 +356,7 @@ package hungryHero.components.processes
 			imgSkin.texturesPrefix = randImgSkin.texturesPrefix;
 			
 			// Reset position of item.
-			itemToTrack.x = renderer.viewport.stage.stageWidth;
+			itemToTrack.x = gameArea.right;
 			itemToTrack.y = patternPosY;
 			
 			// Mark the item for animation.
@@ -405,6 +368,7 @@ package hungryHero.components.processes
 		// reuseAndConfigureItem()
 		private function spawnItems():void
 		{
+			var gameArea:Rectangle = globals ? globals.gameArea : defaultGameArea;
 			var itemToTrack:AbstractSkin2D;
 			var skin:AbstractSkin2D;
 			// randItem is inputted by user so could be ImageSkin or MovieClipSkin
@@ -420,7 +384,7 @@ package hungryHero.components.processes
 				}
 
 				// Checkout item from pool and set the type of item.
-				itemToTrack = checkOutItem(randItem, renderer.viewport.stage.stageWidth, patternPosY);
+				itemToTrack = checkOutItem(randItem, gameArea.right, patternPosY);
 			} else if ( pattern == 2 ) {
 				// Vertical, creates a line of food items that could be the height of the entire screen or just a small part of it.
 				if (patternOnce == true) {
@@ -430,7 +394,7 @@ package hungryHero.components.processes
 					patternPosY = Math.floor(Math.random() * (gameArea.bottom - gameArea.top + 1)) + gameArea.top;
 					
 					// Set a random length not shorter than 0.4 of the screen, and not longer than 0.8 of the screen.
-					patternLength = (Math.random() * 0.4 + 0.4) * renderer.viewport.stage.stageHeight;//stage.stageHeight;
+					patternLength = (Math.random() * 0.4 + 0.4) * gameArea.bottom;//stage.stageHeight;
 				}
 				
 				// Set the start position of the food items pattern.
@@ -438,10 +402,10 @@ package hungryHero.components.processes
 				
 				// Create a line based on the height of patternLength, but not exceeding the height of the screen.
 				while (patternPosYstart + patternStep < patternPosY + patternLength 
-					&& patternPosYstart + patternStep < renderer.viewport.stage.stageHeight * 0.8)
+					&& patternPosYstart + patternStep < gameArea.bottom * 0.8)
 				{
 					// Checkout item from pool and set the type of item.
-					itemToTrack = checkOutItem(randItem, renderer.viewport.stage.stageWidth, patternPosY);
+					itemToTrack = checkOutItem(randItem, gameArea.right, patternPosY);
 
 					// Increase the position of the next item based on patternStep.
 					patternPosYstart += patternStep;
@@ -460,7 +424,7 @@ package hungryHero.components.processes
 				
 				if (patternPosY >= gameArea.top && patternPosY <= gameArea.bottom) {
 					// Checkout item from pool and set the type of item.
-					itemToTrack = checkOutItem(randItem, renderer.viewport.stage.stageWidth, patternPosY);
+					itemToTrack = checkOutItem(randItem, gameArea.right, patternPosY);
 
 					// Increase the position of the next item based on patternStep and patternDirection.
 					patternPosY += patternStep * patternDirection;
@@ -477,7 +441,7 @@ package hungryHero.components.processes
 					while (patternPosY + patternStep < gameArea.bottom)
 					{
 						// Checkout item from pool and set the type of item.
-						itemToTrack = checkOutItem(randItem, renderer.viewport.stage.stageWidth, patternPosY);
+						itemToTrack = checkOutItem(randItem, gameArea.right, patternPosY);
 						
 						// Increase the position of the next item by a random value.
 						patternPosY += Math.round(Math.random() * 100 + 100);
@@ -493,7 +457,7 @@ package hungryHero.components.processes
 					patternPosY = Math.floor(Math.random() * (gameArea.bottom - gameArea.top + 1)) + gameArea.top;
 					
 					// Checkout item from pool and set the type of item.
-					itemToTrack = checkOutItem(randItem, renderer.viewport.stage.stageWidth, patternPosY);
+					itemToTrack = checkOutItem(randItem, gameArea.right, patternPosY);
 				}
 			}
 		}
@@ -503,7 +467,7 @@ package hungryHero.components.processes
 		{
 			var itemToTrack:MovieClipSkin;
 			
-			for(var i:uint = 0;i<itemsToAnimateLength;i++)
+			for( var i:uint = 0; i < itemsToAnimateLength; i++ )
 			{
 				itemToTrack = itemsToAnimate[i];
 				
@@ -528,11 +492,12 @@ package hungryHero.components.processes
 					else
 					{
 						// Collision detection - Check if the hero eats a food item.
-						heroItem_xDist = itemToTrack.x - heroX;
-						heroItem_yDist = itemToTrack.y - heroY;
-						heroItem_sqDist = heroItem_xDist * heroItem_xDist + heroItem_yDist * heroItem_yDist;
+						var xDistance:Number = itemToTrack.x - hitTestX;
+						var yDistance:Number = itemToTrack.y - hitTestY;
+						var h:Number = Math.sqrt( xDistance * xDistance + yDistance * yDistance );
+						var hitDistance:Number = hitTestSkin ? hitTestSkin.width / 2 : 100;
 						
-						if (heroItem_sqDist < 5000)
+						if ( h < hitDistance )
 						{
 							var behaviour:IPowerupBehaviour = powerupsTable[itemToTrack.texturesPrefix];
 							if ( behaviour ) {
@@ -629,10 +594,12 @@ package hungryHero.components.processes
 		
 		private function disposeItemTemporarily(animateId:uint, item:MovieClipSkin):void
 		{
+			var gameArea:Rectangle = globals ? globals.gameArea : defaultGameArea;
+			
 			itemsToAnimate.splice(animateId, 1);
 			itemsToAnimateLength--;
 			
-			item.x = renderer.viewport.stage.stageWidth + item.width * 2;
+			item.x = gameArea.right + item.width * 2;
 			
 			itemsPool.checkIn(item);
 		}

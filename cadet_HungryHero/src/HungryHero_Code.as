@@ -20,11 +20,13 @@ package
 	
 	import hungryHero.components.behaviours.MagnetBehaviour;
 	import hungryHero.components.behaviours.MoveBehaviour;
+	import hungryHero.components.behaviours.ObstacleBehaviour;
 	import hungryHero.components.behaviours.ParallaxBehaviour;
 	import hungryHero.components.behaviours.SpeedUpBehaviour;
 	import hungryHero.components.processes.BackgroundsProcess;
 	import hungryHero.components.processes.GlobalsProcess;
 	import hungryHero.components.processes.ItemsProcess;
+	import hungryHero.components.processes.ObstaclesProcess;
 	
 	[SWF( width="1024", height="768", backgroundColor="0x002135", frameRate="60" )]
 	public class HungryHero_Code extends Sprite
@@ -85,6 +87,7 @@ package
 			addBackgrounds();			
 			addHero();
 			addItems();
+			addObstacles();
 			
 			addEventListener( Event.ENTER_FRAME, enterFrameHandler );			
 		}
@@ -213,6 +216,30 @@ package
 			var moveBehaviour:MoveBehaviour = new MoveBehaviour();
 			itemsProcess.children.addItem(moveBehaviour);
 			moveBehaviour.angle = 270;
+		}
+		
+		private function addObstacles():void
+		{
+			// Add the Obstacles Entity
+			var obstaclesEntity:Entity = new Entity();
+			cadetScene.children.addItem(obstaclesEntity);
+			
+			for ( var i:uint = 0; i < 3; i ++ ) {
+				// Add an ImageSkin to the itemsEntity
+				var obstacle:Entity = new Entity();
+				var imageSkin:ImageSkin = new ImageSkin();
+				obstacle.children.addItem(imageSkin);
+				imageSkin.textureAtlas = allSpritesAtlas;
+				imageSkin.texturesPrefix = "obstacle"+(i+1);
+				var behaviour:ObstacleBehaviour = new ObstacleBehaviour();
+				obstacle.children.addItem(behaviour);
+				obstaclesEntity.children.addItem(obstacle);				
+			}
+			
+			var obstaclesProcess:ObstaclesProcess = new ObstaclesProcess();
+			cadetScene.children.addItem(obstaclesProcess);
+			obstaclesProcess.obstaclesContainer = obstaclesEntity;
+			obstaclesProcess.hitTestSkin = heroSkin;
 		}
 		
 		private function textureValidatedHandler( event:SkinEvent ):void

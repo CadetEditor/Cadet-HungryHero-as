@@ -9,6 +9,8 @@
     <classEntry path="hungryHero.components.behaviours.SpeedUpBehaviour"/>
     <classEntry path="hungryHero.components.behaviours.IPowerupBehaviour"/>
     <classEntry path="hungryHero.components.processes.BackgroundsProcess"/>
+    <classEntry path="hungryHero.components.processes.ObstaclesProcess"/>
+    <classEntry path="hungryHero.components.behaviours.ObstacleBehaviour"/>
   </includeClasses>
   <includeResources/>
   <namespaceManifests/>

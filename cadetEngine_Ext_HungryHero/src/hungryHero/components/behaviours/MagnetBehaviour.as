@@ -42,7 +42,6 @@ package hungryHero.components.behaviours
 		
 		override protected function addedToScene():void
 		{
-			trace("ADDED MAGNET");
 			addSceneReference(GlobalsProcess, "globals");
 		}
 		
