@@ -74,23 +74,20 @@ package ui
 			this.addEventListener(Event.ADDED_TO_STAGE, onAddedToStage);
 		}
 		
-		/**
-		 * On added to stage. 
-		 * @param event
-		 * 
+		/**
+		 * On added to stage. 		 * @param event
+		 *
 		 */
-		private function onAddedToStage(event:Event):void
+		private function onAddedToStage(event:Event):void
 		{
 			this.removeEventListener(Event.ADDED_TO_STAGE, onAddedToStage);
-			
+			
 			drawGameOver();
 		}
 		
-		/**
-		 * Draw game over screen. 
-		 * 
+		/**		 * Draw game over screen. 		 * 
 		 */
-		private function drawGameOver():void
+		private function drawGameOver():void
 		{
 			// Get fonts for text display.
 			fontMessage = Fonts.getFont("ScoreValue");

@@ -1,17 +1,9 @@
 package view
 {
-	import flash.media.SoundMixer;
-	import flash.net.URLRequest;
-	import flash.net.navigateToURL;
-	
 	import assets.Assets;
-	
-	import events.NavigationEvent;
 	
 	import font.Font;
 	import font.Fonts;
-	
-	import sound.Sounds;
 	
 	import starling.animation.Transitions;
 	import starling.animation.Tween;
@@ -33,29 +25,17 @@ package view
 		/** Game title. */
 		private var title:Image;
 		
-		/** Play button. */
-		private var playBtn:Button;
-		
-		/** About button. */
-		private var aboutBtn:Button;
+		public var playBtn:Button;
+		public var aboutBtn:Button;
+		public var hsharmaBtn:Button;
+		public var starlingBtn:Button;
+		public var backBtn:Button;
 		
 		/** Hero artwork. */
 		private var hero:Image;
 		
 		/** About text field. */
 		private var aboutText:TextField;
-		
-		/** hsharma.com button. */
-		private var hsharmaBtn:Button;
-		
-		/** Starling Framework button. */
-		private var starlingBtn:Button;
-		
-		/** Back button. */
-		private var backBtn:Button;
-		
-		/** Screen mode - "welcome" or "about". */
-		private var screenMode:String;
 		
 		/** Current date. */
 		private var _currentDate:Date;
@@ -105,13 +85,11 @@ package view
 			playBtn = new Button(Assets.getAtlas().getTexture("welcome_playButton"));
 			playBtn.x = 640;
 			playBtn.y = 340;
-			playBtn.addEventListener(Event.TRIGGERED, onPlayClick);
 			this.addChild(playBtn);
 			
 			aboutBtn = new Button(Assets.getAtlas().getTexture("welcome_aboutButton"));
 			aboutBtn.x = 460;
 			aboutBtn.y = 460;
-			aboutBtn.addEventListener(Event.TRIGGERED, onAboutClick);
 			this.addChild(aboutBtn);
 			
 			// ABOUT ELEMENTS
@@ -133,85 +111,25 @@ package view
 			hsharmaBtn = new Button(Assets.getAtlas().getTexture("about_hsharmaLogo"));
 			hsharmaBtn.x = aboutText.x;
 			hsharmaBtn.y = aboutText.bounds.bottom;
-			hsharmaBtn.addEventListener(Event.TRIGGERED, onHsharmaBtnClick);
 			this.addChild(hsharmaBtn);
 			
 			starlingBtn = new Button(Assets.getAtlas().getTexture("about_starlingLogo"));
 			starlingBtn.x = aboutText.bounds.right - starlingBtn.width;
 			starlingBtn.y = aboutText.bounds.bottom;
-			starlingBtn.addEventListener(Event.TRIGGERED, onStarlingBtnClick);
 			this.addChild(starlingBtn);
 			
 			backBtn = new Button(Assets.getAtlas().getTexture("about_backButton"));
 			backBtn.x = 660;
 			backBtn.y = 350;
-			backBtn.addEventListener(Event.TRIGGERED, onAboutBackClick);
 			this.addChild(backBtn);
 		}
-		
-		/**
-		 * On back button click from about screen. 
-		 * @param event
-		 * 
-		 */
-		private function onAboutBackClick(event:Event):void
-		{
-			if (!Sounds.muted) Sounds.sndCoffee.play();
-			
-			initialize();
-		}
-		
-		/**
-		 * On credits click on hsharma.com image. 
-		 * @param event
-		 * 
-		 */
-		private function onHsharmaBtnClick(event:Event):void
-		{
-			navigateToURL(new URLRequest("http://www.hsharma.com/"), "_blank");
-		}
-		
-		/**
-		 * On credits click on Starling Framework image. 
-		 * @param event
-		 * 
-		 */
-		private function onStarlingBtnClick(event:Event):void
-		{
-			navigateToURL(new URLRequest("http://www.gamua.com/starling"), "_blank");
-		}
-		
-		/**
-		 * On play button click. 
-		 * @param event
-		 * 
-		 */
-		private function onPlayClick(event:Event):void
-		{
-			this.dispatchEvent(new NavigationEvent(NavigationEvent.CHANGE_SCREEN, {id: "play"}, true));
-			
-			if (!Sounds.muted) Sounds.sndCoffee.play();
-		}
-		
-		/**
-		 * On about button click. 
-		 * @param event
-		 * 
-		 */
-		private function onAboutClick(event:Event):void
-		{
-			if (!Sounds.muted) Sounds.sndMushroom.play();
-			showAbout();
-		}
-		
+
 		/**
 		 * Show about screen.
 		 * 
 		 */
 		public function showAbout():void	
 		{	
-			screenMode = "about";
-			
 			hero.visible = false;
 			playBtn.visible = false;
 			aboutBtn.visible = false;
@@ -229,16 +147,6 @@ package view
 		public function initialize():void
 		{
 			disposeTemporarily();
-			
-			this.visible = true;
-			
-			// If not coming from about, restart playing background music.
-			if (screenMode != "about")
-			{
-				if (!Sounds.muted) Sounds.sndBgMain.play(0, 999);
-			}
-			
-			screenMode = "welcome";
 			
 			hero.visible = true;
 			playBtn.visible = true;
@@ -279,11 +187,7 @@ package view
 		 */
 		public function disposeTemporarily():void
 		{
-			this.visible = false;
-			
 			if (this.hasEventListener(Event.ENTER_FRAME)) this.removeEventListener(Event.ENTER_FRAME, floatingAnimation);
-			
-			if (screenMode != "about") SoundMixer.stopAll();
 		}		
 	}
 }
