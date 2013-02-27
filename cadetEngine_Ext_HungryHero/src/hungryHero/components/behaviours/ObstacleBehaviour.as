@@ -76,7 +76,7 @@ package hungryHero.components.behaviours
 		public function get alreadyHit():Boolean { return _alreadyHit; }
 		public function set alreadyHit(value:Boolean):void
 		{
-			if ( _alreadyHit != value ) {
+		//	if ( _alreadyHit != value ) {
 				if ( value ) {
 					defaultSkin.visible = false;
 					crashSkin.visible = true;
@@ -94,7 +94,7 @@ package hungryHero.components.behaviours
 					defaultSkin.visible = true;
 					crashSkin.visible = false;
 				}
-			}
+			//}
 			
 			_alreadyHit = value;
 		}

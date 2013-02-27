@@ -63,7 +63,7 @@ package hungryHero.components.processes
 		public function set renderer( value:Renderer2D ):void
 		{
 			_renderer = value;
-			gameArea = new Rectangle(0, 0, renderer.viewport.stage.stageWidth, renderer.viewport.stage.stageHeight);
+			gameArea = new Rectangle(0, 100, renderer.viewport.stage.stageWidth, renderer.viewport.stage.stageHeight - 100);
 		}
 		public function get renderer():Renderer2D
 		{
