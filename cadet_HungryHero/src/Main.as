@@ -21,9 +21,6 @@ package
 
 	public class Main extends Sprite
 	{
-//		private var gameView		:GameView;
-//		private var welcomeView		:WelcomeView;
-		
 		private var viewManager		:ViewManager;
 		
 		/** Sound / Mute button. */
@@ -44,7 +41,7 @@ package
 		
 		private function init():void
 		{
-			viewManager				= new ViewManager( this );
+			viewManager	= new ViewManager( this );
 			
 			viewManager.registerView( GameView, GameViewController );
 			viewManager.registerView( WelcomeView, WelcomeViewController );
@@ -93,10 +90,6 @@ package
 				if (viewManager.currentView is WelcomeView ) {
 					Sounds.sndBgMain.play(0, 999);
 				}
-			//	if (welcomeView.visible) Sounds.sndBgMain.play(0, 999);
-			//	else if (screenInGame.visible) Sounds.sndBgGame.play(0, 999);
-				// If in game, communicate with Cadet scene.
-				
 				
 				soundButton.showUnmuteState();
 			} else {

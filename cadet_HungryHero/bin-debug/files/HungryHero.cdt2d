@@ -1,66 +1,99 @@
-<cadet:CadetScene x:id="0" timeScale="1" framerate="60" name="Component" xmlns:cadet="www.unwrong.com/cadet/1.0.0" xmlns:x="flox.app.core.serialization.Serializer" xmlns:flox="www.unwrong.com/flox/1.0.0" xmlns:ns0="cadet.components.sounds" xmlns:cadet2D="www.unwrong.com/cadet2D/1.0.0" xmlns:ns1="cadet2D.components.textures" xmlns:ns2="cadet2D.components.skins" xmlns:ns3="cadet2D.components.behaviours">
-  <Object x:name="userData" x:id="1" showGrid="1" snapEnabled="1" panY="272.38888888888886" zoom="0.6" gridSize="10" panX="511.8888888888888"/>
-  <flox:ArrayCollection x:name="children" x:id="2">
-    <ns0:Sound x:name="0" x:id="3" asset="hungryHero/sounds/bgGame.mp3" name="Game Music Loop"/>
-    <cadet2D:Renderer2D x:name="1" x:id="4" depthSort="1" name="2D Renderer"/>
-    <ns1:TextureComponent x:name="2" x:id="5" bitmapData="hungryHero/graphics/mySpritesheet.png" name="AllSprites"/>
-    <ns1:TextureAtlasComponent x:name="3" x:id="6" xml="hungryHero/graphics/mySpritesheet.xml" name="AllSpritesAtlas">
-      <x:Ref x:name="texture" x:id="5"/>
-    </ns1:TextureAtlasComponent>
-    <cadet2D:Entity x:name="4" x:id="7" name="Sky">
-      <flox:ArrayCollection x:name="children" x:id="8">
-        <ns2:ImageSkin x:name="0" x:id="9" rotation="0" x="0" y="0" scaleX="1" scaleY="1" touchable="1" height="768" name="Image Skin" width="1024">
-          <ns1:TextureComponent x:name="texture" x:id="10" bitmapData="hungryHero/graphics/bgLayer1.jpg" name="Bg Texture"/>
+<cadet:CadetScene x:id="0" timeScale="1" framerate="60" name="Component" xmlns:cadet="www.unwrong.com/cadet/1.0.0" xmlns:x="flox.app.core.serialization.Serializer" xmlns:flox="www.unwrong.com/flox/1.0.0" xmlns:ns0="cadet.components.sounds" xmlns:ns1="hungryHero.components.processes" xmlns:cadet2D="www.unwrong.com/cadet2D/1.0.0" xmlns:ns2="cadet2D.components.skins" xmlns:ns3="cadet2D.components.textures" xmlns:ns4="cadet2D.components.behaviours" xmlns:ns5="hungryHero.components.behaviours">
+  <flox:DependencyManager x:name="dependencyManager" x:id="1">
+    <flox:ArrayCollection x:name="dependencyNodes" x:id="2"/>
+  </flox:DependencyManager>
+  <flox:ArrayCollection x:name="children" x:id="3">
+    <ns0:Sound x:name="0" x:id="4" asset="hungryHero/sounds/bgGame.mp3" name="Game Music Loop"/>
+    <ns1:ItemsProcess x:name="1" x:id="5" name="Items Process">
+      <cadet2D:Entity x:name="itemsContainer" x:id="6" name="Items">
+        <flox:ArrayCollection x:name="children" x:id="7">
+          <ns2:ImageSkin x:name="0" x:id="8" rotation="0" texturesPrefix="item1" x="700" y="190" scaleX="1" scaleY="1" touchable="1" width="29" height="30" name="Fries">
+            <ns3:TextureAtlasComponent x:name="textureAtlas" x:id="9" xml="hungryHero/graphics/mySpritesheet.xml" name="AllSpritesAtlas">
+              <ns3:TextureComponent x:name="texture" x:id="10" bitmapData="hungryHero/graphics/mySpritesheet.png" name="AllSprites"/>
+            </ns3:TextureAtlasComponent>
+          </ns2:ImageSkin>
+          <ns2:ImageSkin x:name="1" x:id="11" rotation="0" texturesPrefix="item2" x="760" y="180" scaleX="1" scaleY="1" touchable="1" width="22" height="33" name="Drink">
+            <x:Ref x:name="textureAtlas" x:id="9"/>
+          </ns2:ImageSkin>
+          <ns2:ImageSkin x:name="2" x:id="12" rotation="0" texturesPrefix="item3" x="810" y="200" scaleX="1" scaleY="1" touchable="1" width="25" height="23" name="Burger">
+            <x:Ref x:name="textureAtlas" x:id="9"/>
+          </ns2:ImageSkin>
+          <ns2:ImageSkin x:name="3" x:id="13" rotation="0" texturesPrefix="item4" x="730" y="240" scaleX="1" scaleY="1" touchable="1" width="23" height="24" name="Apple">
+            <x:Ref x:name="textureAtlas" x:id="9"/>
+          </ns2:ImageSkin>
+          <ns2:ImageSkin x:name="4" x:id="14" rotation="0" texturesPrefix="item5" x="790" y="250" scaleX="1" scaleY="1" touchable="1" width="26" height="25" name="Bananas">
+            <x:Ref x:name="textureAtlas" x:id="9"/>
+          </ns2:ImageSkin>
+        </flox:ArrayCollection>
+      </cadet2D:Entity>
+      <ns2:MovieClipSkin x:name="hitTestSkin" x:id="15" rotation="0" texturesPrefix="fly_" x="50" y="70" scaleX="1" scaleY="1" touchable="1" loop="1" width="155" height="77" name="Hero Skin">
+        <x:Ref x:name="textureAtlas" x:id="9"/>
+        <cadet2D:Transform2D x:name="transform2D" x:id="16" name="2D Transform" matrix="1,0,0,1,50,70"/>
+      </ns2:MovieClipSkin>
+      <cadet2D:Entity x:name="powerupsContainer" x:id="17" name="Power Ups">
+        <flox:ArrayCollection x:name="children" x:id="18">
+          <ns2:ImageSkin x:name="0" x:id="19" rotation="0" texturesPrefix="item6" x="700" y="300" scaleX="1" scaleY="1" touchable="1" width="56" height="55" name="Coffee">
+            <x:Ref x:name="textureAtlas" x:id="9"/>
+          </ns2:ImageSkin>
+          <ns2:ImageSkin x:name="1" x:id="20" rotation="0" texturesPrefix="item7" x="780" y="300" scaleX="1" scaleY="1" touchable="1" width="57" height="55" name="Mushroom">
+            <x:Ref x:name="textureAtlas" x:id="9"/>
+          </ns2:ImageSkin>
+        </flox:ArrayCollection>
+      </cadet2D:Entity>
+    </ns1:ItemsProcess>
+    <cadet2D:Renderer2D x:name="2" x:id="21" depthSort="1" name="2D Renderer"/>
+    <x:Ref x:name="3" x:id="10"/>
+    <x:Ref x:name="4" x:id="9"/>
+    <cadet2D:Entity x:name="5" x:id="22" name="Sky">
+      <flox:ArrayCollection x:name="children" x:id="23">
+        <ns2:ImageSkin x:name="0" x:id="24" rotation="0" x="0" y="0" scaleX="1" scaleY="1" touchable="1" width="1024" height="768" name="Image Skin">
+          <ns3:TextureComponent x:name="texture" x:id="25" bitmapData="hungryHero/graphics/bgLayer1.jpg" name="Bg Texture"/>
         </ns2:ImageSkin>
-        <x:Ref x:name="1" x:id="10"/>
-        <ns3:ParallaxBehaviour x:name="2" x:id="11" depth="0.1" speed="-15" name="Parallax"/>
+        <x:Ref x:name="1" x:id="25"/>
+        <ns5:ParallaxBehaviour x:name="2" x:id="26" depth="0.1" speed="-15" name="Parallax"/>
       </flox:ArrayCollection>
     </cadet2D:Entity>
-    <cadet2D:Entity x:name="5" x:id="12" name="Hills">
-      <flox:ArrayCollection x:name="children" x:id="13">
-        <ns2:ImageSkin x:name="0" x:id="14" rotation="0" x="0" y="290" scaleX="1" scaleY="1" touchable="1" texturesPrefix="bgLayer2" height="362" name="Image Skin" width="1024">
-          <x:Ref x:name="textureAtlas" x:id="6"/>
+    <cadet2D:Entity x:name="6" x:id="27" name="Hills">
+      <flox:ArrayCollection x:name="children" x:id="28">
+        <ns2:ImageSkin x:name="0" x:id="29" rotation="0" texturesPrefix="bgLayer2" x="0" y="290" scaleX="1" scaleY="1" touchable="1" width="1024" height="362" name="Image Skin">
+          <x:Ref x:name="textureAtlas" x:id="9"/>
         </ns2:ImageSkin>
-        <ns3:ParallaxBehaviour x:name="1" x:id="15" depth="0.3" speed="-15" name="Parallax"/>
+        <ns5:ParallaxBehaviour x:name="1" x:id="30" depth="0.3" speed="-15" name="Parallax"/>
       </flox:ArrayCollection>
     </cadet2D:Entity>
-    <cadet2D:Entity x:name="6" x:id="16" name="Midground">
-      <flox:ArrayCollection x:name="children" x:id="17">
-        <ns2:ImageSkin x:name="0" x:id="18" rotation="0" x="0" y="360" scaleX="1" scaleY="1" touchable="1" texturesPrefix="bgLayer3" height="279" name="Image Skin" width="1024">
-          <x:Ref x:name="textureAtlas" x:id="6"/>
+    <cadet2D:Entity x:name="7" x:id="31" name="Midground">
+      <flox:ArrayCollection x:name="children" x:id="32">
+        <ns2:ImageSkin x:name="0" x:id="33" rotation="0" texturesPrefix="bgLayer3" x="0" y="360" scaleX="1" scaleY="1" touchable="1" width="1024" height="279" name="Image Skin">
+          <x:Ref x:name="textureAtlas" x:id="9"/>
         </ns2:ImageSkin>
-        <ns3:ParallaxBehaviour x:name="1" x:id="19" depth="0.6" speed="-15" name="Parallax"/>
+        <ns5:ParallaxBehaviour x:name="1" x:id="34" depth="0.6" speed="-15" name="Parallax"/>
       </flox:ArrayCollection>
     </cadet2D:Entity>
-    <cadet2D:Entity x:name="7" x:id="20" name="Foreground">
-      <flox:ArrayCollection x:name="children" x:id="21">
-        <ns2:ImageSkin x:name="0" x:id="22" rotation="0" x="0" y="450" scaleX="1" scaleY="1" touchable="1" texturesPrefix="bgLayer4" height="124" name="Image Skin" width="1024">
-          <x:Ref x:name="textureAtlas" x:id="6"/>
+    <cadet2D:Entity x:name="8" x:id="35" name="Foreground">
+      <flox:ArrayCollection x:name="children" x:id="36">
+        <ns2:ImageSkin x:name="0" x:id="37" rotation="0" texturesPrefix="bgLayer4" x="0" y="450" scaleX="1" scaleY="1" touchable="1" width="1024" height="124" name="Image Skin">
+          <x:Ref x:name="textureAtlas" x:id="9"/>
         </ns2:ImageSkin>
-        <ns3:ParallaxBehaviour x:name="1" x:id="23" depth="1" speed="-15" name="Parallax"/>
+        <ns5:ParallaxBehaviour x:name="1" x:id="38" depth="1" speed="-15" name="Parallax"/>
       </flox:ArrayCollection>
     </cadet2D:Entity>
-    <cadet2D:Entity x:name="8" x:id="24" name="Hero">
-      <flox:ArrayCollection x:name="children" x:id="25">
-        <ns2:MovieClipSkin x:name="0" x:id="26" rotation="0" x="50" y="70" scaleX="1" scaleY="1" touchable="1" texturesPrefix="fly_" loop="1" height="77" name="MovieClip Skin" width="155">
-          <cadet2D:Transform2D x:name="transform2D" x:id="27" name="2D Transform" matrix="1,0,0,1,50,70"/>
-          <x:Ref x:name="textureAtlas" x:id="6"/>
+    <x:Ref x:name="9" x:id="6"/>
+    <x:Ref x:name="10" x:id="17"/>
+    <cadet2D:Entity x:name="11" x:id="39" name="Obstacles">
+      <flox:ArrayCollection x:name="children" x:id="40">
+        <ns2:MovieClipSkin x:name="0" x:id="41" rotation="0" texturesPrefix="obstacle1" x="850" y="50" scaleX="1" scaleY="1" touchable="1" loop="0" width="139" height="53" name="Plane">
+          <x:Ref x:name="textureAtlas" x:id="9"/>
+          <!--<cadet2D:Transform2D x:name="transform2D" x:id="42" name="2D Transform" matrix="1,0,0,1,850,50"/>-->
         </ns2:MovieClipSkin>
-        <x:Ref x:name="1" x:id="27"/>
-        <ns3:MouseFollowBehaviour x:name="2" x:id="28" constrain="x" name="Mouse Follow"/>
       </flox:ArrayCollection>
     </cadet2D:Entity>
-    <cadet2D:Entity x:name="9" x:id="29" name="Plane">
-      <flox:ArrayCollection x:name="children" x:id="30">
-        <cadet2D:Transform2D x:name="0" x:id="31" name="2D Transform" matrix="1,0,0,1,810,50"/>
-        <ns2:MovieClipSkin x:name="1" x:id="32" rotation="0" x="810" y="50" scaleX="1" scaleY="1" touchable="1" texturesPrefix="obstacle1" loop="0" height="53" name="MovieClip Skin" width="139">
-          <x:Ref x:name="transform2D" x:id="31"/>
-          <x:Ref x:name="textureAtlas" x:id="6"/>
-        </ns2:MovieClipSkin>
+    <cadet2D:Entity x:name="12" x:id="43" name="Hero">
+      <flox:ArrayCollection x:name="children" x:id="44">
+        <x:Ref x:name="0" x:id="15"/>
+        <x:Ref x:name="1" x:id="16"/>
+        <ns4:MouseFollowBehaviour x:name="2" x:id="45" constrain="x" name="Mouse Follow"/>
       </flox:ArrayCollection>
     </cadet2D:Entity>
   </flox:ArrayCollection>
-  <flox:DependencyManager x:name="dependencyManager" x:id="33">
-    <flox:ArrayCollection x:name="dependencyNodes" x:id="34"/>
-  </flox:DependencyManager>
+  <Object x:name="userData" x:id="46" gridSize="10" panX="568.1388888888888" panY="286.13888888888886" zoom="0.8" snapEnabled="1" showGrid="1"/>
 </cadet:CadetScene>

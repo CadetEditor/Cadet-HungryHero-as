@@ -1,12 +1,9 @@
 package hungryHero.components.processes
 {
-	import flash.geom.Rectangle;
 	import flash.utils.getTimer;
 	
 	import cadet.core.Component;
 	import cadet.core.ISteppableComponent;
-	
-	import cadet2D.components.renderers.Renderer2D;
 	
 	public class GlobalsProcess extends Component implements ISteppableComponent
 	{
@@ -22,13 +19,9 @@ package hungryHero.components.processes
 		
 		public var elapsed:Number = 0;
 		
-		public var gameArea:Rectangle;
-		
 		/** Time calculation for animation. */
 		private var timePrevious:Number = 0;
 		private var timeCurrent:Number = 0;
-		
-		private var _renderer			:Renderer2D;
 		
 		public function GlobalsProcess()
 		{
@@ -37,7 +30,7 @@ package hungryHero.components.processes
 		
 		override protected function addedToScene():void
 		{
-			addSceneReference(Renderer2D, "renderer");
+			
 		}
 		
 		public function step( dt:Number ):void
@@ -46,6 +39,9 @@ package hungryHero.components.processes
 			
 			// constantly slow playerSpeed down towards playerMinSpeed
 			playerSpeed -= (playerSpeed - playerMinSpeed) * 0.01;
+			if ( playerSpeed < playerMinSpeed + 1 ) {
+				playerSpeed = playerMinSpeed;
+			}
 		}
 		
 		private function calculateElapsed():void
@@ -58,16 +54,6 @@ package hungryHero.components.processes
 			
 			// Calcualte the time it takes for a frame to pass, in milliseconds.
 			elapsed = (timeCurrent - timePrevious) * 0.001; 
-		}
-		
-		public function set renderer( value:Renderer2D ):void
-		{
-			_renderer = value;
-			gameArea = new Rectangle(0, 100, renderer.viewport.stage.stageWidth, renderer.viewport.stage.stageHeight - 100);
-		}
-		public function get renderer():Renderer2D
-		{
-			return _renderer;
 		}
 	}
 }

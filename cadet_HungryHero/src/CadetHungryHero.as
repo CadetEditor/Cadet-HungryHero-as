@@ -11,11 +11,15 @@ package
 		/** Starling object. */
 		private var myStarling:Starling;
 		
+		public static var instance:Sprite;
+		
 		public function CadetHungryHero()
 		{
 			super();
 			
 			this.addEventListener(Event.ADDED_TO_STAGE, onAddedToStage);
+			
+			instance = this;
 		}
 		
 		/**

@@ -8,14 +8,9 @@ package hungryHero.components.behaviours
 	
 	public class MoveBehaviour extends Component implements IMoveBehaviour
 	{
-		public var globals			:GlobalsProcess;
-		private var _transform		:ITransform2D;
-		
-		[Serializable][Inspectable(priority="51" editor="Slider", min="0", max="360", snapInterval="1") ]
-		public var angle					:Number;
-		
-//		[Serializable][Inspectable(priority="52") ]
-//		public var distance					:Number;
+		public var globals					:GlobalsProcess;
+		private var _transform				:ITransform2D;
+		private var _angle					:Number = 0;
 		
 		public function MoveBehaviour()
 		{
@@ -26,6 +21,26 @@ package hungryHero.components.behaviours
 		{
 			addSceneReference(GlobalsProcess, "globals");
 		}
+
+		// -------------------------------------------------------------------------------------
+		// PUBLIC API
+		// -------------------------------------------------------------------------------------
+		
+		[Serializable][Inspectable(priority="50", editor="Slider", min="0", max="360", snapInterval="1") ]
+		public function set angle( value:Number ):void
+		{
+			_angle = value;
+		}
+		public function get angle():Number { return _angle; }
+		
+		[Serializable][Inspectable( priority="51", editor="ComponentList", scope="scene" )]
+		public function set transform( value:ITransform2D ):void
+		{
+			_transform = value;
+		}
+		public function get transform():ITransform2D { return _transform; }
+		
+		// -------------------------------------------------------------------------------------
 		
 		public function init():void
 		{
@@ -53,16 +68,6 @@ package hungryHero.components.behaviours
 			
 			transform.x += xStep;
 			transform.y += yStep;
-		}
-		
-		[Serializable][Inspectable( priority="50" )]
-		public function set transform( value:ITransform2D ):void
-		{
-			_transform = value;
-		}
-		public function get transform():ITransform2D
-		{
-			return _transform;
 		}
 		
 /*		public function movePercentageDistanceToTarget(point:Point, target:Point, percentage:Number):Point

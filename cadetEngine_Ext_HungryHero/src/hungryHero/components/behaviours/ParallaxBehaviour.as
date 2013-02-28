@@ -52,11 +52,13 @@ package hungryHero.components.behaviours
 			}
 			
 			if (_initialised) {
-				_skin1.x += Math.round(speed * depth);
-				_skin2.x += Math.round(speed * depth);
+				_skin1.x += Math.round(_speed * depth);
+				//_skin1.y += Math.round(_ySpeed * depth);
+				_skin2.x += Math.round(_speed * depth);
+				//_skin2.y += Math.round(_ySpeed * depth);
 				
 				// if direction is left
-				if ( speed < 0 ) {
+				if ( _speed < 0 ) {
 					if ( _skin1.x + _skin1.width < 0 ) {
 						_skin1.x = _skin2.x + _skin2.width;
 					}
@@ -73,6 +75,7 @@ package hungryHero.components.behaviours
 						_skin2.x = _skin1.x - _skin2.width;
 					}					
 				}
+				
 				//trace("stage X "+_skin.displayObject.stage.x+" Y "+_skin.displayObject.stage.y+" W "+_skin.displayObject.stage.stageWidth+" H "+_skin.displayObject.stage.stageHeight);
 			}
 		}
@@ -98,14 +101,8 @@ package hungryHero.components.behaviours
 		}
 		
 		[Serializable][Inspectable]
-		public function set speed( value:Number ):void
-		{
-			_speed = value;
-		}
-		public function get speed():Number
-		{
-			return _speed;
-		}
+		public function set speed( value:Number ):void { _speed = value; }
+		public function get speed():Number { return _speed; }
 		
 		public function set skin( value:AbstractSkin2D ):void
 		{

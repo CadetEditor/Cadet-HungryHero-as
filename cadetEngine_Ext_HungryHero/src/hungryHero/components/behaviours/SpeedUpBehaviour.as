@@ -10,12 +10,9 @@ package hungryHero.components.behaviours
 	{
 		public var globals			:GlobalsProcess;
 		
-		// How long does coffee power last? (in seconds)
-		[Serializable][Inspectable( priority="50" )]
-		public var effectLength	:Number = 50;
+		public var _effectLength	:Number = 50; // How long does coffee power last? (in seconds)
 		
-		[Inspectable( priority="51" )]
-		public var power			:Number;
+		private var power			:Number;
 		
 		private var notifyComplete	:Boolean;
 		
@@ -28,6 +25,19 @@ package hungryHero.components.behaviours
 		{
 			addSceneReference(GlobalsProcess, "globals");
 		}
+		
+		// -------------------------------------------------------------------------------------
+		// PUBLIC API
+		// -------------------------------------------------------------------------------------
+
+		[Serializable][Inspectable( priority="50" )]
+		public function set effectLength( value:Number ):void
+		{
+			_effectLength = value;
+		}
+		public function get effectLength():Number { return _effectLength; }
+	
+		// -------------------------------------------------------------------------------------
 		
 		public function init():void
 		{

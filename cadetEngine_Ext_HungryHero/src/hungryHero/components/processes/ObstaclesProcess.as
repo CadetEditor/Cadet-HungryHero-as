@@ -5,9 +5,11 @@ package hungryHero.components.processes
 	import cadet.core.Component;
 	import cadet.core.IComponentContainer;
 	import cadet.core.ISteppableComponent;
+	import cadet.events.InvalidationEvent;
 	import cadet.util.ComponentUtil;
 	
 	import cadet2D.components.core.Entity;
+	import cadet2D.components.processes.WorldBounds2D;
 	import cadet2D.components.skins.AbstractSkin2D;
 	import cadet2D.components.skins.ImageSkin;
 	import cadet2D.components.skins.MovieClipSkin;
@@ -19,76 +21,87 @@ package hungryHero.components.processes
 	public class ObstaclesProcess extends Component implements ISteppableComponent
 	{
 		private var _initialised				:Boolean;
-		private var obstacles					:Vector.<ObstacleBehaviour>;
-		//private var obstaclesTable				:Dictionary;
+		private var _obstacles					:Vector.<ObstacleBehaviour>;
 		
 		public var globals						:GlobalsProcess;
+		private var _worldBounds				:WorldBounds2D;
+		
+		public var worldBoundsRect				:Rectangle = new Rectangle(0, 0, 800, 600);
 		
 		[Serializable][Inspectable(priority="50") ]
 		public var obstacleGap				:Number = 1200;		
 		[Serializable][Inspectable(priority="51") ]
 		public var obstacleSpeed			:Number = 300;
+			
+		private var _obstaclesPool				:Pool; 				// Obstacles pool with a maximum cap for reuse of items.
+		private var _obstacleGapCount			:Number = 0; 		// Obstacle count - to track the frequency of obstacles.
+		private var _hitObstacle				:Number = 0;		// The power of obstacle after it is hit.
+		private var _obstaclesToAnimate			:Vector.<Entity>;	// Obstacles to animate.
+		private var _obstaclesToAnimateLength	:uint = 0;			// Obstacles to animate - array length.
 		
-		/** Obstacles pool with a maximum cap for reuse of items. */		
-		private var obstaclesPool			:Pool;
+		private var _hitTestX:int;
+		private var _hitTestY:int;
 		
-		/** Obstacle count - to track the frequency of obstacles. */
-		private var obstacleGapCount:Number = 0;
+		private var _hitTestSkin				:AbstractSkin2D;
+		private var _obstaclesContainer			:IComponentContainer;
 		
-		/** The power of obstacle after it is hit. */
-		private var hitObstacle:Number = 0;
-		
-		/** Obstacles to animate. */
-		private var obstaclesToAnimate:Vector.<Entity>;
-		
-		/** Obstacles to animate - array length. */		
-		private var obstaclesToAnimateLength:uint = 0;
-		
-		private var hitTestX:int;
-		private var hitTestY:int;
-		
-		private var _hitTestSkin			:AbstractSkin2D;
-		private var _obstaclesContainer		:IComponentContainer;
-		
-		private var elapsed					:Number = 0.02;;
-		private var playerSpeed				:int = 650;
-		public var defaultGameArea			:Rectangle = new Rectangle(0, 0, 800, 600);
-		
+		private var _elapsed					:Number = 0.02;;
+		private var _playerSpeed				:int = 650;
+	
 		public function ObstaclesProcess()
 		{
-			obstacles = new Vector.<ObstacleBehaviour>();
-			//obstaclesTable = new Dictionary();
+			_obstacles = new Vector.<ObstacleBehaviour>();
 			
 			// Initialize items-to-animate vector.
-			obstaclesToAnimate = new Vector.<Entity>();
-			obstaclesToAnimateLength = 0;
+			_obstaclesToAnimate = new Vector.<Entity>();
+			_obstaclesToAnimateLength = 0;
 		}
 		
 		override protected function addedToScene():void
 		{
-//			addSceneReference(Renderer2D, "renderer");
+			addSceneReference(WorldBounds2D, "worldBounds");
 			addSceneReference(GlobalsProcess, "globals");
 		}
+		
+		public function set worldBounds( value:WorldBounds2D ):void
+		{
+			if ( _worldBounds ) {
+				_worldBounds.removeEventListener( InvalidationEvent.INVALIDATE, invalidateWorldBoundsHandler );
+			}
+			
+			_worldBounds = value;
+			
+			if ( _worldBounds ) {
+				worldBoundsRect = _worldBounds.getRect();
+				_worldBounds.addEventListener( InvalidationEvent.INVALIDATE, invalidateWorldBoundsHandler );
+			}
+		}
+		public function get worldBounds():WorldBounds2D { return _worldBounds; }
+		
+		private function invalidateWorldBoundsHandler( event:InvalidationEvent ):void
+		{
+			worldBoundsRect = _worldBounds.getRect();
+		}
+		
+		// -------------------------------------------------------------------------------------
+		// PUBLIC API
+		// -------------------------------------------------------------------------------------
 		
 		[Serializable][Inspectable( editor="ComponentList", scope="scene", priority="50" )]
 		public function set hitTestSkin( value:AbstractSkin2D ):void
 		{
 			_hitTestSkin = value;
 		}
-		public function get hitTestSkin():AbstractSkin2D
-		{
-			return _hitTestSkin;
-		}
+		public function get hitTestSkin():AbstractSkin2D { return _hitTestSkin; }
 		
 		[Serializable][Inspectable( editor="ComponentList", scope="scene", priority="51" )]
 		public function set obstaclesContainer( value:IComponentContainer ):void
 		{
 			_obstaclesContainer = value;
 		}
-		public function get obstaclesContainer():IComponentContainer
-		{
-			return _obstaclesContainer;
-		}
+		public function get obstaclesContainer():IComponentContainer { return _obstaclesContainer; }
+		
+		// -------------------------------------------------------------------------------------
 		
 		public function step( dt:Number ):void
 		{
@@ -97,8 +110,8 @@ package hungryHero.components.processes
 			}
 			
 			if ( globals ) {
-				playerSpeed = globals.playerSpeed;
-				elapsed = globals.elapsed;
+				_playerSpeed = globals.playerSpeed;
+				_elapsed = globals.elapsed;
 			}
 			
 			// Create obstacles.
@@ -106,8 +119,8 @@ package hungryHero.components.processes
 
 			// Store the hero's current x and y positions (needed for animations below).
 			if (_hitTestSkin) {
-				hitTestX = _hitTestSkin.x + _hitTestSkin.width/2;//hero.x;
-				hitTestY = _hitTestSkin.y + _hitTestSkin.height/2;//hero.y;
+				_hitTestX = _hitTestSkin.x + _hitTestSkin.width/2;//hero.x;
+				_hitTestY = _hitTestSkin.y + _hitTestSkin.height/2;//hero.y;
 			}
 			
 			animateObstacles();
@@ -142,26 +155,24 @@ package hungryHero.components.processes
 				//var skin:ImageSkin = ComponentUtil.getChildOfType(entity, ImageSkin);
 				behaviour = ComponentUtil.getChildOfType(entity, ObstacleBehaviour);
 				if ( behaviour ) {	
-					obstacles.push( behaviour );
+					_obstacles.push( behaviour );
 				}
 			}
 			
 			// Remove skins
-			for ( i = 0; i < obstacles.length; i ++ ) {
-				behaviour = obstacles[i];
+			for ( i = 0; i < _obstacles.length; i ++ ) {
+				behaviour = _obstacles[i];
 				var defaultSkin:ImageSkin = behaviour.defaultSkin;
 				var crashSkin:ImageSkin = behaviour.crashSkin;
 				behaviour.parentComponent.children.removeItem(defaultSkin);
 				behaviour.parentComponent.children.removeItem(crashSkin);
 			}
 			
-			obstaclesPool = new Pool(obstacleCreate, obstacleClean, 4, 10);
+			_obstaclesPool = new Pool(obstacleCreate, obstacleClean, 4, 10);
 		}
 		
 		private function obstacleCreate():Entity
 		{
-			var gameArea:Rectangle = globals ? globals.gameArea : defaultGameArea;
-
 			var obstacle:Entity = new Entity();
 			_obstaclesContainer.children.addItem(obstacle);
 			// Add the default ImageSkin to the obstacle entity
@@ -191,8 +202,7 @@ package hungryHero.components.processes
 		
 		private function checkOutItem(distance:Number):Entity
 		{
-			var gameArea:Rectangle = globals ? globals.gameArea : defaultGameArea;
-			var itemToTrack:Entity = Entity(obstaclesPool.checkOut());
+			var itemToTrack:Entity = Entity(_obstaclesPool.checkOut());
 			
 			if (!itemToTrack) return null;
 			
@@ -204,7 +214,7 @@ package hungryHero.components.processes
 			imgSkin.texturesPrefix = randImgSkin.texturesPrefix;*/			
 			
 			// Get random obstacle
-			var randBehaviour:ObstacleBehaviour = obstacles[Math.round(Math.random() * (obstacles.length-1))];
+			var randBehaviour:ObstacleBehaviour = _obstacles[Math.round(Math.random() * (_obstacles.length-1))];
 			
 			var behaviour:ObstacleBehaviour = ComponentUtil.getChildOfType(itemToTrack, ObstacleBehaviour);
 			// Apply skins
@@ -214,7 +224,7 @@ package hungryHero.components.processes
 			behaviour.crashSkin.texturesPrefix = randBehaviour.crashSkin.texturesPrefix;
 			behaviour.init();
 			behaviour.distance = distance;
-			behaviour.transform.x = gameArea.right;
+			behaviour.transform.x = worldBoundsRect.right;
 			
 			// For only one of the obstacles, make it appear in either the top or bottom of the screen.
 /*			if (_type <= GameConstants.OBSTACLE_TYPE_3)
@@ -222,13 +232,13 @@ package hungryHero.components.processes
 				// Place it on the top of the screen.
 				if (Math.random() > 0.5)
 				{
-					behaviour.transform.y = gameArea.top;
+					behaviour.transform.y = worldBoundsRect.top;
 					behaviour.position = "top";
 				}
 				else
 				{
 					// Or place it in the bottom of the screen.
-					behaviour.transform.y = gameArea.bottom - behaviour.defaultSkin.height;
+					behaviour.transform.y = worldBoundsRect.bottom - behaviour.defaultSkin.height;
 					behaviour.position = "bottom";
 				}
 /*			}
@@ -246,7 +256,7 @@ package hungryHero.components.processes
 			behaviour.lookOut = true;
 			
 			// Animate the obstacle.
-			obstaclesToAnimate[obstaclesToAnimateLength++] = itemToTrack;
+			_obstaclesToAnimate[_obstaclesToAnimateLength++] = itemToTrack;
 			
 			return itemToTrack;
 		}
@@ -258,14 +268,14 @@ package hungryHero.components.processes
 		private function initObstacle():void
 		{
 			// Create an obstacle after hero travels some distance (obstacleGap).
-			if (obstacleGapCount < obstacleGap)
+			if (_obstacleGapCount < obstacleGap)
 			{
-				obstacleGapCount += playerSpeed * elapsed;
+				_obstacleGapCount += _playerSpeed * _elapsed;
 			}
-			else if (obstacleGapCount != 0)
+			else if (_obstacleGapCount != 0)
 			{
 				//var randObstacle:AbstractSkin2D = obstacles[Math.round(Math.random() * (obstacles.length-1))];
-				obstacleGapCount = 0;
+				_obstacleGapCount = 0;
 				
 				// Create any one of the obstacles.
 				checkOutItem(Math.random() * 1000 + 1000);
@@ -294,15 +304,15 @@ package hungryHero.components.processes
 				var heroRect:Rectangle;
 				var obstacleRect:Rectangle;
 				
-				for (var i:uint = 0; i < obstaclesToAnimateLength ; i ++)
+				for (var i:uint = 0; i < _obstaclesToAnimateLength ; i ++)
 				{
-					var obstacleToTrack:Entity = obstaclesToAnimate[i];
+					var obstacleToTrack:Entity = _obstaclesToAnimate[i];
 					var behaviour:ObstacleBehaviour = ComponentUtil.getChildOfType(obstacleToTrack, ObstacleBehaviour); 
 					
 					// If the distance is still more than 0, keep reducing its value, without moving the obstacle.
 					if (behaviour.distance > 0 ) 
 					{
-						behaviour.distance -= playerSpeed * elapsed;  
+						behaviour.distance -= _playerSpeed * _elapsed;  
 					}
 					else  
 					{
@@ -315,7 +325,7 @@ package hungryHero.components.processes
 						}
 						
 						// Move the obstacle based on hero's speed.
-						behaviour.transform.x -= (playerSpeed + behaviour.speed) * elapsed; 
+						behaviour.transform.x -= (_playerSpeed + behaviour.speed) * _elapsed; 
 					}
 					
 					// If the obstacle passes beyond the screen, remove it.
@@ -325,8 +335,8 @@ package hungryHero.components.processes
 					}
 					
 					// Collision detection - Check if hero collides with any obstacle.
-					var xDistance:Number = behaviour.transform.x - hitTestX;
-					var yDistance:Number = behaviour.transform.y - hitTestY;
+					var xDistance:Number = behaviour.transform.x - _hitTestX;
+					var yDistance:Number = behaviour.transform.y - _hitTestY;
 					var h:Number = Math.sqrt( xDistance * xDistance + yDistance * yDistance );
 					var hitDistance:Number = hitTestSkin ? hitTestSkin.width / 2 : 100;
 					
@@ -358,10 +368,10 @@ package hungryHero.components.processes
 							}
 							
 							// Otherwise, if hero doesn't have a coffee item, set hit obstacle value.
-							hitObstacle = 30; 
+							_hitObstacle = 30; 
 							
 							// Reduce hero's speed.
-							playerSpeed *= 0.5; 
+							_playerSpeed *= 0.5; 
 /*							
 							// Play hurt sound.
 							if (!Sounds.muted) Sounds.sndHurt.play();
@@ -390,9 +400,9 @@ package hungryHero.components.processes
 		
 		private function disposeObstacleTemporarily(animateId:uint, obstacle:Entity):void
 		{
-			obstaclesToAnimate.splice(animateId, 1);
-			obstaclesToAnimateLength--;
-			obstaclesPool.checkIn(obstacle);
+			_obstaclesToAnimate.splice(animateId, 1);
+			_obstaclesToAnimateLength--;
+			_obstaclesPool.checkIn(obstacle);
 		}
 		
 		public function deg2rad(deg:Number):Number

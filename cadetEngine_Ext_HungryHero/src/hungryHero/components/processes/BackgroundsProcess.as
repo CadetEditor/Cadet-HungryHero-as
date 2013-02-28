@@ -15,8 +15,9 @@ package hungryHero.components.processes
 		
 		private const LEFT			:String = "LEFT";
 		private const RIGHT			:String = "RIGHT";
+		private const NONE			:String = "NONE";
 		
-		[Serializable][Inspectable( editor="DropDownMenu", dataProvider="[LEFT,RIGHT]" )]
+		[Serializable][Inspectable( editor="DropDownMenu", dataProvider="[LEFT,RIGHT,NONE]" )]
 		public var xDirection		:String = LEFT;
 		
 		public function BackgroundsProcess()
@@ -37,13 +38,20 @@ package hungryHero.components.processes
 			
 			if (!globals) return;
 			
-			for ( var i:uint = 0; i < _parallaxes.length; i ++ ) {
-				var parallax:ParallaxBehaviour = _parallaxes[i];
-				parallax.speed = globals.playerSpeed * globals.elapsed;
+			var speed:Number = 0;
+			
+			if ( xDirection != NONE ) {
+				speed = globals.playerSpeed * globals.elapsed;
 				
 				if ( xDirection == LEFT ) {
-					parallax.speed *= -1;
+					speed *= -1;
 				}
+			}
+			
+			for ( var i:uint = 0; i < _parallaxes.length; i ++ ) 
+			{
+				var parallax:ParallaxBehaviour = _parallaxes[i];			
+				parallax.speed = speed;
 			}
 		}
 		

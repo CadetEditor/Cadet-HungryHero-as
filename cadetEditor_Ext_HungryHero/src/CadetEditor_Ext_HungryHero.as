@@ -36,8 +36,8 @@ package
 			var resourceManager:ResourceManager = FloxApp.resourceManager;
 			
 			// Behaviours
-			resourceManager.addResource( new ComponentFactory( MagnetBehaviour, "Magnet Behaviour", "Behaviours", CadetEngineIcons.Behaviour, Entity, 1 ) );
-			resourceManager.addResource( new ComponentFactory( MoveBehaviour, "Move Behaviour", "Behaviours", CadetEngineIcons.Behaviour, Entity, 1 ) );
+			resourceManager.addResource( new ComponentFactory( MagnetBehaviour, "Magnet Behaviour", "Behaviours", CadetEngineIcons.Behaviour ) );
+			resourceManager.addResource( new ComponentFactory( MoveBehaviour, "Move Behaviour", "Behaviours", CadetEngineIcons.Behaviour ) );
 			resourceManager.addResource( new ComponentFactory( ParallaxBehaviour, "Parallax", "Behaviours",	CadetEngineIcons.Behaviour, Entity,	1 ) );
 			resourceManager.addResource( new ComponentFactory( SpeedUpBehaviour, "Speed Up Behaviour", "Behaviours", CadetEngineIcons.Behaviour, Entity, 1 ) );
 			// Processes

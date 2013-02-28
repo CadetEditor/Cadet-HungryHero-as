@@ -10,22 +10,15 @@ package hungryHero.components.behaviours
 	
 	public class MagnetBehaviour extends Component implements IMoveBehaviour
 	{
-		public var globals			:GlobalsProcess;
+		public var globals				:GlobalsProcess;
 		
-		private var _transform:ITransform2D;
+		private var _transform			:ITransform2D;
+		private var _targetTransform	:ITransform2D;
 		
-		[Serializable][Inspectable( priority="51" )]
-		public var targetTransform:ITransform2D;
+		private var _pcDistance			:Number = 0.2;
+		private var _effectLength		:Number = 40; // How long does mushroom power last? (in seconds)
 		
-		[Serializable][Inspectable( priority="52" )]
-		public var pcDistance:Number = 0.2;
-		
-		// How long does mushroom power last? (in seconds)
-		[Serializable][Inspectable( priority="53" )]
-		public var effectLength	:Number = 40;
-		
-		[Inspectable( priority="54" )]
-		public var power			:Number;
+		private var power			:Number;
 		
 		private var notifyComplete	:Boolean;
 		
@@ -34,15 +27,53 @@ package hungryHero.components.behaviours
 			super();
 		}
 		
+		override protected function addedToScene():void
+		{
+			addSceneReference(GlobalsProcess, "globals");
+		}
+		
+		// -------------------------------------------------------------------------------------
+		// PUBLIC API
+		// -------------------------------------------------------------------------------------
+		
+		[Serializable][Inspectable( priority="50", editor="ComponentList", scope="scene" )]
+		public function set transform( value:ITransform2D ):void
+		{
+			_transform = value;
+		}
+		public function get transform():ITransform2D
+		{
+			return _transform;
+		}
+		
+		[Serializable][Inspectable( priority="51", editor="ComponentList", scope="scene"  )]
+		public function set targetTransform( value:ITransform2D ):void
+		{
+			_targetTransform = value;
+		}
+		public function get targetTransform():ITransform2D { return _targetTransform; }
+		
+		[Serializable][Inspectable(priority="52", editor="Slider", min="0", max="1", snapInterval="0.02") ]
+		public function set pcDistance( value:Number ):void
+		{
+			_pcDistance = value;
+		}
+		public function get pcDistance():Number { return _pcDistance; }
+		
+		// How long does mushroom power last? (in seconds)
+		[Serializable][Inspectable( priority="53" )]
+		public function set effectLength( value:Number ):void
+		{
+			_effectLength = value;
+		}
+		public function get effectLength():Number { return _effectLength; }
+		
+		// -------------------------------------------------------------------------------------
+		
 		public function init():void
 		{
 			power = effectLength;
 			notifyComplete = false;
-		}
-		
-		override protected function addedToScene():void
-		{
-			addSceneReference(GlobalsProcess, "globals");
 		}
 		
 		public function execute():void
@@ -83,16 +114,6 @@ package hungryHero.components.behaviours
 			
 			transform.x += xStep;
 			transform.y += yStep;
-		}
-		
-		[Serializable][Inspectable( priority="50" )]
-		public function set transform( value:ITransform2D ):void
-		{
-			_transform = value;
-		}
-		public function get transform():ITransform2D
-		{
-			return _transform;
 		}
 	}
 }

@@ -4,6 +4,8 @@ package controller
 	
 	import events.NavigationEvent;
 	
+	import model.GameModel_Code;
+	
 	import sound.Sounds;
 	
 	import starling.animation.Tween;
@@ -23,6 +25,8 @@ package controller
 		/** Tween object for game over container. */
 		private var tween_gameOverContainer:Tween;
 		
+		private var gameModel		:GameModel_Code;
+		
 		public function GameViewController()
 		{
 		}
@@ -30,6 +34,8 @@ package controller
 		public function init(view:DisplayObjectContainer):void
 		{
 			_view	= GameView(view);
+			
+			gameModel = new GameModel_Code();
 			
 			enable();
 		}
@@ -127,6 +133,7 @@ package controller
 			
 			// Launch hero.
 			//launchHero();
+			gameModel.init(CadetHungryHero.instance);
 		}
 	}
 }
