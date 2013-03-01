@@ -133,7 +133,7 @@ package controller
 			
 			// Launch hero.
 			//launchHero();
-			gameModel.init(CadetHungryHero.instance);
+			gameModel.init(_view.gameWindow);
 		}
 	}
 }

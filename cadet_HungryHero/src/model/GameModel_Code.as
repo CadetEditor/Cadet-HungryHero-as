@@ -1,8 +1,5 @@
 package model
 {
-	import flash.display.DisplayObject;
-	import flash.display.DisplayObjectContainer;
-	import flash.events.Event;
 	import flash.utils.ByteArray;
 	
 	import cadet.core.CadetScene;
@@ -26,9 +23,11 @@ package model
 	import hungryHero.components.behaviours.ParallaxBehaviour;
 	import hungryHero.components.behaviours.SpeedUpBehaviour;
 	import hungryHero.components.processes.BackgroundsProcess;
-	import hungryHero.components.processes.GlobalsProcess;
 	import hungryHero.components.processes.ItemsProcess;
 	import hungryHero.components.processes.ObstaclesProcess;
+	
+	import starling.display.DisplayObjectContainer;
+	import starling.events.Event;
 
 	// This class constructs a CadetEngine 2D scene using the CadetEngine API
 	public class GameModel_Code
@@ -54,13 +53,13 @@ package model
 		
 		private var heroSkin		:MovieClipSkin;
 		
-		private var parent			:DisplayObject;
+		private var parent			:starling.display.DisplayObjectContainer;
 		
 		public function GameModel_Code()
 		{
 		}
 		
-		public function init(parent:flash.display.DisplayObjectContainer):void
+		public function init(parent:starling.display.DisplayObjectContainer):void//:flash.display.DisplayObjectContainer):void
 		{
 			this.parent = parent;
 			
@@ -73,7 +72,7 @@ package model
 			renderer.viewportHeight = parent.stage.stageHeight;
 			renderer.addEventListener(RendererEvent.INITIALISED, rendererInitialised);
 			cadetScene.children.addItem(renderer);
-			renderer.enable(parent);
+			renderer.enableToExisting(parent);
 		}
 		
 		private function rendererInitialised(event:RendererEvent):void
