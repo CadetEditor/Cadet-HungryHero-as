@@ -2,19 +2,23 @@ package hungryHero.components.behaviours
 {
 	import flash.events.Event;
 	
+	import cadet.components.sounds.ISound;
 	import cadet.core.Component;
 	
 	import hungryHero.components.processes.GlobalsProcess;
 	
 	public class SpeedUpBehaviour extends Component implements IPowerupBehaviour
 	{
-		public var globals			:GlobalsProcess;
+		public var globals					:GlobalsProcess;
 		
-		public var _effectLength	:Number = 50; // How long does coffee power last? (in seconds)
+		public var _effectLength			:Number = 50; // How long does coffee power last? (in seconds)
 		
-		private var power			:Number;
+		private var power					:Number;
 		
-		private var notifyComplete	:Boolean;
+		private var notifyComplete			:Boolean;
+		
+		// SOUNDS
+		private var _collectSound			:ISound;
 		
 		public function SpeedUpBehaviour()
 		{
@@ -24,10 +28,11 @@ package hungryHero.components.behaviours
 		override protected function addedToScene():void
 		{
 			addSceneReference(GlobalsProcess, "globals");
+			addSiblingReference(ISound, "collectSound");
 		}
 		
 		// -------------------------------------------------------------------------------------
-		// PUBLIC API
+		// INSPECTABLE API
 		// -------------------------------------------------------------------------------------
 
 		[Serializable][Inspectable( priority="50" )]
@@ -37,6 +42,14 @@ package hungryHero.components.behaviours
 		}
 		public function get effectLength():Number { return _effectLength; }
 	
+		// SOUNDS
+		[Serializable][Inspectable( editor="ComponentList", scope="scene", priority="55" )]
+		public function set collectSound( value:ISound ):void
+		{
+			_collectSound = value;
+		}
+		public function get collectSound():ISound { return _collectSound; }
+		
 		// -------------------------------------------------------------------------------------
 		
 		public function init():void

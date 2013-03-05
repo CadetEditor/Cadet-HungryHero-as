@@ -1,5 +1,6 @@
 package hungryHero.components.behaviours
 {
+	import cadet.components.sounds.ISound;
 	import cadet.core.Component;
 	
 	import cadet2D.components.transforms.ITransform2D;
@@ -12,6 +13,9 @@ package hungryHero.components.behaviours
 		private var _transform				:ITransform2D;
 		private var _angle					:Number = 0;
 		
+		// SOUNDS
+		private var _collectSound			:ISound;
+		
 		public function MoveBehaviour()
 		{
 			super();
@@ -23,7 +27,7 @@ package hungryHero.components.behaviours
 		}
 
 		// -------------------------------------------------------------------------------------
-		// PUBLIC API
+		// INSPECTABLE API
 		// -------------------------------------------------------------------------------------
 		
 		[Serializable][Inspectable(priority="50", editor="Slider", min="0", max="360", snapInterval="1") ]
@@ -39,6 +43,14 @@ package hungryHero.components.behaviours
 			_transform = value;
 		}
 		public function get transform():ITransform2D { return _transform; }
+		
+		// SOUNDS
+		[Serializable][Inspectable( editor="ComponentList", scope="scene", priority="55" )]
+		public function set collectSound( value:ISound ):void
+		{
+			_collectSound = value;
+		}
+		public function get collectSound():ISound { return _collectSound; }
 		
 		// -------------------------------------------------------------------------------------
 		

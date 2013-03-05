@@ -4,6 +4,7 @@ package hungryHero.components.processes
 	import flash.geom.Rectangle;
 	import flash.utils.Dictionary;
 	
+	import cadet.components.sounds.ISound;
 	import cadet.core.Component;
 	import cadet.core.ComponentContainer;
 	import cadet.core.IComponentContainer;
@@ -69,6 +70,9 @@ package hungryHero.components.processes
 		private var _elapsed					:Number = 0.02;
 		private var _playerSpeed				:int = 650;
 		
+		// SOUNDS
+		private var _collectSound			:ISound;
+		
 		public function ItemsProcess()
 		{
 			_items = new Vector.<AbstractSkin2D>();
@@ -115,7 +119,7 @@ package hungryHero.components.processes
 		}
 		
 		// -------------------------------------------------------------------------------------
-		// PUBLIC API
+		// INSPECTABLE API
 		// -------------------------------------------------------------------------------------
 		
 		[Serializable][Inspectable( editor="ComponentList", scope="scene", priority="50" )]
@@ -160,6 +164,14 @@ package hungryHero.components.processes
 			}
 		}
 		public function get moveBehaviour():IMoveBehaviour { return _moveBehaviour; }
+		
+		// SOUNDS
+		[Serializable][Inspectable( editor="ComponentList", scope="scene", priority="55" )]
+		public function set collectSound( value:ISound ):void
+		{
+			_collectSound = value;
+		}
+		public function get collectSound():ISound { return _collectSound; }
 		
 		// -------------------------------------------------------------------------------------
 		
@@ -523,6 +535,14 @@ package hungryHero.components.processes
 									_activePowerups.push(behaviour);
 									behaviour.init();
 									behaviour.addEventListener(Event.COMPLETE, powerupCompleteHandler);
+								}
+								
+								if ( behaviour.collectSound ) {
+									behaviour.collectSound.play();
+								}
+							} else {
+								if ( _collectSound ) {
+									_collectSound.play();	
 								}
 							}
 							

@@ -2,6 +2,7 @@ package model
 {
 	import flash.utils.ByteArray;
 	
+	import cadet.components.sounds.SoundComponent;
 	import cadet.core.CadetScene;
 	import cadet.events.RendererEvent;
 	
@@ -34,12 +35,23 @@ package model
 	{
 		private var cadetScene:CadetScene;
 		
+		// ASSETS
 		[Embed(source="../../bin-debug/files/assets/hungryHero/graphics/bgLayer1.jpg")]
 		private var SkyAsset:Class;
 		[Embed(source="../../bin-debug/files/assets/hungryHero/graphics/mySpriteSheet.png")]
 		private var SpriteSheetAsset:Class;
 		[Embed(source="../../bin-debug/files/assets/hungryHero/graphics/mySpriteSheet.xml", mimeType="application/octet-stream")]
 		private var SpriteSheetXML:Class;
+		
+		// SOUNDS
+		[Embed(source='../../bin-debug/files/assets/hungryHero/sounds/eat.mp3')]
+		private var EatSoundClass:Class;
+		[Embed(source='../../bin-debug/files/assets/hungryHero/sounds/coffee.mp3')]
+		private var CoffeeSoundClass:Class;
+		[Embed(source='../../bin-debug/files/assets/hungryHero/sounds/mushroom.mp3')]
+		private var MushroomSoundClass:Class;
+		[Embed(source='../../bin-debug/files/assets/hungryHero/sounds/bgGame.mp3')]
+		private var MusicSoundClass:Class;
 		
 		private var allSprites:TextureComponent;
 		private var allSpritesAtlas:TextureAtlasComponent;
@@ -54,6 +66,11 @@ package model
 		private var heroSkin		:MovieClipSkin;
 		
 		private var parent			:starling.display.DisplayObjectContainer;
+		
+		private var eatSound		:SoundComponent;
+		private var mushroomSound	:SoundComponent;
+		private var coffeeSound		:SoundComponent;
+		private var musicSound		:SoundComponent;
 		
 		public function GameModel_Code()
 		{
@@ -103,12 +120,30 @@ package model
 			worldBounds.right 	= 1024;
 			worldBounds.bottom 	= 786;
 			
+			addSounds();
 			addBackgrounds();
 			addHero();
 			addItems();
 			addObstacles();
 			
 			parent.addEventListener( Event.ENTER_FRAME, enterFrameHandler );	
+		}
+		
+		private function addSounds():void
+		{
+			musicSound = new SoundComponent();
+			musicSound.asset = new MusicSoundClass();
+			musicSound.loops = 999;
+			musicSound.play();
+			
+			eatSound = new SoundComponent();
+			eatSound.asset = new EatSoundClass();
+			
+			mushroomSound = new SoundComponent();
+			mushroomSound.asset = new MushroomSoundClass();
+			
+			coffeeSound = new SoundComponent();
+			coffeeSound.asset = new CoffeeSoundClass();
 		}
 		
 		private function addBackgrounds():void
@@ -212,6 +247,7 @@ package model
 			imageSkin.textureAtlas = allSpritesAtlas;
 			imageSkin.texturesPrefix = "item6";
 			var speedUpBehaviour:SpeedUpBehaviour = new SpeedUpBehaviour();
+			speedUpBehaviour.collectSound = coffeeSound;
 			powerup.children.addItem(speedUpBehaviour);
 			
 			// Add Mushroom powerup
@@ -222,12 +258,14 @@ package model
 			imageSkin.textureAtlas = allSpritesAtlas;
 			imageSkin.texturesPrefix = "item7";
 			var magnetBehaviour:MagnetBehaviour = new MagnetBehaviour();
+			magnetBehaviour.collectSound = mushroomSound;
 			powerup.children.addItem(magnetBehaviour);
 			magnetBehaviour.targetTransform = heroSkin;
 			
 			// Add ItemsProcess
 			var itemsProcess:ItemsProcess = new ItemsProcess();
 			cadetScene.children.addItem(itemsProcess);
+			itemsProcess.collectSound = eatSound;
 			itemsProcess.itemsContainer = itemsEntity;
 			itemsProcess.powerupsContainer = powerupsEntity;
 			itemsProcess.hitTestSkin = heroSkin;
