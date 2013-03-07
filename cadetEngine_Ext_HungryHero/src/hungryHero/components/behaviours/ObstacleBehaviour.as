@@ -7,24 +7,15 @@ package hungryHero.components.behaviours
 	
 	public class ObstacleBehaviour extends Component
 	{
-		/** Speed of the obstacle. */
-		private var _speed:int;
+		private var _speed:int;	// Speed of the obstacle.
+		private var _distance:int; // Distance after which the obstacle should appear on screen.
+		private var _showLookOut:Boolean; // Look out sign status.
+		private var _alreadyHit:Boolean; // Has the hero already collided with the obstacle?
+		private var _position:String; // Vertical position of the obstacle.
 		
-		/** Distance after which the obstacle should appear on screen. */
-		private var _distance:int;
-		
-		/** Look out sign status. */
-		private var _showLookOut:Boolean;
-		
-		/** Has the hero already collided with the obstacle? */
-		private var _alreadyHit:Boolean;
-		
-		/** Vertical position of the obstacle. */
-		private var _position:String;
-		
-		[Serializable][Inspectable(priority="50") ]
+		[Serializable][Inspectable( editor="ComponentList", scope="parent", priority="50") ]
 		public var defaultSkin	:ImageSkin;
-		[Serializable][Inspectable(priority="51") ]
+		[Serializable][Inspectable( editor="ComponentList", scope="parent", priority="51") ]
 		public var crashSkin	:ImageSkin;
 		
 		public var transform	:Transform2D;

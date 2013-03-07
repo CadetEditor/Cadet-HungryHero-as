@@ -15,7 +15,10 @@ package hungryHero.components.processes
 		public var playerMaxSpeed:Number = 1400;
 		
 		[Serializable][Inspectable(priority="54") ]
-		public var playerSpeed:Number = playerMinSpeed;
+		public var playerSpeed:Number = 0;
+
+		[Serializable][Inspectable(priority="55") ]
+		public var paused:Boolean = false;		
 		
 		public var elapsed:Number = 0;
 		
@@ -23,9 +26,16 @@ package hungryHero.components.processes
 		private var timePrevious:Number = 0;
 		private var timeCurrent:Number = 0;
 		
+		public static const GAME_STATE_IDLE:int = 0;
+		public static const GAME_STATE_FLYING:int = 1;
+		public static const GAME_STATE_OVER:int = 2;
+		
+		public var gameState				:int;
+		public var hitObstacle				:Number = 0;	// The power of obstacle after it is hit.
+		
 		public function GlobalsProcess()
 		{
-			super();
+			gameState = GAME_STATE_IDLE;
 		}
 		
 		override protected function addedToScene():void
@@ -35,13 +45,15 @@ package hungryHero.components.processes
 		
 		public function step( dt:Number ):void
 		{
+			if ( paused ) return;
+			
 			calculateElapsed();
 			
 			// constantly slow playerSpeed down towards playerMinSpeed
 			playerSpeed -= (playerSpeed - playerMinSpeed) * 0.01;
-			if ( playerSpeed < playerMinSpeed + 1 ) {
-				playerSpeed = playerMinSpeed;
-			}
+//			if ( playerSpeed < playerMinSpeed + 1 ) {
+//				playerSpeed = playerMinSpeed;
+//			}
 		}
 		
 		private function calculateElapsed():void
@@ -57,3 +69,6 @@ package hungryHero.components.processes
 		}
 	}
 }
+
+
+

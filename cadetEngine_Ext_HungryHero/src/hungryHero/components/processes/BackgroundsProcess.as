@@ -36,7 +36,7 @@ package hungryHero.components.processes
 				initialise();
 			}
 			
-			if (!globals) return;
+			if (!globals || globals.paused) return;
 			
 			var speed:Number = 0;
 			

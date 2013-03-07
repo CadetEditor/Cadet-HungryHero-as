@@ -2,6 +2,7 @@ package
 {
 	import flash.display.Sprite;
 	import flash.events.Event;
+	import flash.geom.Point;
 	import flash.utils.ByteArray;
 	
 	import cadet.core.CadetScene;
@@ -81,13 +82,13 @@ package
 			cadetScene.children.addItem(allSpritesAtlas);
 			
 			// Add the Global variables
-			var globals:GlobalsProcess = new GlobalsProcess();
-			cadetScene.children.addItem(globals);
+//			var globals:GlobalsProcess = new GlobalsProcess();
+//			cadetScene.children.addItem(globals);
 			
-			addBackgrounds();			
+//			addBackgrounds();			
 			addHero();
-			addItems();
-			addObstacles();
+//			addItems();
+//			addObstacles();
 			
 			addEventListener( Event.ENTER_FRAME, enterFrameHandler );			
 		}
@@ -153,7 +154,8 @@ package
 			cadetScene.children.addItem(hero);
 			// Add a 2D transform
 			var transform2D:Transform2D = new Transform2D();
-			transform2D.x = 50;
+			transform2D.x = 150;
+			transform2D.y = 150;
 			hero.children.addItem(transform2D);
 			// Add an animatable MovieClipSkin
 			heroSkin = new MovieClipSkin();
@@ -162,9 +164,9 @@ package
 			heroSkin.loop = true;
 			hero.children.addItem(heroSkin);
 			// Add the MouseFollowBehaviour
-			var mouseFollow:MouseFollowBehaviour = new MouseFollowBehaviour();
-			mouseFollow.constrain = MouseFollowBehaviour.CONSTRAIN_X;
-			hero.children.addItem(mouseFollow);
+//			var mouseFollow:MouseFollowBehaviour = new MouseFollowBehaviour();
+//			mouseFollow.constrain = MouseFollowBehaviour.CONSTRAIN_X;
+//			hero.children.addItem(mouseFollow);
 		}
 		
 		private function addItems():void

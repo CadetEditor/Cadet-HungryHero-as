@@ -67,9 +67,6 @@ package hungryHero.components.processes
 		private var _defaultMoveBehaviour	:IMoveBehaviour;
 		private var _moveBehaviour			:IMoveBehaviour;
 		
-		private var _elapsed					:Number = 0.02;
-		private var _playerSpeed				:int = 650;
-		
 		// SOUNDS
 		private var _collectSound			:ISound;
 		
@@ -179,10 +176,7 @@ package hungryHero.components.processes
 		
 		public function step( dt:Number ):void
 		{
-			if ( globals ) {
-				_playerSpeed = globals.playerSpeed;
-				_elapsed = globals.elapsed;
-			}
+			if ( !globals || globals.paused ) return;
 			
 //			if (!renderer || !renderer.viewport) return;
 			
@@ -196,8 +190,8 @@ package hungryHero.components.processes
 						
 			// Store the hero's current x and y positions (needed for animations below).
 			if (_hitTestSkin) {
-				_hitTestX = _hitTestSkin.x + _hitTestSkin.width/2;//hero.x;
-				_hitTestY = _hitTestSkin.y + _hitTestSkin.height/2;//hero.y;
+				_hitTestX = _hitTestSkin.x;// + _hitTestSkin.width/2;//hero.x;
+				_hitTestY = _hitTestSkin.y;// + _hitTestSkin.height/2;//hero.y;
 			}
 			
 			// Animate elements.
@@ -314,10 +308,12 @@ package hungryHero.components.processes
 		 */
 		private function createItemsPattern():void
 		{
+			if (!globals) return;
+			
 			// Create a food item after we pass some distance (patternGap).
 			if (_patternGapCount < _patternGap )
 			{
-				_patternGapCount += _playerSpeed * _elapsed;
+				_patternGapCount += globals.playerSpeed * globals.elapsed;
 			}
 			else if (_pattern != 0)
 			{
@@ -333,7 +329,7 @@ package hungryHero.components.processes
 		{
 			// If hero has not travelled the required distance, don't change the pattern.
 			if (_patternChange > 0) {
-				_patternChange -= _playerSpeed * _elapsed;
+				_patternChange -= globals.playerSpeed * globals.elapsed;
 			} else {
 				// If hero has travelled the required distance, change the pattern.
 				if ( Math.random() < 0.7 ) {

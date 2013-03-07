@@ -17,8 +17,11 @@ package hungryHero.components.behaviours
 	
 	import cadet2D.components.skins.AbstractSkin2D;
 	
+	import hungryHero.components.processes.GlobalsProcess;
+	
 	public class ParallaxBehaviour extends Component implements ISteppableComponent
 	{
+		public var globals			:GlobalsProcess;
 		private var _skin			:AbstractSkin2D;
 		private var _skin1			:AbstractSkin2D;
 		private var _skin2			:AbstractSkin2D;
@@ -37,12 +40,14 @@ package hungryHero.components.behaviours
 		// "skin1" and "skin2" when updating skin positions.
 		override protected function addedToScene():void
 		{
+			addSceneReference( GlobalsProcess, "globals" );
 			addSiblingReference( AbstractSkin2D, "skin" );
 		}
 		
 		public function step(dt:Number):void
 		{
 			if (!_skin) return;
+			if ( globals && globals.paused ) return;
 			
 			// Initialisation of this behaviour will remove the skin and add in two duplicated DisplayObjects
 			// in order to provide the continuous parallax effect. Initialisation has to happen within step() to

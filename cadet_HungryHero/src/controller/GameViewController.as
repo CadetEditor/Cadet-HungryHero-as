@@ -2,7 +2,11 @@ package controller
 {
 	import flash.media.SoundMixer;
 	
+	import cadet.util.ComponentUtil;
+	
 	import events.NavigationEvent;
+	
+	import hungryHero.components.processes.GlobalsProcess;
 	
 	import model.GameModel_Code;
 	
@@ -19,13 +23,12 @@ package controller
 	{
 		private var _view			:GameView;
 		
-		/** Is game currently in paused state? */
-		private var gamePaused:Boolean = false;
-		
 		/** Tween object for game over container. */
 		private var tween_gameOverContainer:Tween;
 		
 		private var gameModel		:GameModel_Code;
+		
+		private var globals			:GlobalsProcess;
 		
 		public function GameViewController()
 		{
@@ -36,6 +39,7 @@ package controller
 			_view	= GameView(view);
 			
 			gameModel = new GameModel_Code();
+			gameModel.init(_view.gameWindow);
 			
 			enable();
 		}
@@ -83,11 +87,7 @@ package controller
 		{
 			event.stopImmediatePropagation();
 			
-			// Pause or unpause the game.
-			if (gamePaused) gamePaused = false;
-			else gamePaused = true;
-			
-			// PAUSE GAME
+			globals.paused = !globals.paused;
 		}
 		
 		/**
@@ -131,9 +131,9 @@ package controller
 			// Show pause button since the game is started.
 			_view.pauseButton.visible = true;
 			
-			// Launch hero.
-			//launchHero();
-			gameModel.init(_view.gameWindow);
+			// Launch hero.			
+			globals = ComponentUtil.getChildOfType( gameModel.cadetScene, GlobalsProcess );
+			globals.paused = false;
 		}
 	}
 }

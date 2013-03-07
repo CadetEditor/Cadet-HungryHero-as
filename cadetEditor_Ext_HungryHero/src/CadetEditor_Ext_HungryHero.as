@@ -20,8 +20,10 @@ package
 	import flox.app.FloxApp;
 	import flox.app.managers.ResourceManager;
 	
+	import hungryHero.components.behaviours.HeroBehaviour;
 	import hungryHero.components.behaviours.MagnetBehaviour;
 	import hungryHero.components.behaviours.MoveBehaviour;
+	import hungryHero.components.behaviours.ObstacleBehaviour;
 	import hungryHero.components.behaviours.ParallaxBehaviour;
 	import hungryHero.components.behaviours.SpeedUpBehaviour;
 	import hungryHero.components.processes.BackgroundsProcess;
@@ -36,8 +38,10 @@ package
 			var resourceManager:ResourceManager = FloxApp.resourceManager;
 			
 			// Behaviours
+			resourceManager.addResource( new ComponentFactory( HeroBehaviour, "Hero Behaviour", "Behaviours", CadetEngineIcons.Behaviour, Entity, 1 ) );
 			resourceManager.addResource( new ComponentFactory( MagnetBehaviour, "Magnet Behaviour", "Behaviours", CadetEngineIcons.Behaviour ) );
 			resourceManager.addResource( new ComponentFactory( MoveBehaviour, "Move Behaviour", "Behaviours", CadetEngineIcons.Behaviour ) );
+			resourceManager.addResource( new ComponentFactory( ObstacleBehaviour, "Obstacle Behaviour", "Behaviours", CadetEngineIcons.Behaviour, Entity, 1 ) );
 			resourceManager.addResource( new ComponentFactory( ParallaxBehaviour, "Parallax", "Behaviours",	CadetEngineIcons.Behaviour, Entity,	1 ) );
 			resourceManager.addResource( new ComponentFactory( SpeedUpBehaviour, "Speed Up Behaviour", "Behaviours", CadetEngineIcons.Behaviour, Entity, 1 ) );
 			// Processes

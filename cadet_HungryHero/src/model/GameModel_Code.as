@@ -6,7 +6,6 @@ package model
 	import cadet.core.CadetScene;
 	import cadet.events.RendererEvent;
 	
-	import cadet2D.components.behaviours.MouseFollowBehaviour;
 	import cadet2D.components.core.Entity;
 	import cadet2D.components.processes.WorldBounds2D;
 	import cadet2D.components.renderers.Renderer2D;
@@ -18,12 +17,14 @@ package model
 	import cadet2D.components.transforms.Transform2D;
 	import cadet2D.events.SkinEvent;
 	
+	import hungryHero.components.behaviours.HeroBehaviour;
 	import hungryHero.components.behaviours.MagnetBehaviour;
 	import hungryHero.components.behaviours.MoveBehaviour;
 	import hungryHero.components.behaviours.ObstacleBehaviour;
 	import hungryHero.components.behaviours.ParallaxBehaviour;
 	import hungryHero.components.behaviours.SpeedUpBehaviour;
 	import hungryHero.components.processes.BackgroundsProcess;
+	import hungryHero.components.processes.GlobalsProcess;
 	import hungryHero.components.processes.ItemsProcess;
 	import hungryHero.components.processes.ObstaclesProcess;
 	
@@ -33,7 +34,7 @@ package model
 	// This class constructs a CadetEngine 2D scene using the CadetEngine API
 	public class GameModel_Code
 	{
-		private var cadetScene:CadetScene;
+		public var cadetScene:CadetScene;
 		
 		// ASSETS
 		[Embed(source="../../bin-debug/files/assets/hungryHero/graphics/bgLayer1.jpg")]
@@ -52,6 +53,10 @@ package model
 		private var MushroomSoundClass:Class;
 		[Embed(source='../../bin-debug/files/assets/hungryHero/sounds/bgGame.mp3')]
 		private var MusicSoundClass:Class;
+		[Embed(source='../../bin-debug/files/assets/hungryHero/sounds/hit.mp3')]
+		private var HitSoundClass:Class;
+		[Embed(source='../../bin-debug/files/assets/hungryHero/sounds/hurt.mp3')]
+		private var HurtSoundClass:Class;
 		
 		private var allSprites:TextureComponent;
 		private var allSpritesAtlas:TextureAtlasComponent;
@@ -71,12 +76,14 @@ package model
 		private var mushroomSound	:SoundComponent;
 		private var coffeeSound		:SoundComponent;
 		private var musicSound		:SoundComponent;
+		private var hitSound		:SoundComponent;
+		private var hurtSound		:SoundComponent;
 		
 		public function GameModel_Code()
 		{
 		}
 		
-		public function init(parent:starling.display.DisplayObjectContainer):void//:flash.display.DisplayObjectContainer):void
+		public function init(parent:starling.display.DisplayObjectContainer):void
 		{
 			this.parent = parent;
 			
@@ -109,16 +116,17 @@ package model
 			cadetScene.children.addItem(allSpritesAtlas);
 			
 			// Add the Global variables
-//			var globals:GlobalsProcess = new GlobalsProcess();
-//			cadetScene.children.addItem(globals);
+			var globals:GlobalsProcess = new GlobalsProcess();
+			globals.paused = true;
+			cadetScene.children.addItem(globals);
 			
 			// Define WorldBounds
 			var worldBounds:WorldBounds2D = new WorldBounds2D();
 			cadetScene.children.addItem(worldBounds);
-			worldBounds.top 	= 0;
+			worldBounds.top 	= 100;
 			worldBounds.left 	= 0;
 			worldBounds.right 	= 1024;
-			worldBounds.bottom 	= 786;
+			worldBounds.bottom 	= 768 - 250;
 			
 			addSounds();
 			addBackgrounds();
@@ -144,6 +152,12 @@ package model
 			
 			coffeeSound = new SoundComponent();
 			coffeeSound.asset = new CoffeeSoundClass();
+			
+			hitSound = new SoundComponent();
+			hitSound.asset = new HitSoundClass();
+			
+			hurtSound = new SoundComponent();
+			hurtSound.asset = new HurtSoundClass();
 		}
 		
 		private function addBackgrounds():void
@@ -173,7 +187,7 @@ package model
 			hills.children.addItem(hillsSkin);
 			hillsSkin.textureAtlas = allSpritesAtlas;
 			hillsSkin.texturesPrefix = "bgLayer2";
-			hillsSkin.y = 290;
+			hillsSkin.y = 440;
 			hillsSkin.addEventListener(SkinEvent.TEXTURE_VALIDATED, textureValidatedHandler);
 			
 			// Add the midground to the scene
@@ -184,7 +198,7 @@ package model
 			midground.children.addItem(midgroundSkin);	
 			midgroundSkin.textureAtlas = allSpritesAtlas;
 			midgroundSkin.texturesPrefix = "bgLayer3";	
-			midgroundSkin.y = 360;
+			midgroundSkin.y = 510;
 			midgroundSkin.addEventListener(SkinEvent.TEXTURE_VALIDATED, textureValidatedHandler);
 			
 			// Add the foreground to the scene
@@ -195,7 +209,7 @@ package model
 			foreground.children.addItem(foregroundSkin);
 			foregroundSkin.textureAtlas = allSpritesAtlas;
 			foregroundSkin.texturesPrefix = "bgLayer4";	
-			foregroundSkin.y = 450;
+			foregroundSkin.y = 600;
 			foregroundSkin.addEventListener(SkinEvent.TEXTURE_VALIDATED, textureValidatedHandler);	
 		}
 		
@@ -207,7 +221,8 @@ package model
 			cadetScene.children.addItem(hero);
 			// Add a 2D transform
 			var transform2D:Transform2D = new Transform2D();
-			transform2D.x = 50;
+			transform2D.x = -200;
+			transform2D.y = parent.stage.stageHeight/2;
 			hero.children.addItem(transform2D);
 			// Add an animatable MovieClipSkin
 			heroSkin = new MovieClipSkin();
@@ -215,10 +230,13 @@ package model
 			heroSkin.texturesPrefix = "fly_";
 			heroSkin.loop = true;
 			hero.children.addItem(heroSkin);
+			// Add the HeroBehaviour
+			var heroBehaviour:HeroBehaviour = new HeroBehaviour();
+			hero.children.addItem(heroBehaviour);
 			// Add the MouseFollowBehaviour
-			var mouseFollow:MouseFollowBehaviour = new MouseFollowBehaviour();
-			mouseFollow.constrain = MouseFollowBehaviour.CONSTRAIN_X;
-			hero.children.addItem(mouseFollow);
+//			var mouseFollow:MouseFollowBehaviour = new MouseFollowBehaviour();
+//			mouseFollow.constrain = MouseFollowBehaviour.CONSTRAIN_X;
+//			hero.children.addItem(mouseFollow);
 		}
 		
 		private function addItems():void
@@ -305,10 +323,35 @@ package model
 				obstaclesEntity.children.addItem(obstacle);				
 			}
 			
+			// Helicopter Obstacle
+			obstacle = new Entity();
+			var defaultMcSkin:MovieClipSkin = new MovieClipSkin();
+			obstacle.children.addItem(defaultMcSkin);
+			defaultMcSkin.textureAtlas = allSpritesAtlas;
+			defaultMcSkin.texturesPrefix = "obstacle4_0";
+			defaultMcSkin.loop = true;
+			// Add the crash ImageSkin to the obstacle entity
+			crashSkin = new ImageSkin();
+			obstacle.children.addItem(crashSkin);
+			crashSkin.textureAtlas = allSpritesAtlas;
+			crashSkin.texturesPrefix = "obstacle4_crash";
+			// Add the Transform2D to the obstacle entity
+			transform = new Transform2D();
+			obstacle.children.addItem(transform);
+			// Add the ObstacleBehaviour to the obstacle entity
+			behaviour = new ObstacleBehaviour();
+			obstacle.children.addItem(behaviour);
+			behaviour.defaultSkin = defaultMcSkin;
+			behaviour.crashSkin = crashSkin;
+			// Finally, add the obstacle entity to the container entity
+			obstaclesEntity.children.addItem(obstacle);			
+			
 			var obstaclesProcess:ObstaclesProcess = new ObstaclesProcess();
 			cadetScene.children.addItem(obstaclesProcess);
 			obstaclesProcess.obstaclesContainer = obstaclesEntity;
 			obstaclesProcess.hitTestSkin = heroSkin;
+			obstaclesProcess.hitSound = hitSound;
+			obstaclesProcess.hurtSound = hurtSound;
 		}		
 		
 		private function textureValidatedHandler( event:SkinEvent ):void

@@ -2,6 +2,7 @@ package hungryHero.components.processes
 {
 	import flash.geom.Rectangle;
 	
+	import cadet.components.sounds.ISound;
 	import cadet.core.Component;
 	import cadet.core.IComponentContainer;
 	import cadet.core.ISteppableComponent;
@@ -35,7 +36,7 @@ package hungryHero.components.processes
 			
 		private var _obstaclesPool				:Pool; 				// Obstacles pool with a maximum cap for reuse of items.
 		private var _obstacleGapCount			:Number = 0; 		// Obstacle count - to track the frequency of obstacles.
-		private var _hitObstacle				:Number = 0;		// The power of obstacle after it is hit.
+//		private var _hitObstacle				:Number = 0;		// The power of obstacle after it is hit.
 		private var _obstaclesToAnimate			:Vector.<Entity>;	// Obstacles to animate.
 		private var _obstaclesToAnimateLength	:uint = 0;			// Obstacles to animate - array length.
 		
@@ -45,8 +46,9 @@ package hungryHero.components.processes
 		private var _hitTestSkin				:AbstractSkin2D;
 		private var _obstaclesContainer			:IComponentContainer;
 		
-		private var _elapsed					:Number = 0.02;;
-		private var _playerSpeed				:int = 650;
+		//SOUNDS
+		private var _hitSound					:ISound;
+		private var _hurtSound					:ISound;
 	
 		public function ObstaclesProcess()
 		{
@@ -101,17 +103,29 @@ package hungryHero.components.processes
 		}
 		public function get obstaclesContainer():IComponentContainer { return _obstaclesContainer; }
 		
+		// SOUNDS
+		[Serializable][Inspectable( editor="ComponentList", scope="scene", priority="52" )]
+		public function set hitSound( value:ISound ):void
+		{
+			_hitSound = value;
+		}
+		public function get hitSound():ISound { return _hitSound; }
+
+		[Serializable][Inspectable( editor="ComponentList", scope="scene", priority="53" )]
+		public function set hurtSound( value:ISound ):void
+		{
+			_hurtSound = value;
+		}
+		public function get hurtSound():ISound { return _hurtSound; }		
+		
 		// -------------------------------------------------------------------------------------
 		
 		public function step( dt:Number ):void
 		{
+			if (!globals || globals.paused) return;
+			
 			if (!_initialised) {
 				initialise();
-			}
-			
-			if ( globals ) {
-				_playerSpeed = globals.playerSpeed;
-				_elapsed = globals.elapsed;
 			}
 			
 			// Create obstacles.
@@ -119,8 +133,8 @@ package hungryHero.components.processes
 
 			// Store the hero's current x and y positions (needed for animations below).
 			if (_hitTestSkin) {
-				_hitTestX = _hitTestSkin.x + _hitTestSkin.width/2;//hero.x;
-				_hitTestY = _hitTestSkin.y + _hitTestSkin.height/2;//hero.y;
+				_hitTestX = _hitTestSkin.x;
+				_hitTestY = _hitTestSkin.y;
 			}
 			
 			animateObstacles();
@@ -149,13 +163,12 @@ package hungryHero.components.processes
 			{
 				var child:Component = _obstaclesContainer.children[i];
 				
-				if (!child is Entity) continue;
-				
-				var entity:Entity = Entity(child);
-				//var skin:ImageSkin = ComponentUtil.getChildOfType(entity, ImageSkin);
-				behaviour = ComponentUtil.getChildOfType(entity, ObstacleBehaviour);
-				if ( behaviour ) {	
-					_obstacles.push( behaviour );
+				if (child is Entity) {
+					var entity:Entity = Entity(child);
+					behaviour = ComponentUtil.getChildOfType(entity, ObstacleBehaviour);
+					if ( behaviour ) {	
+						_obstacles.push( behaviour );
+					}
 				}
 			}
 			
@@ -177,6 +190,7 @@ package hungryHero.components.processes
 			_obstaclesContainer.children.addItem(obstacle);
 			// Add the default ImageSkin to the obstacle entity
 			var defaultSkin:MovieClipSkin = new MovieClipSkin();
+			defaultSkin.loop = true;
 			obstacle.children.addItem(defaultSkin);
 			// Add the crash ImageSkin to the obstacle entity
 			var crashSkin:MovieClipSkin = new MovieClipSkin();
@@ -190,7 +204,6 @@ package hungryHero.components.processes
 			behaviour.defaultSkin = defaultSkin;
 			behaviour.crashSkin = crashSkin;
 			behaviour.transform = transform;
-			//behaviour.init();
 			
 			return obstacle;
 		}
@@ -204,14 +217,7 @@ package hungryHero.components.processes
 		{
 			var itemToTrack:Entity = Entity(_obstaclesPool.checkOut());
 			
-			if (!itemToTrack) return null;
-			
-			// randItem is either MovieClipSkin or ImageSkin (MovieClipSkin extends ImageSkin)
-/*			var randImgSkin:ImageSkin = ImageSkin(randItem);
-			var imgSkin:MovieClipSkin = MovieClipSkin(itemToTrack);
-			imgSkin.texture = randImgSkin.texture;
-			imgSkin.textureAtlas = randImgSkin.textureAtlas;
-			imgSkin.texturesPrefix = randImgSkin.texturesPrefix;*/			
+			if (!itemToTrack || _obstacles.length == 0) return null;
 			
 			// Get random obstacle
 			var randBehaviour:ObstacleBehaviour = _obstacles[Math.round(Math.random() * (_obstacles.length-1))];
@@ -227,8 +233,8 @@ package hungryHero.components.processes
 			behaviour.transform.x = worldBoundsRect.right;
 			
 			// For only one of the obstacles, make it appear in either the top or bottom of the screen.
-/*			if (_type <= GameConstants.OBSTACLE_TYPE_3)
-			{*/
+			if ( Math.random() > 0.5 )
+			{
 				// Place it on the top of the screen.
 				if (Math.random() > 0.5)
 				{
@@ -241,13 +247,13 @@ package hungryHero.components.processes
 					behaviour.transform.y = worldBoundsRect.bottom - behaviour.defaultSkin.height;
 					behaviour.position = "bottom";
 				}
-/*			}
+			}
 			else
 			{
 				// Otherwise, if it's any other obstacle type, put it somewhere in the middle of the screen.
-				itemToTrack.y = Math.floor(Math.random() * (gameArea.bottom-itemToTrack.height - gameArea.top + 1)) + gameArea.top;
-				itemToTrack.position = "middle";
-			}*/
+				behaviour.transform.y = Math.floor(Math.random() * (worldBoundsRect.bottom-behaviour.defaultSkin.height - worldBoundsRect.top + 1)) + worldBoundsRect.top;
+				behaviour.position = "middle";
+			}
 			
 			// Set the obstacle's speed.
 			behaviour.speed = obstacleSpeed;
@@ -267,10 +273,12 @@ package hungryHero.components.processes
 		 */
 		private function initObstacle():void
 		{
+			if (!globals) return;
+			
 			// Create an obstacle after hero travels some distance (obstacleGap).
 			if (_obstacleGapCount < obstacleGap)
 			{
-				_obstacleGapCount += _playerSpeed * _elapsed;
+				_obstacleGapCount += globals.playerSpeed * globals.elapsed;
 			}
 			else if (_obstacleGapCount != 0)
 			{
@@ -299,103 +307,104 @@ package hungryHero.components.processes
 		 */
 		private function animateObstacles():void
 		{
-/*			if (!gamePaused)
-			{*/
-				var heroRect:Rectangle;
-				var obstacleRect:Rectangle;
+			if (!globals || globals.paused) return;
+
+			var heroRect:Rectangle;
+			var obstacleRect:Rectangle;
+			
+			for (var i:uint = 0; i < _obstaclesToAnimateLength ; i ++)
+			{
+				var obstacleToTrack:Entity = _obstaclesToAnimate[i];
+				var behaviour:ObstacleBehaviour = ComponentUtil.getChildOfType(obstacleToTrack, ObstacleBehaviour); 
 				
-				for (var i:uint = 0; i < _obstaclesToAnimateLength ; i ++)
+				// If the distance is still more than 0, keep reducing its value, without moving the obstacle.
+				if (behaviour.distance > 0 ) 
 				{
-					var obstacleToTrack:Entity = _obstaclesToAnimate[i];
-					var behaviour:ObstacleBehaviour = ComponentUtil.getChildOfType(obstacleToTrack, ObstacleBehaviour); 
-					
-					// If the distance is still more than 0, keep reducing its value, without moving the obstacle.
-					if (behaviour.distance > 0 ) 
-					{
-						behaviour.distance -= _playerSpeed * _elapsed;  
-					}
-					else  
-					{
-						// Otherwise, move the obstacle based on hero's speed, and check if he hits it. 
-						
-						// Remove the look out sign.
-						if (behaviour.lookOut == true )
-						{
-							behaviour.lookOut = false;
-						}
-						
-						// Move the obstacle based on hero's speed.
-						behaviour.transform.x -= (_playerSpeed + behaviour.speed) * _elapsed; 
-					}
-					
-					// If the obstacle passes beyond the screen, remove it.
-					if (behaviour.transform.x < -behaviour.defaultSkin.width)// || gameState == GameConstants.GAME_STATE_OVER)
-					{
-						disposeObstacleTemporarily(i, obstacleToTrack);
-					}
-					
-					// Collision detection - Check if hero collides with any obstacle.
-					var xDistance:Number = behaviour.transform.x - _hitTestX;
-					var yDistance:Number = behaviour.transform.y - _hitTestY;
-					var h:Number = Math.sqrt( xDistance * xDistance + yDistance * yDistance );
-					var hitDistance:Number = hitTestSkin ? hitTestSkin.width / 2 : 100;
-					
-					if ( h < hitDistance  && !behaviour.alreadyHit )
-					//if (heroObstacle_sqDist < 5000 && !obstacleToTrack.alreadyHit)
-					{
-						behaviour.alreadyHit = true;
-						
-						/*if (!Sounds.muted) Sounds.sndHit.play();*/
-						
-/*						if (coffee > 0) 
-						{
-							// If hero has a coffee item, break through the obstacle.
-							if (behaviour.position == "bottom") behaviour.transform.rotation = deg2rad(100);
-							else behaviour.transform.rotation = deg2rad(-100);
-							
-							// Set hit obstacle value.
-							hitObstacle = 30;
-							
-							// Reduce hero's speed
-							playerSpeed *= 0.8; 
-						}
-						else 
-						{*/
-							if (behaviour.position == "bottom") {
-								behaviour.transform.rotation = deg2rad(70);
-							} else {
-								behaviour.transform.rotation = deg2rad(-70);
-							}
-							
-							// Otherwise, if hero doesn't have a coffee item, set hit obstacle value.
-							_hitObstacle = 30; 
-							
-							// Reduce hero's speed.
-							_playerSpeed *= 0.5; 
-/*							
-							// Play hurt sound.
-							if (!Sounds.muted) Sounds.sndHurt.play();
-							
-							// Update lives.
-							lives--;
-							
-							if (lives <= 0)
-							{
-								lives = 0;
-								endGame();
-							}
-							
-							hud.lives = lives;*/
-						//}
-					}
-					
-					// If the game has ended, remove the obstacle.
-/*					if (gameState == GameConstants.GAME_STATE_OVER)
-					{
-						disposeObstacleTemporarily(i, obstacleToTrack);
-					}*/
+					behaviour.distance -= globals.playerSpeed * globals.elapsed;  
 				}
-/*			}*/
+				else  
+				{
+					// Otherwise, move the obstacle based on hero's speed, and check if he hits it. 
+					
+					// Remove the look out sign.
+					if (behaviour.lookOut == true )
+					{
+						behaviour.lookOut = false;
+					}
+					
+					// Move the obstacle based on hero's speed.
+					behaviour.transform.x -= (globals.playerSpeed + behaviour.speed) * globals.elapsed; 
+				}
+				
+				// If the obstacle passes beyond the screen, remove it.
+				if (behaviour.transform.x < -behaviour.defaultSkin.width || globals.gameState == GlobalsProcess.GAME_STATE_OVER)
+				{
+					disposeObstacleTemporarily(i, obstacleToTrack);
+				}
+				
+				// Collision detection - Check if hero collides with any obstacle.
+				var xDistance:Number = behaviour.transform.x - _hitTestX;
+				var yDistance:Number = behaviour.transform.y - _hitTestY;
+				var h:Number = Math.sqrt( xDistance * xDistance + yDistance * yDistance );
+				var hitDistance:Number = hitTestSkin ? hitTestSkin.width / 2 : 100;
+				
+				if ( h < hitDistance  && !behaviour.alreadyHit )
+				{
+					behaviour.alreadyHit = true;
+					
+					/*if (!Sounds.muted) Sounds.sndHit.play();*/
+					if ( hitSound ) hitSound.play();
+					
+	/*				if (coffee > 0) 
+					{
+						// If hero has a coffee item, break through the obstacle.
+						if (behaviour.position == "bottom") behaviour.transform.rotation = deg2rad(100);
+						else behaviour.transform.rotation = deg2rad(-100);
+						
+						// Set hit obstacle value.
+						hitObstacle = 30;
+						
+						// Reduce hero's speed
+						playerSpeed *= 0.8; 
+					}
+					else 
+					{*/
+						if (behaviour.position == "bottom") {
+							behaviour.transform.rotation = deg2rad(70);
+						} else {
+							behaviour.transform.rotation = deg2rad(-70);
+						}
+						
+						// Otherwise, if hero doesn't have a coffee item, set hit obstacle value.
+						globals.hitObstacle = 30; 
+						
+						// Reduce hero's speed.
+						globals.playerSpeed *= 0.5; 
+										
+						// Play hurt sound.
+				//		if (!Sounds.muted) Sounds.sndHurt.play();
+					
+						if ( hurtSound ) hurtSound.play();
+					
+					/*	// Update lives.
+						lives--;
+						
+						if (lives <= 0)
+						{
+							lives = 0;
+							endGame();
+						}
+						
+						hud.lives = lives;*/
+					//}
+				}
+				
+				// If the game has ended, remove the obstacle.
+				if (globals.gameState == GlobalsProcess.GAME_STATE_OVER)
+				{
+					disposeObstacleTemporarily(i, obstacleToTrack);
+				}
+			}
 		}		
 		
 		private function disposeObstacleTemporarily(animateId:uint, obstacle:Entity):void
