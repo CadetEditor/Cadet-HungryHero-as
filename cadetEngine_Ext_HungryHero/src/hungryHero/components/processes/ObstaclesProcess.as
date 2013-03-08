@@ -45,6 +45,7 @@ package hungryHero.components.processes
 		
 		private var _hitTestSkin				:AbstractSkin2D;
 		private var _obstaclesContainer			:IComponentContainer;
+//		private var _warningSkin				:ImageSkin;
 		
 		//SOUNDS
 		private var _hitSound					:ISound;
@@ -103,15 +104,22 @@ package hungryHero.components.processes
 		}
 		public function get obstaclesContainer():IComponentContainer { return _obstaclesContainer; }
 		
+/*		[Serializable][Inspectable( editor="ComponentList", scope="scene", priority="52" )]
+		public function set warningSkin( value:ImageSkin ):void
+		{
+			_warningSkin = value;
+		}
+		public function get warningSkin():ImageSkin { return _warningSkin; }*/
+		
 		// SOUNDS
-		[Serializable][Inspectable( editor="ComponentList", scope="scene", priority="52" )]
+		[Serializable][Inspectable( editor="ComponentList", scope="scene", priority="53" )]
 		public function set hitSound( value:ISound ):void
 		{
 			_hitSound = value;
 		}
 		public function get hitSound():ISound { return _hitSound; }
 
-		[Serializable][Inspectable( editor="ComponentList", scope="scene", priority="53" )]
+		[Serializable][Inspectable( editor="ComponentList", scope="scene", priority="54" )]
 		public function set hurtSound( value:ISound ):void
 		{
 			_hurtSound = value;
@@ -190,11 +198,14 @@ package hungryHero.components.processes
 			_obstaclesContainer.children.addItem(obstacle);
 			// Add the default ImageSkin to the obstacle entity
 			var defaultSkin:MovieClipSkin = new MovieClipSkin();
-			defaultSkin.loop = true;
 			obstacle.children.addItem(defaultSkin);
 			// Add the crash ImageSkin to the obstacle entity
 			var crashSkin:MovieClipSkin = new MovieClipSkin();
 			obstacle.children.addItem(crashSkin);
+			// Add the lookOut! Skin to the scene (not to the obstacle entity, as we need
+			// it to be independent of the obstacle's Transform2D)
+			var warningSkin:MovieClipSkin = new MovieClipSkin();
+			scene.children.addItem(warningSkin);
 			// Add the Transform2D to the obstacle entity
 			var transform:Transform2D = new Transform2D();
 			obstacle.children.addItem(transform);
@@ -203,6 +214,7 @@ package hungryHero.components.processes
 			obstacle.children.addItem(behaviour);
 			behaviour.defaultSkin = defaultSkin;
 			behaviour.crashSkin = crashSkin;
+			behaviour.warningSkin = warningSkin;
 			behaviour.transform = transform;
 			
 			return obstacle;
@@ -226,8 +238,20 @@ package hungryHero.components.processes
 			// Apply skins
 			behaviour.defaultSkin.textureAtlas = randBehaviour.defaultSkin.textureAtlas;
 			behaviour.defaultSkin.texturesPrefix = randBehaviour.defaultSkin.texturesPrefix;
+			
+			if ( randBehaviour.defaultSkin is MovieClipSkin ) {
+				MovieClipSkin(behaviour.defaultSkin).loop = MovieClipSkin(randBehaviour.defaultSkin).loop;
+			}
+			
+			if ( randBehaviour.crashSkin is MovieClipSkin ) {
+				MovieClipSkin(behaviour.crashSkin).loop = MovieClipSkin(randBehaviour.crashSkin).loop;
+			}
+			
 			behaviour.crashSkin.textureAtlas = randBehaviour.crashSkin.textureAtlas;
 			behaviour.crashSkin.texturesPrefix = randBehaviour.crashSkin.texturesPrefix;
+			behaviour.warningSkin.textureAtlas = randBehaviour.warningSkin.textureAtlas;
+			behaviour.warningSkin.texturesPrefix = randBehaviour.warningSkin.texturesPrefix;
+			behaviour.warningSkin.loop = randBehaviour.warningSkin.loop;
 			behaviour.init();
 			behaviour.distance = distance;
 			behaviour.transform.x = worldBoundsRect.right;
@@ -261,6 +285,12 @@ package hungryHero.components.processes
 			// Set look out mode to true, during which, a look out text appears.
 			behaviour.lookOut = true;
 			
+			var xpos:Number = behaviour.transform.x - behaviour.warningSkin.width;
+			if ( behaviour.warningSkin.width ) xpos -= 20;
+			
+			behaviour.warningSkin.x = xpos;
+			behaviour.warningSkin.y = behaviour.transform.y + (behaviour.defaultSkin.height * 0.5);
+
 			// Animate the obstacle.
 			_obstaclesToAnimate[_obstaclesToAnimateLength++] = itemToTrack;
 			

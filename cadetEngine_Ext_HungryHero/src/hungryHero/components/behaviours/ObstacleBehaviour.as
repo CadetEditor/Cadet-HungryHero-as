@@ -3,6 +3,7 @@ package hungryHero.components.behaviours
 	import cadet.core.Component;
 	
 	import cadet2D.components.skins.ImageSkin;
+	import cadet2D.components.skins.MovieClipSkin;
 	import cadet2D.components.transforms.Transform2D;
 	
 	public class ObstacleBehaviour extends Component
@@ -17,6 +18,8 @@ package hungryHero.components.behaviours
 		public var defaultSkin	:ImageSkin;
 		[Serializable][Inspectable( editor="ComponentList", scope="parent", priority="51") ]
 		public var crashSkin	:ImageSkin;
+		[Serializable][Inspectable( editor="ComponentList", scope="scene", priority="52") ]
+		public var warningSkin	:MovieClipSkin;
 		
 		public var transform	:Transform2D;
 		
@@ -46,18 +49,17 @@ package hungryHero.components.behaviours
 		{
 			_showLookOut = value;
 			
-/*			if (lookOutAnimation)
+			if (warningSkin)
 			{
 				if (value)
 				{
-					lookOutAnimation.visible = true;
+					warningSkin.visible = true;
 				}
 				else
 				{
-					lookOutAnimation.visible = false;
-					Starling.juggler.remove(lookOutAnimation);
+					warningSkin.visible = false;
 				}
-			}*/
+			}
 		}
 		
 		/**
@@ -90,24 +92,15 @@ package hungryHero.components.behaviours
 			_alreadyHit = value;
 		}
 		
-		/**
-		 * Speed of the obstacle. 
-		 * 
-		 */
+		// Speed of the obstacle.
 		public function get speed():int { return _speed; }
 		public function set speed(value:int):void { _speed = value; }
 		
-		/**
-		 * Distance after which the obstacle should appear on screen. 
-		 * 
-		 */
+		// Distance after which the obstacle should appear on screen.
 		public function get distance():int { return _distance; }
 		public function set distance(value:int):void { _distance = value; }
 		
-		/**
-		 * Vertical position of the obstacle. 
-		 * 
-		 */
+		// Vertical position of the obstacle. 
 		public function get position():String { return _position; }
 		public function set position(value:String):void { _position = value; }
 	}

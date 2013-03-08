@@ -248,6 +248,7 @@ package model
 			for ( var i:uint = 0; i < 5; i ++ ) {
 				// Add an ImageSkin to the itemsEntity
 				var imageSkin:ImageSkin = new ImageSkin();
+				imageSkin.x = -1000;
 				imageSkin.textureAtlas = allSpritesAtlas;
 				imageSkin.texturesPrefix = "item"+(i+1);
 				itemsEntity.children.addItem(imageSkin);				
@@ -262,6 +263,7 @@ package model
 			powerupsEntity.children.addItem(powerup);
 			imageSkin = new ImageSkin();
 			powerup.children.addItem(imageSkin);
+			imageSkin.x = -1000;
 			imageSkin.textureAtlas = allSpritesAtlas;
 			imageSkin.texturesPrefix = "item6";
 			var speedUpBehaviour:SpeedUpBehaviour = new SpeedUpBehaviour();
@@ -273,6 +275,7 @@ package model
 			powerupsEntity.children.addItem(powerup);
 			imageSkin = new ImageSkin();
 			powerup.children.addItem(imageSkin);
+			imageSkin.x = -1000;
 			imageSkin.textureAtlas = allSpritesAtlas;
 			imageSkin.texturesPrefix = "item7";
 			var magnetBehaviour:MagnetBehaviour = new MagnetBehaviour();
@@ -295,6 +298,13 @@ package model
 		
 		private function addObstacles():void
 		{
+			var warningSkin:MovieClipSkin = new MovieClipSkin();
+			cadetScene.children.addItem(warningSkin);
+			warningSkin.textureAtlas = allSpritesAtlas;
+			warningSkin.texturesPrefix = "watchOut_";
+			warningSkin.loop = true;
+			warningSkin.x = -1000;
+			
 			// Add the Obstacles Entity
 			var obstaclesEntity:Entity = new Entity();
 			cadetScene.children.addItem(obstaclesEntity);
@@ -314,11 +324,13 @@ package model
 				// Add the Transform2D to the obstacle entity
 				var transform:Transform2D = new Transform2D();
 				obstacle.children.addItem(transform);
+				transform.x = -1000;
 				// Add the ObstacleBehaviour to the obstacle entity
 				var behaviour:ObstacleBehaviour = new ObstacleBehaviour();
 				obstacle.children.addItem(behaviour);
 				behaviour.defaultSkin = defaultSkin;
 				behaviour.crashSkin = crashSkin;
+				behaviour.warningSkin = warningSkin;
 				// Finally, add the obstacle entity to the container entity
 				obstaclesEntity.children.addItem(obstacle);				
 			}
@@ -338,13 +350,15 @@ package model
 			// Add the Transform2D to the obstacle entity
 			transform = new Transform2D();
 			obstacle.children.addItem(transform);
+			transform.x = -1000;
 			// Add the ObstacleBehaviour to the obstacle entity
 			behaviour = new ObstacleBehaviour();
 			obstacle.children.addItem(behaviour);
 			behaviour.defaultSkin = defaultMcSkin;
 			behaviour.crashSkin = crashSkin;
+			behaviour.warningSkin = warningSkin;
 			// Finally, add the obstacle entity to the container entity
-			obstaclesEntity.children.addItem(obstacle);			
+			obstaclesEntity.children.addItem(obstacle);
 			
 			var obstaclesProcess:ObstaclesProcess = new ObstaclesProcess();
 			cadetScene.children.addItem(obstaclesProcess);
