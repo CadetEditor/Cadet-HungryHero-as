@@ -1,6 +1,5 @@
 package hungryHero.components.behaviours
 {
-	import flash.geom.Matrix;
 	import flash.geom.Rectangle;
 	
 	import cadet.core.Component;
@@ -13,6 +12,7 @@ package hungryHero.components.behaviours
 	import cadet2D.components.renderers.Renderer2D;
 	import cadet2D.components.skins.AbstractSkin2D;
 	import cadet2D.components.skins.ImageSkin;
+	import cadet2D.components.skins.MovieClipSkin;
 	import cadet2D.components.transforms.ITransform2D;
 	import cadet2D.components.transforms.Transform2D;
 	
@@ -35,6 +35,7 @@ package hungryHero.components.behaviours
 		public var transform				:ITransform2D;
 		public var skin						:ImageSkin;
 		public var globals					:GlobalsProcess;
+		public var shakeBehaviour			:ShakeBehaviour;
 		private var _worldBounds			:WorldBounds2D;
 		private var _renderer				:Renderer2D;
 		
@@ -54,7 +55,8 @@ package hungryHero.components.behaviours
 		{
 			addSceneReference(GlobalsProcess, "globals");
 			addSceneReference(WorldBounds2D, "worldBounds");
-			addSceneReference( Renderer2D, "renderer" );
+			addSceneReference(Renderer2D, "renderer");
+			addSceneReference(ShakeBehaviour, "shakeBehaviour");
 			
 			addSiblingReference(Transform2D, "transform");
 			addSiblingReference(AbstractSkin2D, "skin");
@@ -123,8 +125,9 @@ package hungryHero.components.behaviours
 					
 				} else {
 					// Hit by obstacle
-//					if (coffee <= 0)
-//					{
+					//if (coffee <= 0)
+					if ( globals.playerSpeed <= globals.playerMinSpeed )
+					{
 						// Play hero animation for obstacle hit.
 						if (state != HERO_STATE_HIT) {
 							state = HERO_STATE_HIT;
@@ -139,17 +142,30 @@ package hungryHero.components.behaviours
 						} else {
 							transform.rotation += deg2rad(globals.hitObstacle * 2);
 						}
-//					}
+					}
 					
 					// If hit by an obstacle.
 					globals.hitObstacle--;
 					
 					// Camera shake.
+					if (shakeBehaviour) {
+						shakeBehaviour.shake = globals.hitObstacle;
+					}
 //					cameraShake = hitObstacle;
 //					shakeAnimation(null);
 				}
 			}
 						
+		}
+		
+		// This should be set FPS
+		public function setHeroAnimationSpeed(speed:int):void 
+		{
+			if ( skin is MovieClipSkin ) {
+				var mcSkin:MovieClipSkin = MovieClipSkin(skin);
+				if (speed == 0) mcSkin.fps = 20;
+				else mcSkin.fps = 60;
+			}
 		}
 		
 		private function rotateToMouse():void

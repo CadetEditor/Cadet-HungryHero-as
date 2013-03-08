@@ -22,6 +22,7 @@ package model
 	import hungryHero.components.behaviours.MoveBehaviour;
 	import hungryHero.components.behaviours.ObstacleBehaviour;
 	import hungryHero.components.behaviours.ParallaxBehaviour;
+	import hungryHero.components.behaviours.ShakeBehaviour;
 	import hungryHero.components.behaviours.SpeedUpBehaviour;
 	import hungryHero.components.processes.BackgroundsProcess;
 	import hungryHero.components.processes.GlobalsProcess;
@@ -34,7 +35,8 @@ package model
 	// This class constructs a CadetEngine 2D scene using the CadetEngine API
 	public class GameModel_Code
 	{
-		public var cadetScene:CadetScene;
+		public var cadetScene	:CadetScene;
+		private var renderer	:Renderer2D;
 		
 		// ASSETS
 		[Embed(source="../../bin-debug/files/assets/hungryHero/graphics/bgLayer1.jpg")]
@@ -91,7 +93,7 @@ package model
 			cadetScene = new CadetScene();
 			
 			// Add a 2D Renderer to the scene
-			var renderer:Renderer2D = new Renderer2D(true);
+			renderer = new Renderer2D(true);
 			renderer.viewportWidth = parent.stage.stageWidth;
 			renderer.viewportHeight = parent.stage.stageHeight;
 			renderer.addEventListener(RendererEvent.INITIALISED, rendererInitialised);
@@ -127,6 +129,11 @@ package model
 			worldBounds.left 	= 0;
 			worldBounds.right 	= 1024;
 			worldBounds.bottom 	= 768 - 250;
+			
+			// Add ShakeBehaviour
+			var shakeBehaviour:ShakeBehaviour = new ShakeBehaviour();
+			cadetScene.children.addItem(shakeBehaviour);
+			shakeBehaviour.target = renderer;
 			
 			addSounds();
 			addBackgrounds();

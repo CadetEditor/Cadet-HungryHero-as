@@ -63,6 +63,7 @@ package controller
 			_view.pauseButton.addEventListener(Event.TRIGGERED, onPauseButtonClick);
 			_view.startButton.addEventListener(Event.TRIGGERED, onStartButtonClick);
 			_view.gameOverContainer.addEventListener(NavigationEvent.CHANGE_SCREEN, playAgain);
+			_view.addEventListener(Event.ENTER_FRAME, enterFrameHandler);
 		}
 		
 		public function disable():void
@@ -76,6 +77,15 @@ package controller
 			_view.pauseButton.removeEventListener(Event.TRIGGERED, onPauseButtonClick);
 			_view.startButton.removeEventListener(Event.TRIGGERED, onStartButtonClick);
 			_view.gameOverContainer.removeEventListener(NavigationEvent.CHANGE_SCREEN, playAgain);
+			_view.removeEventListener(Event.ENTER_FRAME, enterFrameHandler);
+		}
+		
+		private function enterFrameHandler( event:Event ):void
+		{
+			if (!globals) return;
+			_view.hud.distance = Math.round(globals.scoreDistance);
+			_view.hud.foodScore = globals.scoreItems;
+			_view.hud.lives = globals.currentLives;
 		}
 		
 		/**

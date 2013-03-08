@@ -10,14 +10,17 @@ package hungryHero.components.processes
 		[Serializable][Inspectable(priority="51") ]
 		public var numLives:int = 5;
 		[Serializable][Inspectable(priority="52") ]
-		public var playerMinSpeed:Number = 650;
+		public var currentLives:int = numLives;
+		
 		[Serializable][Inspectable(priority="53") ]
+		public var playerMinSpeed:Number = 650;
+		[Serializable][Inspectable(priority="54") ]
 		public var playerMaxSpeed:Number = 1400;
 		
-		[Serializable][Inspectable(priority="54") ]
+		[Serializable][Inspectable(priority="55") ]
 		public var playerSpeed:Number = 0;
 
-		[Serializable][Inspectable(priority="55") ]
+		[Serializable][Inspectable(priority="56") ]
 		public var paused:Boolean = false;		
 		
 		public var elapsed:Number = 0;
@@ -32,6 +35,8 @@ package hungryHero.components.processes
 		
 		public var gameState				:int;
 		public var hitObstacle				:Number = 0;	// The power of obstacle after it is hit.
+		public var scoreDistance			:Number = 0;
+		public var scoreItems				:Number = 0;
 		
 		public function GlobalsProcess()
 		{
@@ -51,9 +56,8 @@ package hungryHero.components.processes
 			
 			// constantly slow playerSpeed down towards playerMinSpeed
 			playerSpeed -= (playerSpeed - playerMinSpeed) * 0.01;
-//			if ( playerSpeed < playerMinSpeed + 1 ) {
-//				playerSpeed = playerMinSpeed;
-//			}
+
+			scoreDistance += (playerSpeed * elapsed) * 0.1;
 		}
 		
 		private function calculateElapsed():void

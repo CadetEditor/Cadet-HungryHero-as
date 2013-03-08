@@ -508,7 +508,7 @@ package hungryHero.components.processes
 					// If the item passes outside the screen on the left, remove it (check-in).
 					
 					// If item
-					if (itemToTrack.x < -80)// || gameState == GameConstants.GAME_STATE_OVER)
+					if (itemToTrack.x < -80 || globals.gameState == GlobalsProcess.GAME_STATE_OVER)
 					{
 						disposeItemTemporarily(i, itemToTrack);
 					}
@@ -541,6 +541,8 @@ package hungryHero.components.processes
 									_collectSound.play();	
 								}
 							}
+							
+							globals.scoreItems ++;
 							
 							// If hero eats an item, add up the score.
 						/*	if (itemToTrack.foodItemType <= GameConstants.ITEM_TYPE_5)

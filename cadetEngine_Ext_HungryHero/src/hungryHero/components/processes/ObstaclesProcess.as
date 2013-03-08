@@ -382,23 +382,23 @@ package hungryHero.components.processes
 				{
 					behaviour.alreadyHit = true;
 					
-					/*if (!Sounds.muted) Sounds.sndHit.play();*/
 					if ( hitSound ) hitSound.play();
 					
-	/*				if (coffee > 0) 
+					//if (coffee > 0) 
+					if ( globals.playerSpeed > globals.playerMinSpeed )
 					{
 						// If hero has a coffee item, break through the obstacle.
 						if (behaviour.position == "bottom") behaviour.transform.rotation = deg2rad(100);
 						else behaviour.transform.rotation = deg2rad(-100);
 						
 						// Set hit obstacle value.
-						hitObstacle = 30;
+						globals.hitObstacle = 30;
 						
 						// Reduce hero's speed
-						playerSpeed *= 0.8; 
+						globals.playerSpeed *= 0.8; 
 					}
 					else 
-					{*/
+					{
 						if (behaviour.position == "bottom") {
 							behaviour.transform.rotation = deg2rad(70);
 						} else {
@@ -412,21 +412,19 @@ package hungryHero.components.processes
 						globals.playerSpeed *= 0.5; 
 										
 						// Play hurt sound.
-				//		if (!Sounds.muted) Sounds.sndHurt.play();
-					
 						if ( hurtSound ) hurtSound.play();
 					
-					/*	// Update lives.
-						lives--;
+						// Update lives.
+						globals.currentLives--;
 						
-						if (lives <= 0)
+					/*	if (lives <= 0)
 						{
 							lives = 0;
 							endGame();
 						}
 						
-						hud.lives = lives;*/
-					//}
+						hud.lives = lives;	*/
+					}
 				}
 				
 				// If the game has ended, remove the obstacle.
