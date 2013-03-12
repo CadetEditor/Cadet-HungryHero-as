@@ -4,12 +4,13 @@ package hungryHero.components.behaviours
 	
 	import cadet.components.sounds.ISound;
 	import cadet.core.Component;
+	import cadet.core.ISteppableComponent;
 	
 	import cadet2D.components.transforms.ITransform2D;
 	
 	import hungryHero.components.processes.GlobalsProcess;
 	
-	public class MagnetBehaviour extends Component implements IMoveBehaviour
+	public class MagnetBehaviour extends Component implements IMoveBehaviour, ISteppableComponent
 	{
 		public var globals					:GlobalsProcess;
 		
@@ -17,7 +18,7 @@ package hungryHero.components.behaviours
 		private var _targetTransform		:ITransform2D;
 		
 		private var _pcDistance				:Number = 0.2;
-		private var _effectLength			:Number = 40; // How long does mushroom power last? (in seconds)
+		private var _effectLength			:Number = 4; // How long does mushroom power last? (in seconds)
 		
 		private var power					:Number;
 		
@@ -37,11 +38,27 @@ package hungryHero.components.behaviours
 			addSiblingReference(ISound, "collectSound");
 		}
 		
+		public function step( dt:Number ):void
+		{
+			if (!globals) return;
+			
+			if (power > 0)
+			{
+				// If we have a mushroom, reduce the value of the power.
+				power -= globals.elapsed;
+				
+				//trace("MAGNET power "+power+" elapsed "+globals.elapsed);
+			} else if (!notifyComplete) {
+				notifyComplete = true;
+				dispatchEvent(new Event(Event.COMPLETE));
+			}	
+		}
+		
 		// -------------------------------------------------------------------------------------
 		// INSPECTABLE API
 		// -------------------------------------------------------------------------------------
 		
-		[Serializable][Inspectable( priority="50", editor="ComponentList", scope="scene" )]
+		//[Serializable][Inspectable( priority="50", editor="ComponentList", scope="scene" )]
 		public function set transform( value:ITransform2D ):void
 		{
 			_transform = value;
@@ -91,20 +108,7 @@ package hungryHero.components.behaviours
 		
 		public function execute():void
 		{
-			var elapsed:Number = globals ? globals.elapsed : 0.01;
-			
-			// If drank coffee, fly faster for a while.
-			if (power > 0)
-			{
-				movePercentageDistanceToTarget(transform, pcDistance);
-				// If we have a coffee, reduce the value of the power.
-				power -= elapsed;
-				
-				//trace("power "+power+" elapsed "+elapsed);
-			} else if (!notifyComplete) {
-				notifyComplete = true;
-				dispatchEvent(new Event(Event.COMPLETE));
-			}
+			movePercentageDistanceToTarget(transform, pcDistance);
 		}
 		
 		private function movePercentageDistanceToTarget(transform:ITransform2D, percentage:Number):void

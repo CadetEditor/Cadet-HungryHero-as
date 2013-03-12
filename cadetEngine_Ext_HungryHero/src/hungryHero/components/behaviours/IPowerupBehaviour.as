@@ -1,10 +1,9 @@
 package hungryHero.components.behaviours
 {
-	import flash.events.IEventDispatcher;
-	
 	import cadet.components.sounds.ISound;
+	import cadet.core.IComponent;
 
-	public interface IPowerupBehaviour extends IEventDispatcher
+	public interface IPowerupBehaviour extends IComponent
 	{
 		function init():void
 		function execute():void

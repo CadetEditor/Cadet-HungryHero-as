@@ -86,6 +86,7 @@ package controller
 			_view.hud.distance = Math.round(globals.scoreDistance);
 			_view.hud.foodScore = globals.scoreItems;
 			_view.hud.lives = globals.currentLives;
+			_view.hud.speed = globals.playerSpeed;
 		}
 		
 		/**

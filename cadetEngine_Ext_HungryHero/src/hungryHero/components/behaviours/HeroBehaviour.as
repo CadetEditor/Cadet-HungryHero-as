@@ -7,6 +7,8 @@ package hungryHero.components.behaviours
 	import cadet.core.ISteppableComponent;
 	import cadet.events.InvalidationEvent;
 	import cadet.events.RendererEvent;
+	import cadet.util.deg2rad;
+	import cadet.util.rad2deg;
 	
 	import cadet2D.components.processes.WorldBounds2D;
 	import cadet2D.components.renderers.Renderer2D;
@@ -40,15 +42,13 @@ package hungryHero.components.behaviours
 		private var _renderer				:Renderer2D;
 		
 		private var worldBoundsRect			:Rectangle;
-		
-		private var _initialised			:Boolean;
-		
+
 		private var touchX					:Number = 0;
 		private var touchY					:Number = 0;
 		
 		public function HeroBehaviour()
 		{
-			_initialised = true;
+			
 		}
 		
 		override protected function addedToScene():void
@@ -62,22 +62,8 @@ package hungryHero.components.behaviours
 			addSiblingReference(AbstractSkin2D, "skin");
 		}	
 		
-		// onStartButtonClick
-		public function initialise():void
-		{
-			//globals.playerSpeed = 0;
-			
-			// Touch interaction
-			//this.addEventListener(TouchEvent.TOUCH, onTouch);
-			
-			// Game tick
-			//this.addEventListener(Event.ENTER_FRAME, onGameTick);
-			_initialised = true;
-		}
-		
 		public function step(dt:Number):void
 		{
-			if (!_initialised) return;
 			// HeroBehaviour is dependent on the following associations
 			if (!renderer || !_renderer.viewport) return;
 			if (!worldBounds) return;
@@ -151,8 +137,6 @@ package hungryHero.components.behaviours
 					if (shakeBehaviour) {
 						shakeBehaviour.shake = globals.hitObstacle;
 					}
-//					cameraShake = hitObstacle;
-//					shakeAnimation(null);
 				}
 			}
 						
@@ -273,16 +257,6 @@ package hungryHero.components.behaviours
 					break;
 				}
 			}
-		}			
-		
-		public function deg2rad(deg:Number):Number
-		{
-			return deg / 180.0 * Math.PI;   
-		}
-		
-		public function rad2deg(rad:Number):Number
-		{
-			return rad / Math.PI * 180.0;            
 		}
 	}
 }

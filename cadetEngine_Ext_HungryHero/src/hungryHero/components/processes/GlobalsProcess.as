@@ -54,6 +54,8 @@ package hungryHero.components.processes
 			
 			calculateElapsed();
 			
+			//trace("elapsed "+elapsed);
+			
 			// constantly slow playerSpeed down towards playerMinSpeed
 			playerSpeed -= (playerSpeed - playerMinSpeed) * 0.01;
 

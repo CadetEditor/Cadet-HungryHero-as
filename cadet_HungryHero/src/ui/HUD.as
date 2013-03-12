@@ -30,38 +30,21 @@ package ui
 	 */
 	public class HUD extends Sprite
 	{
-		/** Lives left. */
-		private var _lives:int;
+		private var _lives:int;					// Lives left.
+		private var _distance:int;				// Distance travelled.
+		private var _foodScore:int;				// Food items score.
+		private var _speed:int;
 		
-		/** Distance travelled. */
-		private var _distance:int;
+		private var speedText:TextField;		// Speed TextField
 		
-		/** Food items score. */
-		private var _foodScore:int;
-		
-		/** Lives icon.  */		
-		private var livesLabel:TextField;
-		
-		/** Lives TextField. */		
-		private var livesText:TextField;
-		
-		/** Distance icon. */		
-		private var distanceLabel:TextField;
-		
-		/** Distance TextField. */		
-		private var distanceText:TextField;
-		
-		/** Food Score icon. */
-		private var foodScoreLabel:TextField;
-		
-		/** Food Score TextField. */		
-		private var foodScoreText:TextField;
-		
-		/** Font for score label. */		
-		private var fontScoreLabel:Font;
-		
-		/** Font for score value. */		
-		private var fontScoreValue:Font;
+		private var livesLabel:TextField;		// Lives icon.
+		private var livesText:TextField; 		// Lives TextField.	
+		private var distanceLabel:TextField;	// Distance icon.
+		private var distanceText:TextField;		// Distance TextField.
+		private var foodScoreLabel:TextField;	// Food Score icon.
+		private var foodScoreText:TextField;	// Food Score TextField.
+		private var fontScoreLabel:Font;		// Font for score label.
+		private var fontScoreValue:Font;		// Font for score value.
 		
 		public function HUD()
 		{
@@ -79,6 +62,16 @@ package ui
 			// Get fonts for score labels and values.
 			fontScoreLabel = Fonts.getFont("ScoreLabel");
 			fontScoreValue = Fonts.getFont("ScoreValue");
+
+			// Speed
+			speedText = new TextField(150, 75, "5", fontScoreValue.fontName, fontScoreValue.fontSize, 0xffffff);
+			speedText.hAlign = HAlign.RIGHT;
+			speedText.vAlign = VAlign.TOP;
+			speedText.width = 100;
+			
+			speedText.x = 10;
+			speedText.y = 10;
+			this.addChild(speedText);			
 			
 			// Lives label
 			livesLabel = new TextField(150, 20, "L I V E S", fontScoreLabel.fontName, fontScoreLabel.fontSize, 0xffffff);
@@ -172,6 +165,19 @@ package ui
 		{
 			_foodScore = value;
 			foodScoreText.text = _foodScore.toString();
+		}
+		
+		/**
+		 * Food items score. 
+		 * @return 
+		 * 
+		 */
+		public function get speed():int { return _speed; }
+		public function set speed(value:int):void
+			
+		{
+			_speed = value;
+			speedText.text = _speed.toString();
 		}
 		
 		/**

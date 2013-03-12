@@ -5,9 +5,11 @@ package hungryHero.components.processes
 	import cadet.components.sounds.ISound;
 	import cadet.core.Component;
 	import cadet.core.IComponentContainer;
+	import cadet.core.IInitOnRunComponent;
 	import cadet.core.ISteppableComponent;
 	import cadet.events.InvalidationEvent;
 	import cadet.util.ComponentUtil;
+	import cadet.util.deg2rad;
 	
 	import cadet2D.components.core.Entity;
 	import cadet2D.components.processes.WorldBounds2D;
@@ -19,9 +21,8 @@ package hungryHero.components.processes
 	import hungryHero.components.behaviours.ObstacleBehaviour;
 	import hungryHero.pools.Pool;
 	
-	public class ObstaclesProcess extends Component implements ISteppableComponent
+	public class ObstaclesProcess extends Component implements ISteppableComponent, IInitOnRunComponent
 	{
-		private var _initialised				:Boolean;
 		private var _obstacles					:Vector.<ObstacleBehaviour>;
 		
 		public var globals						:GlobalsProcess;
@@ -45,8 +46,7 @@ package hungryHero.components.processes
 		
 		private var _hitTestSkin				:AbstractSkin2D;
 		private var _obstaclesContainer			:IComponentContainer;
-//		private var _warningSkin				:ImageSkin;
-		
+
 		//SOUNDS
 		private var _hitSound					:ISound;
 		private var _hurtSound					:ISound;
@@ -64,6 +64,29 @@ package hungryHero.components.processes
 		{
 			addSceneReference(WorldBounds2D, "worldBounds");
 			addSceneReference(GlobalsProcess, "globals");
+		}
+		
+		// IInitOnRunComponent
+		public function init():void
+		{
+			createObstaclesPool();
+		}
+		
+		// ISteppableComponent
+		public function step( dt:Number ):void
+		{
+			if (!globals || globals.paused) return;
+			
+			// Create obstacles.
+			initObstacle();
+			
+			// Store the hero's current x and y positions (needed for animations below).
+			if (_hitTestSkin) {
+				_hitTestX = _hitTestSkin.x;
+				_hitTestY = _hitTestSkin.y;
+			}
+			
+			animateObstacles();
 		}
 		
 		public function set worldBounds( value:WorldBounds2D ):void
@@ -104,13 +127,6 @@ package hungryHero.components.processes
 		}
 		public function get obstaclesContainer():IComponentContainer { return _obstaclesContainer; }
 		
-/*		[Serializable][Inspectable( editor="ComponentList", scope="scene", priority="52" )]
-		public function set warningSkin( value:ImageSkin ):void
-		{
-			_warningSkin = value;
-		}
-		public function get warningSkin():ImageSkin { return _warningSkin; }*/
-		
 		// SOUNDS
 		[Serializable][Inspectable( editor="ComponentList", scope="scene", priority="53" )]
 		public function set hitSound( value:ISound ):void
@@ -127,33 +143,6 @@ package hungryHero.components.processes
 		public function get hurtSound():ISound { return _hurtSound; }		
 		
 		// -------------------------------------------------------------------------------------
-		
-		public function step( dt:Number ):void
-		{
-			if (!globals || globals.paused) return;
-			
-			if (!_initialised) {
-				initialise();
-			}
-			
-			// Create obstacles.
-			initObstacle();
-
-			// Store the hero's current x and y positions (needed for animations below).
-			if (_hitTestSkin) {
-				_hitTestX = _hitTestSkin.x;
-				_hitTestY = _hitTestSkin.y;
-			}
-			
-			animateObstacles();
-		}
-		
-		private function initialise():void
-		{
-			createObstaclesPool();
-			
-			_initialised = true;
-		}
 		
 		/**
 		 * Create obstacles pool by passing the create and clean methods/functions to the Pool.  
@@ -440,11 +429,6 @@ package hungryHero.components.processes
 			_obstaclesToAnimate.splice(animateId, 1);
 			_obstaclesToAnimateLength--;
 			_obstaclesPool.checkIn(obstacle);
-		}
-		
-		public function deg2rad(deg:Number):Number
-		{
-			return deg / 180.0 * Math.PI;   
 		}
 	}
 }

@@ -4,14 +4,15 @@ package hungryHero.components.behaviours
 	
 	import cadet.components.sounds.ISound;
 	import cadet.core.Component;
+	import cadet.core.ISteppableComponent;
 	
 	import hungryHero.components.processes.GlobalsProcess;
 	
-	public class SpeedUpBehaviour extends Component implements IPowerupBehaviour
+	public class SpeedUpBehaviour extends Component implements IPowerupBehaviour, ISteppableComponent
 	{
 		public var globals					:GlobalsProcess;
 		
-		public var _effectLength			:Number = 50; // How long does coffee power last? (in seconds)
+		public var _effectLength			:Number = 5; // How long does coffee power last? (in seconds)
 		
 		private var power					:Number;
 		
@@ -29,6 +30,22 @@ package hungryHero.components.behaviours
 		{
 			addSceneReference(GlobalsProcess, "globals");
 			addSiblingReference(ISound, "collectSound");
+		}
+		
+		public function step( dt:Number ):void
+		{
+			if (!globals) return;
+			
+			// If drank coffee, fly faster for a while.
+			if (power > 0)
+			{				
+				// If we have a coffee, reduce the value of the power.
+				power -= globals.elapsed;
+			//	trace("COFFEE power "+power+" elapsed "+globals.elapsed);
+			} else if (!notifyComplete) {
+				notifyComplete = true;
+				dispatchEvent(new Event(Event.COMPLETE));
+			}
 		}
 		
 		// -------------------------------------------------------------------------------------
@@ -62,17 +79,7 @@ package hungryHero.components.behaviours
 		{
 			if (!globals) return;
 			
-			// If drank coffee, fly faster for a while.
-			if (power > 0)
-			{
-				globals.playerSpeed += (globals.playerMaxSpeed - globals.playerSpeed) * 0.2;
-				
-				// If we have a coffee, reduce the value of the power.
-				power -= globals.elapsed;
-			} else if (!notifyComplete) {
-				notifyComplete = true;
-				dispatchEvent(new Event(Event.COMPLETE));
-			}
+			globals.playerSpeed += (globals.playerMaxSpeed - globals.playerSpeed) * 0.2;
 		}		
 	}
 }

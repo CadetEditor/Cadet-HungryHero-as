@@ -185,7 +185,7 @@ package model
 			sky.children.addItem(skySkin);
 			skySkin.texture = skyTexture;
 			skySkin.addEventListener(SkinEvent.TEXTURE_VALIDATED, textureValidatedHandler);
-			
+
 			// Add the background hills to the scene
 			var hills:Entity = new Entity();
 			cadetScene.children.addItem(hills);
@@ -196,7 +196,7 @@ package model
 			hillsSkin.texturesPrefix = "bgLayer2";
 			hillsSkin.y = 440;
 			hillsSkin.addEventListener(SkinEvent.TEXTURE_VALIDATED, textureValidatedHandler);
-			
+
 			// Add the midground to the scene
 			var midground:Entity = new Entity();
 			cadetScene.children.addItem(midground);
@@ -207,7 +207,7 @@ package model
 			midgroundSkin.texturesPrefix = "bgLayer3";	
 			midgroundSkin.y = 510;
 			midgroundSkin.addEventListener(SkinEvent.TEXTURE_VALIDATED, textureValidatedHandler);
-			
+
 			// Add the foreground to the scene
 			var foreground:Entity = new Entity();
 			cadetScene.children.addItem(foreground);
@@ -217,7 +217,7 @@ package model
 			foregroundSkin.textureAtlas = allSpritesAtlas;
 			foregroundSkin.texturesPrefix = "bgLayer4";	
 			foregroundSkin.y = 600;
-			foregroundSkin.addEventListener(SkinEvent.TEXTURE_VALIDATED, textureValidatedHandler);	
+			foregroundSkin.addEventListener(SkinEvent.TEXTURE_VALIDATED, textureValidatedHandler);		
 		}
 		
 		
@@ -240,10 +240,6 @@ package model
 			// Add the HeroBehaviour
 			var heroBehaviour:HeroBehaviour = new HeroBehaviour();
 			hero.children.addItem(heroBehaviour);
-			// Add the MouseFollowBehaviour
-//			var mouseFollow:MouseFollowBehaviour = new MouseFollowBehaviour();
-//			mouseFollow.constrain = MouseFollowBehaviour.CONSTRAIN_X;
-//			hero.children.addItem(mouseFollow);
 		}
 		
 		private function addItems():void
@@ -375,6 +371,7 @@ package model
 			obstaclesProcess.hurtSound = hurtSound;
 		}		
 		
+		// ParallaxBehaviours need to be added after their Skin sibling is validated (before they make a copy of it)
 		private function textureValidatedHandler( event:SkinEvent ):void
 		{
 			var parallax:ParallaxBehaviour;

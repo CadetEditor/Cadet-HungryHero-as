@@ -8,6 +8,7 @@ package hungryHero.components.processes
 	import cadet.core.Component;
 	import cadet.core.ComponentContainer;
 	import cadet.core.IComponentContainer;
+	import cadet.core.IInitOnRunComponent;
 	import cadet.core.ISteppableComponent;
 	import cadet.events.InvalidationEvent;
 	import cadet.util.ComponentUtil;
@@ -23,13 +24,12 @@ package hungryHero.components.processes
 	import hungryHero.components.behaviours.IPowerupBehaviour;
 	import hungryHero.pools.Pool;
 
-	public class ItemsProcess extends ComponentContainer implements ISteppableComponent
+	public class ItemsProcess extends ComponentContainer implements ISteppableComponent, IInitOnRunComponent
 	{
-		private var _initialised			:Boolean = false;
 		private var _items					:Vector.<AbstractSkin2D>;
 		private var _powerups				:Vector.<AbstractSkin2D>;
 		private var _allItems				:Vector.<AbstractSkin2D>;
-		private var _activePowerups			:Vector.<IPowerupBehaviour>;
+		private var _activePowerups			:Dictionary;
 		private var _powerupsTable			:Dictionary;
 		
 		public var globals					:GlobalsProcess;
@@ -76,7 +76,7 @@ package hungryHero.components.processes
 			_powerups = new Vector.<AbstractSkin2D>();
 			_allItems = new Vector.<AbstractSkin2D>();
 			_powerupsTable = new Dictionary();
-			_activePowerups = new Vector.<IPowerupBehaviour>();
+			_activePowerups = new Dictionary();
 			
 			// Initialize items-to-animate vector.
 			_itemsToAnimate = new Vector.<AbstractSkin2D>();
@@ -90,9 +90,48 @@ package hungryHero.components.processes
 			addChildReference(IMoveBehaviour, "defaultMoveBehaviour");
 		}
 		
-		override protected function removedFromScene():void
+		// IInitOnRunComponent
+		public function init():void
 		{
+			createItemsPool();
+			createPowerupsPool();
 			
+			// Reset item pattern styling.
+			_pattern = 1;
+			_patternPosY = worldBoundsRect.top;
+			_patternStep = 15;
+			_patternDirection = 1;
+			_patternGap = 20;
+			_patternGapCount = 0;
+			_patternChange = 100;
+			_patternLength = 50;
+			_patternOnce = true;
+			
+			if (_defaultMoveBehaviour && !moveBehaviour) {
+				moveBehaviour = defaultMoveBehaviour;
+			}
+		}
+		
+		// ISteppableComponent
+		public function step( dt:Number ):void
+		{
+			if ( !globals || globals.paused ) return;
+			
+			// Create food items.
+			setItemsPattern();
+			createItemsPattern();
+			
+			// Store the hero's current x and y positions (needed for animations below).
+			if (_hitTestSkin) {
+				_hitTestX = _hitTestSkin.x;
+				_hitTestY = _hitTestSkin.y;
+			}
+			
+			// Animate elements.
+			updateItems();
+			updatePowerups();
+//			animateEatParticles();
+//			animateWindParticles();
 		}
 		
 		public function set worldBounds( value:WorldBounds2D ):void
@@ -172,78 +211,24 @@ package hungryHero.components.processes
 		
 		// -------------------------------------------------------------------------------------
 		
-
-		
-		public function step( dt:Number ):void
-		{
-			if ( !globals || globals.paused ) return;
-			
-//			if (!renderer || !renderer.viewport) return;
-			
-			if (!_initialised) {
-				initialise();
-			}
-			
-			// Create food items.
-			setItemsPattern();
-			createItemsPattern();
-						
-			// Store the hero's current x and y positions (needed for animations below).
-			if (_hitTestSkin) {
-				_hitTestX = _hitTestSkin.x;// + _hitTestSkin.width/2;//hero.x;
-				_hitTestY = _hitTestSkin.y;// + _hitTestSkin.height/2;//hero.y;
-			}
-			
-			// Animate elements.
-			updateItems();
-			updatePowerups();
-//			animateEatParticles();
-//			animateWindParticles();
-			
-			// Set the background's speed based on hero's speed.
-//			bg.speed = playerSpeed * elapsed;
-		}
-		
-		private function initialise():void
-		{
-			createItemsPool();
-			createPowerupsPool();
-			
-			// Reset item pattern styling.
-			_pattern = 1;
-			_patternPosY = worldBoundsRect.top;
-			_patternStep = 15;
-			_patternDirection = 1;
-			_patternGap = 20;
-			_patternGapCount = 0;
-			_patternChange = 100;
-			_patternLength = 50;
-			_patternOnce = true;
-			
-			_initialised = true;
-			
-			if (!moveBehaviour) {
-				moveBehaviour = defaultMoveBehaviour;
-			}
-			
-			//scene.children.addItem(_moveItemBehaviour);
-		}
-		
 		private function createItemsPool():void
 		{
+			_items = new Vector.<AbstractSkin2D>();
+			
 			if (!_itemsContainer) {
 				_itemsContainer = parentComponent;
 			}
 			
+			// Add Skins from itemsContainer to items list
 			for ( var i:uint = 0; i < _itemsContainer.children.length; i ++ ) 
 			{
 				var child:Component = _itemsContainer.children[i];
-				//if ( entityIsItem( child ) ) {
 				if ( child is AbstractSkin2D ) {	
 					_items.push( child );
 				}
 			}
 			
+			// Remove Skins from scene
 			for ( i = 0; i < _items.length; i ++ ) {
 				child = _items[i];
 				child.parentComponent.children.removeItem(child);
@@ -251,15 +236,18 @@ package hungryHero.components.processes
 			
 			_itemsPool = new Pool(itemCreate, itemClean);
 			
-			_allItems = _items;
+			_allItems = _items;//.concat(_powerups);
 		}
 		
 		private function createPowerupsPool():void
 		{
+			_powerups = new Vector.<AbstractSkin2D>();
+			
 			if (!_powerupsContainer) {
 				_powerupsContainer = parentComponent;
 			}
 			
+			// Add Skins from powerupsContainer to powerups list
 			for ( var i:uint = 0; i < _powerupsContainer.children.length; i ++ ) 
 			{
 				var child:Component = _powerupsContainer.children[i];
@@ -270,19 +258,21 @@ package hungryHero.components.processes
 					var behaviour:IPowerupBehaviour = ComponentUtil.getChildOfType(entity, IPowerupBehaviour);
 					if ( skin && behaviour ) {	
 						_powerups.push( skin );
+						// Presumes texturesPrefix is unique
 						_powerupsTable[skin.texturesPrefix] = behaviour;
 					}
 				}
 			}
 			
+			// Remove Skins & Behaviours from scene
 			for ( i = 0; i < _powerups.length; i ++ ) {
-				child = _powerups[i];
-				child.parentComponent.children.removeItem(child);
+				skin = _powerups[i];
+				//behaviour = _powerupsTable[skin.texturesPrefix];
+				skin.parentComponent.children.removeItem(skin);
+				//behaviour.parentComponent.children.removeItem(behaviour);
 			}
 			
 			_allItems = _items.concat(_powerups);
-			
-			//powerupsPool = new Pool(itemCreate, itemClean);
 		}
 		
 		private function itemCreate():AbstractSkin2D
@@ -394,6 +384,8 @@ package hungryHero.components.processes
 		{
 			var itemToTrack:AbstractSkin2D;
 			var skin:AbstractSkin2D;
+			
+			if ( _items.length == 0 ) return;
 			// randItem is inputted by user so could be ImageSkin or MovieClipSkin
 			var randItem:AbstractSkin2D = _items[Math.round(Math.random() * (_items.length-1))];
 			
@@ -496,7 +488,8 @@ package hungryHero.components.processes
 				
 				if (itemToTrack != null)
 				{					
-					// If it's a powerup, use the defaultMoveBehaviour
+					// If the item is a powerup, use the defaultMoveBehaviour (powerups aren't affected by custom move
+					// behaviours e.g. MagnetBehaviour)
 					if ( _powerupsTable[itemToTrack.texturesPrefix] && defaultMoveBehaviour ) {
 						defaultMoveBehaviour.transform = ITransform2D(itemToTrack);
 						defaultMoveBehaviour.execute();
@@ -506,8 +499,6 @@ package hungryHero.components.processes
 					}
 					
 					// If the item passes outside the screen on the left, remove it (check-in).
-					
-					// If item
 					if (itemToTrack.x < -80 || globals.gameState == GlobalsProcess.GAME_STATE_OVER)
 					{
 						disposeItemTemporarily(i, itemToTrack);
@@ -528,9 +519,7 @@ package hungryHero.components.processes
 									moveBehaviour = IMoveBehaviour(behaviour);
 									moveBehaviour.init();
 								} else {
-									_activePowerups.push(behaviour);
-									behaviour.init();
-									behaviour.addEventListener(Event.COMPLETE, powerupCompleteHandler);
+									addActivePowerup(behaviour);
 								}
 								
 								if ( behaviour.collectSound ) {
@@ -585,10 +574,26 @@ package hungryHero.components.processes
 			}
 		}
 		
+		private function addActivePowerup(behaviour:IPowerupBehaviour):void
+		{
+			if ( _activePowerups[behaviour]) {
+				removeActivePowerup(_activePowerups[behaviour]);
+			}
+			_activePowerups[behaviour] = behaviour;
+			
+			behaviour.init();
+			behaviour.addEventListener(Event.COMPLETE, powerupCompleteHandler);
+		}
+		private function removeActivePowerup(behaviour:IPowerupBehaviour):void
+		{
+			behaviour.removeEventListener(Event.COMPLETE, powerupCompleteHandler);
+			
+			delete _activePowerups[behaviour];			
+		}
+		
 		private function updatePowerups():void
 		{
-			for ( var i:uint = 0; i < _activePowerups.length; i ++ ) {
-				var powerup:IPowerupBehaviour = _activePowerups[i];
+			for each( var powerup:IPowerupBehaviour in _activePowerups ) {
 				powerup.execute();
 			}
 		}
@@ -596,10 +601,10 @@ package hungryHero.components.processes
 		private function powerupCompleteHandler(event:Event):void
 		{
 			var behaviour:IPowerupBehaviour = IPowerupBehaviour(event.target);
-			behaviour.removeEventListener(Event.COMPLETE, powerupCompleteHandler);
+
+			removeActivePowerup(behaviour);
 			
-			var index:int = _activePowerups.indexOf(behaviour);
-			_activePowerups.splice(index, 1);
+			trace("activePowerups "+_activePowerups);
 		}
 		
 		private function moveBehaviourCompleterHandler( event:Event ):void
