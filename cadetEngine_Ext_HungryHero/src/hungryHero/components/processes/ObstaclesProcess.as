@@ -37,7 +37,6 @@ package hungryHero.components.processes
 			
 		private var _obstaclesPool				:Pool; 				// Obstacles pool with a maximum cap for reuse of items.
 		private var _obstacleGapCount			:Number = 0; 		// Obstacle count - to track the frequency of obstacles.
-//		private var _hitObstacle				:Number = 0;		// The power of obstacle after it is hit.
 		private var _obstaclesToAnimate			:Vector.<Entity>;	// Obstacles to animate.
 		private var _obstaclesToAnimateLength	:uint = 0;			// Obstacles to animate - array length.
 		
@@ -77,16 +76,30 @@ package hungryHero.components.processes
 		{
 			if (!globals || globals.paused) return;
 			
-			// Create obstacles.
-			initObstacle();
-			
-			// Store the hero's current x and y positions (needed for animations below).
-			if (_hitTestSkin) {
-				_hitTestX = _hitTestSkin.x;
-				_hitTestY = _hitTestSkin.y;
+			if ( globals.gameState == GlobalsProcess.GAME_STATE_FLYING ) 
+			{
+				// Create obstacles.
+				initObstacle();
+				
+				// Store the hero's current x and y positions (needed for animations below).
+				if (_hitTestSkin) {
+					_hitTestX = _hitTestSkin.x;
+					_hitTestY = _hitTestSkin.y;
+				}
+				
+				animateObstacles();
 			}
-			
-			animateObstacles();
+			else if ( globals.gameState == GlobalsProcess.GAME_STATE_OVER ) 
+			{
+				for(var j:uint = 0; j < _obstaclesToAnimateLength; j++)
+				{
+					if (_obstaclesToAnimate[j] != null)
+					{
+						// Dispose the obstacle temporarily.
+						disposeObstacleTemporarily(j, _obstaclesToAnimate[j]);
+					}
+				}
+			}			
 		}
 		
 		public function set worldBounds( value:WorldBounds2D ):void
@@ -211,7 +224,9 @@ package hungryHero.components.processes
 		
 		private function obstacleClean(obstacle:Entity):void
 		{
-			
+			var transform2D:Transform2D = ComponentUtil.getChildOfType(obstacle, Transform2D);
+			//transform2D.x = stage.stageWidth + obstacle.width * 2;
+			transform2D.x = worldBoundsRect.width * 2;
 		}
 		
 		private function checkOutItem(distance:Number):Entity
@@ -331,7 +346,7 @@ package hungryHero.components.processes
 			var heroRect:Rectangle;
 			var obstacleRect:Rectangle;
 			
-			for (var i:uint = 0; i < _obstaclesToAnimateLength ; i ++)
+			for (var i:uint = 0; i < _obstaclesToAnimateLength; i ++)
 			{
 				var obstacleToTrack:Entity = _obstaclesToAnimate[i];
 				var behaviour:ObstacleBehaviour = ComponentUtil.getChildOfType(obstacleToTrack, ObstacleBehaviour); 
@@ -358,6 +373,7 @@ package hungryHero.components.processes
 				// If the obstacle passes beyond the screen, remove it.
 				if (behaviour.transform.x < -behaviour.defaultSkin.width || globals.gameState == GlobalsProcess.GAME_STATE_OVER)
 				{
+					behaviour.lookOut = false;
 					disposeObstacleTemporarily(i, obstacleToTrack);
 				}
 				
@@ -405,21 +421,7 @@ package hungryHero.components.processes
 					
 						// Update lives.
 						globals.currentLives--;
-						
-					/*	if (lives <= 0)
-						{
-							lives = 0;
-							endGame();
-						}
-						
-						hud.lives = lives;	*/
 					}
-				}
-				
-				// If the game has ended, remove the obstacle.
-				if (globals.gameState == GlobalsProcess.GAME_STATE_OVER)
-				{
-					disposeObstacleTemporarily(i, obstacleToTrack);
 				}
 			}
 		}		

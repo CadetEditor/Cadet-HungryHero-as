@@ -60,26 +60,34 @@ package model
 		[Embed(source='../../bin-debug/files/assets/hungryHero/sounds/hurt.mp3')]
 		private var HurtSoundClass:Class;
 		
-		private var allSprites:TextureComponent;
-		private var allSpritesAtlas:TextureAtlasComponent;
+		private var allSprites			:TextureComponent;
+		private var allSpritesAtlas		:TextureAtlasComponent;
 		
-		private var parallaxSpeed:int = -15;
+		private var parallaxSpeed		:int = -15;
 		
-		private var skySkin			:ImageSkin;
-		private var hillsSkin		:ImageSkin;
-		private var midgroundSkin	:ImageSkin;
-		private var foregroundSkin	:ImageSkin;
+		private var skySkin				:ImageSkin;
+		private var hillsSkin			:ImageSkin;
+		private var midgroundSkin		:ImageSkin;
+		private var foregroundSkin		:ImageSkin;
 		
-		private var heroSkin		:MovieClipSkin;
+		private var heroSkin			:MovieClipSkin;
+		private var heroTransform2D		:Transform2D;
 		
-		private var parent			:starling.display.DisplayObjectContainer;
+		private var parent				:starling.display.DisplayObjectContainer;
 		
-		private var eatSound		:SoundComponent;
-		private var mushroomSound	:SoundComponent;
-		private var coffeeSound		:SoundComponent;
-		private var musicSound		:SoundComponent;
-		private var hitSound		:SoundComponent;
-		private var hurtSound		:SoundComponent;
+		private var eatSound			:SoundComponent;
+		private var mushroomSound		:SoundComponent;
+		private var coffeeSound			:SoundComponent;
+		private var musicSound			:SoundComponent;
+		private var hitSound			:SoundComponent;
+		private var hurtSound			:SoundComponent;
+		
+		private var globals				:GlobalsProcess;
+		
+		private var heroStartX			:Number;
+		private var heroStartY			:Number;
+		
+		private var shakeBehaviour		:ShakeBehaviour;
 		
 		public function GameModel_Code()
 		{
@@ -101,6 +109,23 @@ package model
 			renderer.enableToExisting(parent);
 		}
 		
+		public function reset():void
+		{
+			globals.reset();
+			globals.paused = true;
+			
+			heroTransform2D.x = heroStartX;
+			heroTransform2D.y = heroStartY;
+			
+			shakeBehaviour.shake = 0;
+		}
+		
+		public function dispose():void
+		{
+			cadetScene.dispose();
+			parent.removeEventListener( Event.ENTER_FRAME, enterFrameHandler );	
+		}
+		
 		private function rendererInitialised(event:RendererEvent):void
 		{
 			// Add the main texture to the scene
@@ -118,7 +143,7 @@ package model
 			cadetScene.children.addItem(allSpritesAtlas);
 			
 			// Add the Global variables
-			var globals:GlobalsProcess = new GlobalsProcess();
+			globals = new GlobalsProcess();
 			globals.paused = true;
 			cadetScene.children.addItem(globals);
 			
@@ -131,7 +156,7 @@ package model
 			worldBounds.bottom 	= 768 - 250;
 			
 			// Add ShakeBehaviour
-			var shakeBehaviour:ShakeBehaviour = new ShakeBehaviour();
+			shakeBehaviour = new ShakeBehaviour();
 			cadetScene.children.addItem(shakeBehaviour);
 			shakeBehaviour.target = renderer;
 			
@@ -223,14 +248,17 @@ package model
 		
 		private function addHero():void
 		{
+			heroStartX = -200;
+			heroStartY = parent.stage.stageHeight/2;
+			
 			// Add Hero entity to the scene
 			var hero:Entity = new Entity();
 			cadetScene.children.addItem(hero);
 			// Add a 2D transform
-			var transform2D:Transform2D = new Transform2D();
-			transform2D.x = -200;
-			transform2D.y = parent.stage.stageHeight/2;
-			hero.children.addItem(transform2D);
+			heroTransform2D = new Transform2D();
+			heroTransform2D.x = heroStartX;
+			heroTransform2D.y = heroStartX;
+			hero.children.addItem(heroTransform2D);
 			// Add an animatable MovieClipSkin
 			heroSkin = new MovieClipSkin();
 			heroSkin.textureAtlas = allSpritesAtlas;

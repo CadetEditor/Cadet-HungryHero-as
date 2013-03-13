@@ -49,14 +49,10 @@ package hungryHero.components.behaviours
 		{
 			_showLookOut = value;
 			
-			if (warningSkin)
-			{
-				if (value)
-				{
+			if (warningSkin) {
+				if (_showLookOut) {
 					warningSkin.visible = true;
-				}
-				else
-				{
+				} else {
 					warningSkin.visible = false;
 				}
 			}

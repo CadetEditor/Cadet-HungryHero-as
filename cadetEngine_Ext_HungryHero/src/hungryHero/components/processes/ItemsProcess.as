@@ -117,21 +117,35 @@ package hungryHero.components.processes
 		{
 			if ( !globals || globals.paused ) return;
 			
-			// Create food items.
-			setItemsPattern();
-			createItemsPattern();
-			
-			// Store the hero's current x and y positions (needed for animations below).
-			if (_hitTestSkin) {
-				_hitTestX = _hitTestSkin.x;
-				_hitTestY = _hitTestSkin.y;
+			if ( globals.gameState == GlobalsProcess.GAME_STATE_FLYING ) 
+			{
+				// Create food items.
+				setItemsPattern();
+				createItemsPattern();
+				
+				// Store the hero's current x and y positions (needed for animations below).
+				if (_hitTestSkin) {
+					_hitTestX = _hitTestSkin.x;
+					_hitTestY = _hitTestSkin.y;
+				}
+				
+				// Animate elements.
+				updateItems();
+				updatePowerups();
+	//			animateEatParticles();
+	//			animateWindParticles();
 			}
-			
-			// Animate elements.
-			updateItems();
-			updatePowerups();
-//			animateEatParticles();
-//			animateWindParticles();
+			else if ( globals.gameState == GlobalsProcess.GAME_STATE_OVER ) 
+			{
+				for(var i:uint = 0; i < _itemsToAnimateLength; i++)
+				{
+					if (_itemsToAnimate[i] != null)
+					{
+						// Dispose the item temporarily.
+						disposeItemTemporarily(i, _itemsToAnimate[i]);
+					}
+				}
+			}
 		}
 		
 		public function set worldBounds( value:WorldBounds2D ):void

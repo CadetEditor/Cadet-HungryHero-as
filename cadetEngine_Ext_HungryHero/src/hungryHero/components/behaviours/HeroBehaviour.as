@@ -46,6 +46,8 @@ package hungryHero.components.behaviours
 		private var touchX					:Number = 0;
 		private var touchY					:Number = 0;
 		
+		private var startX					:Number = 200;
+		
 		public function HeroBehaviour()
 		{
 			
@@ -69,9 +71,7 @@ package hungryHero.components.behaviours
 			if (!worldBounds) return;
 			if (!globals || globals.paused) return;
 			if (!transform) return;
-			
-			var startX:Number = 200;//_renderer.viewport.stage.stageWidth * 0.2;
-			
+	
 			// Before game starts.
 			if ( globals.gameState == GlobalsProcess.GAME_STATE_IDLE )
 			{
@@ -81,7 +81,6 @@ package hungryHero.components.behaviours
 					transform.y -= (transform.y - touchY) * 0.1;
 					
 					globals.playerSpeed += (globals.playerMinSpeed - globals.playerSpeed) * 0.05;
-					//bg.speed = playerSpeed * elapsed;
 				} else {
 					globals.gameState = GlobalsProcess.GAME_STATE_FLYING;
 					state = HERO_STATE_FLYING;
@@ -138,6 +137,48 @@ package hungryHero.components.behaviours
 						shakeBehaviour.shake = globals.hitObstacle;
 					}
 				}
+			}
+			// Game over.
+			else if ( globals.gameState == GlobalsProcess.GAME_STATE_OVER )
+			{
+			
+/*				
+				for(var m:uint = 0; m < eatParticlesToAnimateLength; m++)
+				{
+					if (eatParticlesToAnimate[m] != null)
+					{
+						// Dispose the eat particle temporarily.
+						disposeEatParticleTemporarily(m, eatParticlesToAnimate[m]);
+					}
+				}
+			
+				for(var n:uint = 0; n < windParticlesToAnimateLength; n++)
+				{
+					if (windParticlesToAnimate[n] != null)
+					{
+						// Dispose the wind particle temporarily.
+						disposeWindParticleTemporarily(n, windParticlesToAnimate[n]);
+					}
+				}*/
+			
+				// Spin the hero.
+				transform.rotation -= deg2rad(30);
+				
+				// Make the hero fall.
+				
+				// If hero is still on screen, push him down and outside the screen. Also decrease his speed.
+				// Checked for +width below because width is > height. Just a safe value.
+				if (transform.y < _renderer.viewport.stage.stageHeight + skin.width)
+				{
+					globals.playerSpeed -= globals.playerSpeed * globals.elapsed;
+					transform.y += _renderer.viewport.stage.stageHeight * globals.elapsed; 
+				}
+				else
+				{
+					// Once he moves out, reset speed to 0.
+					globals.playerSpeed = 0;
+				}
+
 			}
 						
 		}

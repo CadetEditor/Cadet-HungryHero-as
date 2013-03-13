@@ -33,9 +33,6 @@ package ui
 		private var _lives:int;					// Lives left.
 		private var _distance:int;				// Distance travelled.
 		private var _foodScore:int;				// Food items score.
-		private var _speed:int;
-		
-		private var speedText:TextField;		// Speed TextField
 		
 		private var livesLabel:TextField;		// Lives icon.
 		private var livesText:TextField; 		// Lives TextField.	
@@ -63,16 +60,6 @@ package ui
 			fontScoreLabel = Fonts.getFont("ScoreLabel");
 			fontScoreValue = Fonts.getFont("ScoreValue");
 
-			// Speed
-			speedText = new TextField(150, 75, "5", fontScoreValue.fontName, fontScoreValue.fontSize, 0xffffff);
-			speedText.hAlign = HAlign.RIGHT;
-			speedText.vAlign = VAlign.TOP;
-			speedText.width = 100;
-			
-			speedText.x = 10;
-			speedText.y = 10;
-			this.addChild(speedText);			
-			
 			// Lives label
 			livesLabel = new TextField(150, 20, "L I V E S", fontScoreLabel.fontName, fontScoreLabel.fontSize, 0xffffff);
 			livesLabel.hAlign = HAlign.RIGHT;
@@ -165,19 +152,6 @@ package ui
 		{
 			_foodScore = value;
 			foodScoreText.text = _foodScore.toString();
-		}
-		
-		/**
-		 * Food items score. 
-		 * @return 
-		 * 
-		 */
-		public function get speed():int { return _speed; }
-		public function set speed(value:int):void
-			
-		{
-			_speed = value;
-			speedText.text = _speed.toString();
 		}
 		
 		/**

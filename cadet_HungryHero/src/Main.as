@@ -21,7 +21,7 @@ package
 
 	public class Main extends Sprite
 	{
-		private var viewManager		:ViewManager;
+		public static var viewManager		:ViewManager;
 		
 		/** Sound / Mute button. */
 		private var soundButton:SoundButton;
@@ -56,25 +56,6 @@ package
 			soundButton.y = int(soundButton.height * 0.5);
 			soundButton.addEventListener(Event.TRIGGERED, onSoundButtonClick);
 			this.addChild(soundButton);
-		}
-		
-		/**
-		 * On navigation from different screens. 
-		 * @param event
-		 * 
-		 */
-		private function onInGameNavigation(event:NavigationEvent):void	
-		{
-/*			switch (event.params.id)
-			{
-				case "mainMenu":
-					welcomeView.initialize();
-					break;
-				case "about":
-					welcomeView.initialize();
-					welcomeView.showAbout();
-					break;
-			}*/
 		}
 		
 		/**

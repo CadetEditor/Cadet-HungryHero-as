@@ -124,22 +124,23 @@ package ui
 			// Navigation buttons.
 			mainBtn = new Button(Assets.getAtlas().getTexture("gameOver_mainButton"));
 			mainBtn.y = (stage.stageHeight * 70)/100;
-			mainBtn.addEventListener(Event.TRIGGERED, onMainClick);
 			this.addChild(mainBtn);
 			
 			playAgainBtn = new Button(Assets.getAtlas().getTexture("gameOver_playAgainButton"));
 			playAgainBtn.y = mainBtn.y + mainBtn.height * 0.5 - playAgainBtn.height * 0.5;
-			playAgainBtn.addEventListener(Event.TRIGGERED, onPlayAgainClick);
 			this.addChild(playAgainBtn);
 			
 			aboutBtn = new Button(Assets.getAtlas().getTexture("gameOver_aboutButton"));
 			aboutBtn.y = playAgainBtn.y + playAgainBtn.height * 0.5 - aboutBtn.height * 0.5;
-			aboutBtn.addEventListener(Event.TRIGGERED, onAboutClick);
 			this.addChild(aboutBtn);
 			
 			mainBtn.x = stage.stageWidth * 0.5 - (mainBtn.width + playAgainBtn.width + aboutBtn.width + 30) * 0.5;
 			playAgainBtn.x = mainBtn.bounds.right + 10;
 			aboutBtn.x = playAgainBtn.bounds.right + 10;
+			// Events
+			mainBtn.addEventListener(Event.TRIGGERED, onMainClick);
+			playAgainBtn.addEventListener(Event.TRIGGERED, onPlayAgainClick);
+			aboutBtn.addEventListener(Event.TRIGGERED, onAboutClick);
 		}
 		
 		/**

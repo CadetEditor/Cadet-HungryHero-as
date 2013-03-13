@@ -138,7 +138,7 @@ package controller
 			
 			_view.initialize();
 		}
-		private function showAboutScreen():void
+		public function showAboutScreen():void
 		{
 			screenMode = ABOUT_SCREEN;
 			_view.showAbout();

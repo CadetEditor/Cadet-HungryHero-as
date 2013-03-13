@@ -1,5 +1,6 @@
 package controller
 {
+	import flash.events.Event;
 	import flash.media.SoundMixer;
 	
 	import cadet.util.ComponentUtil;
@@ -18,6 +19,7 @@ package controller
 	import starling.events.Event;
 	
 	import view.GameView;
+	import view.WelcomeView;
 
 	public class GameViewController implements IController
 	{
@@ -39,7 +41,6 @@ package controller
 			_view	= GameView(view);
 			
 			gameModel = new GameModel_Code();
-			gameModel.init(_view.gameWindow);
 			
 			enable();
 		}
@@ -56,37 +57,40 @@ package controller
 		
 		public function enable():void
 		{
+			gameModel.init(_view.gameWindow);
+			
 			_view.visible = true;
 			
 			_view.initialize();
 			
-			_view.pauseButton.addEventListener(Event.TRIGGERED, onPauseButtonClick);
-			_view.startButton.addEventListener(Event.TRIGGERED, onStartButtonClick);
-			_view.gameOverContainer.addEventListener(NavigationEvent.CHANGE_SCREEN, playAgain);
-			_view.addEventListener(Event.ENTER_FRAME, enterFrameHandler);
+			_view.pauseButton.addEventListener(starling.events.Event.TRIGGERED, onPauseButtonClick);
+			_view.startButton.addEventListener(starling.events.Event.TRIGGERED, onStartButtonClick);
+			_view.gameOverContainer.addEventListener(NavigationEvent.CHANGE_SCREEN, onInGameNavigation);
+			_view.addEventListener(starling.events.Event.ENTER_FRAME, enterFrameHandler);
 		}
 		
 		public function disable():void
 		{
+			gameModel.dispose();
+			
 			SoundMixer.stopAll();
 			
 			_view.visible = false;
 			
 			_view.disposeTemporarily();
 			
-			_view.pauseButton.removeEventListener(Event.TRIGGERED, onPauseButtonClick);
-			_view.startButton.removeEventListener(Event.TRIGGERED, onStartButtonClick);
-			_view.gameOverContainer.removeEventListener(NavigationEvent.CHANGE_SCREEN, playAgain);
-			_view.removeEventListener(Event.ENTER_FRAME, enterFrameHandler);
+			_view.pauseButton.removeEventListener(starling.events.Event.TRIGGERED, onPauseButtonClick);
+			_view.startButton.removeEventListener(starling.events.Event.TRIGGERED, onStartButtonClick);
+			_view.gameOverContainer.removeEventListener(NavigationEvent.CHANGE_SCREEN, onInGameNavigation);
+			_view.removeEventListener(starling.events.Event.ENTER_FRAME, enterFrameHandler);
 		}
 		
-		private function enterFrameHandler( event:Event ):void
+		private function enterFrameHandler( event:starling.events.Event ):void
 		{
 			if (!globals) return;
 			_view.hud.distance = Math.round(globals.scoreDistance);
 			_view.hud.foodScore = globals.scoreItems;
 			_view.hud.lives = globals.currentLives;
-			_view.hud.speed = globals.playerSpeed;
 		}
 		
 		/**
@@ -94,7 +98,7 @@ package controller
 		 * @param event
 		 * 
 		 */
-		private function onPauseButtonClick(event:Event):void
+		private function onPauseButtonClick(event:starling.events.Event):void
 		{
 			event.stopImmediatePropagation();
 			
@@ -102,17 +106,23 @@ package controller
 		}
 		
 		/**
-		 * Play again, when clicked on play again button in Game Over screen. 
+		 * On navigation from different screens. 
+		 * @param event
 		 * 
 		 */
-		private function playAgain(event:NavigationEvent):void
+		private function onInGameNavigation(event:NavigationEvent):void	
 		{
-			if (event.params.id == "playAgain") 
-			{
+			if (event.params.id == "playAgain") {
 				tween_gameOverContainer = new Tween(_view.gameOverContainer, 1);
 				tween_gameOverContainer.fadeTo(0);
 				tween_gameOverContainer.onComplete = gameOverFadedOut;
 				Starling.juggler.add(tween_gameOverContainer);
+			} else if ( event.params.id == "mainMenu" ) {
+				Main.viewManager.changeView( WelcomeView );
+			} else if ( event.params.id == "about" ) {
+				Main.viewManager.changeView( WelcomeView );
+				var wvController:WelcomeViewController = WelcomeViewController(Main.viewManager.currentController);
+				wvController.showAboutScreen();
 			}
 		}
 		
@@ -122,6 +132,8 @@ package controller
 		 */
 		private function gameOverFadedOut():void
 		{
+			gameModel.reset();
+			
 			_view.gameOverContainer.visible = false;
 			_view.initialize();
 		}
@@ -131,7 +143,7 @@ package controller
 		 * @param event
 		 * 
 		 */
-		private function onStartButtonClick(event:Event):void
+		private function onStartButtonClick(event:starling.events.Event):void
 		{
 			// Play coffee sound for button click.
 			if (!Sounds.muted) Sounds.sndCoffee.play();
@@ -144,7 +156,19 @@ package controller
 			
 			// Launch hero.			
 			globals = ComponentUtil.getChildOfType( gameModel.cadetScene, GlobalsProcess );
+			globals.addEventListener( GlobalsProcess.GAME_STATE_ENDED, gameEndedHandler );
 			globals.paused = false;
+		}
+		
+		private function gameEndedHandler(event:flash.events.Event):void
+		{
+			trace("GAME VIEW ENDED");
+			_view.setChildIndex(_view.gameOverContainer, _view.numChildren-1);
+			_view.gameOverContainer.initialize(globals.scoreItems, Math.round(globals.scoreDistance));
+			
+			tween_gameOverContainer = new Tween(_view.gameOverContainer, 1);
+			tween_gameOverContainer.fadeTo(1);
+			Starling.juggler.add(tween_gameOverContainer);
 		}
 	}
 }

@@ -1,5 +1,6 @@
 package hungryHero.components.processes
 {
+	import flash.events.Event;
 	import flash.utils.getTimer;
 	
 	import cadet.core.Component;
@@ -9,8 +10,8 @@ package hungryHero.components.processes
 	{
 		[Serializable][Inspectable(priority="51") ]
 		public var numLives:int = 5;
-		[Serializable][Inspectable(priority="52") ]
-		public var currentLives:int = numLives;
+		// priority 52
+		private var _currentLives:int = numLives;
 		
 		[Serializable][Inspectable(priority="53") ]
 		public var playerMinSpeed:Number = 650;
@@ -29,11 +30,12 @@ package hungryHero.components.processes
 		private var timePrevious:Number = 0;
 		private var timeCurrent:Number = 0;
 		
-		public static const GAME_STATE_IDLE:int = 0;
-		public static const GAME_STATE_FLYING:int = 1;
-		public static const GAME_STATE_OVER:int = 2;
+		public static const GAME_STATE_IDLE:String = "gameStateIdle";
+		public static const GAME_STATE_FLYING:String = "gameStateFlying";
+		public static const GAME_STATE_OVER:String = "gameStateOver";
+		public static const GAME_STATE_ENDED:String = "gameStateEnded";
 		
-		public var gameState				:int;
+		public var gameState				:String;
 		public var hitObstacle				:Number = 0;	// The power of obstacle after it is hit.
 		public var scoreDistance			:Number = 0;
 		public var scoreItems				:Number = 0;
@@ -43,23 +45,37 @@ package hungryHero.components.processes
 			gameState = GAME_STATE_IDLE;
 		}
 		
-		override protected function addedToScene():void
+		public function reset():void
 		{
-			
+			currentLives = numLives;
+			gameState = GAME_STATE_IDLE;
+			scoreItems = 0;
+			scoreDistance = 0;
+			hitObstacle = 0;
 		}
 		
 		public function step( dt:Number ):void
 		{
-			if ( paused ) return;
-			
 			calculateElapsed();
+			
+			if ( paused ) return;
 			
 			//trace("elapsed "+elapsed);
 			
-			// constantly slow playerSpeed down towards playerMinSpeed
-			playerSpeed -= (playerSpeed - playerMinSpeed) * 0.01;
-
-			scoreDistance += (playerSpeed * elapsed) * 0.1;
+			if ( gameState == GAME_STATE_FLYING )
+			{
+				// constantly slow playerSpeed down towards playerMinSpeed
+				playerSpeed -= (playerSpeed - playerMinSpeed) * 0.01;
+	
+				scoreDistance += (playerSpeed * elapsed) * 0.1;
+			}
+			else if ( gameState == GAME_STATE_OVER ) 
+			{	
+				if ( playerSpeed == 0 ) {
+					dispatchEvent( new Event( GAME_STATE_ENDED )) ;
+					gameState = GAME_STATE_ENDED;
+				}
+			}
 		}
 		
 		private function calculateElapsed():void
@@ -72,6 +88,20 @@ package hungryHero.components.processes
 			
 			// Calcualte the time it takes for a frame to pass, in milliseconds.
 			elapsed = (timeCurrent - timePrevious) * 0.001; 
+		}
+		
+		[Serializable][Inspectable(priority="52") ]
+		public function get currentLives():int
+		{
+			return _currentLives;
+		}
+		public function set currentLives( value:int ):void
+		{
+			_currentLives = value;
+			
+			if ( _currentLives == 0 ) {
+				gameState = GAME_STATE_OVER;
+			}
 		}
 	}
 }

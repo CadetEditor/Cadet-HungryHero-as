@@ -105,6 +105,10 @@ package managers
 		{
 			return _currentView;
 		}
+		public function get currentController():IController
+		{
+			return _currentController;
+		}
 			
 	}
 }
