@@ -33,6 +33,7 @@ package hungryHero.components.processes
 		private var _powerupsTable			:Dictionary;
 		
 		public var globals					:GlobalsProcess;
+		public var eatParticlesProcess		:EatParticlesProcess;
 		private var _worldBounds			:WorldBounds2D;
 		
 		public var worldBoundsRect			:Rectangle = new Rectangle(0, 0, 800, 600);
@@ -87,6 +88,7 @@ package hungryHero.components.processes
 		{
 			addSceneReference(WorldBounds2D, "worldBounds");
 			addSceneReference(GlobalsProcess, "globals");
+			addSceneReference(EatParticlesProcess, "eatParticlesProcess");
 			addChildReference(IMoveBehaviour, "defaultMoveBehaviour");
 		}
 		
@@ -132,8 +134,6 @@ package hungryHero.components.processes
 				// Animate elements.
 				updateItems();
 				updatePowerups();
-	//			animateEatParticles();
-	//			animateWindParticles();
 			}
 			else if ( globals.gameState == GlobalsProcess.GAME_STATE_OVER ) 
 			{
@@ -580,6 +580,11 @@ package hungryHero.components.processes
 							// Create an eat particle at the position of the food item that was eaten.
 							createEatParticle(itemToTrack);
 							*/
+							
+							if ( eatParticlesProcess ) {
+								eatParticlesProcess.createParticle(itemToTrack);
+							}
+							
 							// Dispose the food item.
 							disposeItemTemporarily(i, itemToTrack);
 						}

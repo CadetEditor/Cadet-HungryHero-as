@@ -12,6 +12,9 @@
     <classEntry path="hungryHero.components.processes.ObstaclesProcess"/>
     <classEntry path="hungryHero.components.behaviours.ObstacleBehaviour"/>
     <classEntry path="hungryHero.components.behaviours.HeroBehaviour"/>
+    <classEntry path="hungryHero.components.processes.WindParticlesProcess"/>
+    <classEntry path="hungryHero.components.processes.EatParticlesProcess"/>
+    <classEntry path="hungryHero.components.behaviours.ParticleBehaviour"/>
   </includeClasses>
   <includeResources/>
   <namespaceManifests/>

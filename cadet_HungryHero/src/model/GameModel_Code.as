@@ -25,9 +25,11 @@ package model
 	import hungryHero.components.behaviours.ShakeBehaviour;
 	import hungryHero.components.behaviours.SpeedUpBehaviour;
 	import hungryHero.components.processes.BackgroundsProcess;
+	import hungryHero.components.processes.EatParticlesProcess;
 	import hungryHero.components.processes.GlobalsProcess;
 	import hungryHero.components.processes.ItemsProcess;
 	import hungryHero.components.processes.ObstaclesProcess;
+	import hungryHero.components.processes.WindParticlesProcess;
 	
 	import starling.display.DisplayObjectContainer;
 	import starling.events.Event;
@@ -165,6 +167,7 @@ package model
 			addHero();
 			addItems();
 			addObstacles();
+			addParticles();
 			
 			parent.addEventListener( Event.ENTER_FRAME, enterFrameHandler );	
 		}
@@ -397,7 +400,38 @@ package model
 			obstaclesProcess.hitTestSkin = heroSkin;
 			obstaclesProcess.hitSound = hitSound;
 			obstaclesProcess.hurtSound = hurtSound;
-		}		
+		}
+		
+		private function addParticles():void
+		{
+			var particleSkin:ImageSkin;
+			var particlesEntity:Entity;
+			
+			// Add the particles Entity
+			particlesEntity = new Entity();
+			cadetScene.children.addItem(particlesEntity);
+			
+			particleSkin = new ImageSkin();
+			particlesEntity.children.addItem(particleSkin);
+			particleSkin.textureAtlas = allSpritesAtlas;
+			particleSkin.texturesPrefix = "particleEat";
+			
+			var eatParticlesProcess:EatParticlesProcess = new EatParticlesProcess();
+			cadetScene.children.addItem(eatParticlesProcess);
+			eatParticlesProcess.particlesContainer = particlesEntity;
+			
+			particlesEntity = new Entity();
+			cadetScene.children.addItem(particlesEntity);
+			
+			particleSkin = new ImageSkin();
+			particlesEntity.children.addItem(particleSkin);
+			particleSkin.textureAtlas = allSpritesAtlas;
+			particleSkin.texturesPrefix = "particleWindForce";
+			
+			var windParticlesProcess:WindParticlesProcess = new WindParticlesProcess();
+			cadetScene.children.addItem(windParticlesProcess);
+			windParticlesProcess.particlesContainer = particlesEntity;
+		}
 		
 		// ParallaxBehaviours need to be added after their Skin sibling is validated (before they make a copy of it)
 		private function textureValidatedHandler( event:SkinEvent ):void
