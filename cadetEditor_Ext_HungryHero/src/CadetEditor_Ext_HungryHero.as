@@ -16,9 +16,11 @@ package
 	import cadet.entities.ComponentFactory;
 	
 	import cadet2D.components.core.Entity;
+	import cadet2D.resources.ExternalXMLResourceParser;
 	
 	import flox.app.FloxApp;
 	import flox.app.managers.ResourceManager;
+	import flox.app.resources.ExternalResourceParserFactory;
 	
 	import hungryHero.components.behaviours.HeroBehaviour;
 	import hungryHero.components.behaviours.MagnetBehaviour;
@@ -28,15 +30,19 @@ package
 	import hungryHero.components.behaviours.ShakeBehaviour;
 	import hungryHero.components.behaviours.SpeedUpBehaviour;
 	import hungryHero.components.processes.BackgroundsProcess;
+	import hungryHero.components.processes.EatParticlesProcess;
 	import hungryHero.components.processes.GlobalsProcess;
 	import hungryHero.components.processes.ItemsProcess;
 	import hungryHero.components.processes.ObstaclesProcess;
+	import hungryHero.components.processes.WindParticlesProcess;
 	
 	public class CadetEditor_Ext_HungryHero extends Sprite
 	{
 		public function CadetEditor_Ext_HungryHero()
 		{
 			var resourceManager:ResourceManager = FloxApp.resourceManager;
+			
+			resourceManager.addResource( new ExternalResourceParserFactory( ExternalXMLResourceParser, "External XML Resource Parser", ["pex"] ) );
 			
 			// Behaviours
 			resourceManager.addResource( new ComponentFactory( HeroBehaviour, "Hero Behaviour", "Behaviours", CadetEngineIcons.Behaviour, Entity, 1 ) );
@@ -51,6 +57,8 @@ package
 			resourceManager.addResource( new ComponentFactory( GlobalsProcess, "Globals Process", "Processes", CadetEngineIcons.Process ) );
 			resourceManager.addResource( new ComponentFactory( ItemsProcess, "Items Process", "Processes", CadetEngineIcons.Process ) );
 			resourceManager.addResource( new ComponentFactory( ObstaclesProcess, "Obstacles Process", "Processes", CadetEngineIcons.Process ) );
+			resourceManager.addResource( new ComponentFactory( EatParticlesProcess, "Eat Particle Process", "Processes", CadetEngineIcons.Process ) );
+			resourceManager.addResource( new ComponentFactory( WindParticlesProcess, "Wind Particle Process", "Processes", CadetEngineIcons.Process ) );
 		}
 	}
 }

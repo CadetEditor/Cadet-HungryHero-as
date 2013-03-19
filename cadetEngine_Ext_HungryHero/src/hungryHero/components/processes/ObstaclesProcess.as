@@ -5,7 +5,7 @@ package hungryHero.components.processes
 	import cadet.components.sounds.ISound;
 	import cadet.core.Component;
 	import cadet.core.IComponentContainer;
-	import cadet.core.IInitOnRunComponent;
+	import cadet.core.IInitialisableComponent;
 	import cadet.core.ISteppableComponent;
 	import cadet.events.InvalidationEvent;
 	import cadet.util.ComponentUtil;
@@ -21,7 +21,7 @@ package hungryHero.components.processes
 	import hungryHero.components.behaviours.ObstacleBehaviour;
 	import hungryHero.pools.Pool;
 	
-	public class ObstaclesProcess extends Component implements ISteppableComponent, IInitOnRunComponent
+	public class ObstaclesProcess extends Component implements ISteppableComponent, IInitialisableComponent
 	{
 		private var _obstacles					:Vector.<ObstacleBehaviour>;
 		
@@ -65,7 +65,7 @@ package hungryHero.components.processes
 			addSceneReference(GlobalsProcess, "globals");
 		}
 		
-		// IInitOnRunComponent
+		// IInitialisableComponent
 		public function init():void
 		{
 			createObstaclesPool();

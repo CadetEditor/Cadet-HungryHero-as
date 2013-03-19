@@ -1,13 +1,16 @@
 package hungryHero.components.processes
 {
+	import flash.geom.Rectangle;
 	import flash.utils.Dictionary;
 	
 	import cadet.core.Component;
 	import cadet.core.IComponentContainer;
-	import cadet.core.IInitOnRunComponent;
+	import cadet.core.IInitialisableComponent;
 	import cadet.core.ISteppableComponent;
+	import cadet.events.InvalidationEvent;
 	import cadet.util.deg2rad;
 	
+	import cadet2D.components.processes.WorldBounds2D;
 	import cadet2D.components.renderers.Renderer2D;
 	import cadet2D.components.skins.AbstractSkin2D;
 	import cadet2D.components.skins.ImageSkin;
@@ -17,7 +20,7 @@ package hungryHero.components.processes
 	import hungryHero.components.behaviours.ParticleBehaviour;
 	import hungryHero.pools.Pool;
 	
-	public class EatParticlesProcess extends Component implements ISteppableComponent, IInitOnRunComponent
+	public class EatParticlesProcess extends Component implements ISteppableComponent, IInitialisableComponent
 	{
 		public var globals						:GlobalsProcess;
 		public var renderer						:Renderer2D;
@@ -26,6 +29,9 @@ package hungryHero.components.processes
 		private var _particlesToAnimateLength	:uint;
 		
 		private var _particlesPool				:Pool;
+		
+		private var _worldBounds				:WorldBounds2D;
+		public var worldBoundsRect				:Rectangle = new Rectangle(0, 0, 800, 600);
 		
 		private var _particles					:Vector.<AbstractSkin2D>;
 		private var _particlesContainer			:IComponentContainer;
@@ -46,7 +52,7 @@ package hungryHero.components.processes
 			addSceneReference(GlobalsProcess, "globals");
 		}
 
-		// IInitOnRunComponent
+		// IInitialisableComponent
 		public function init():void
 		{
 			// Create Eat Particle pool and place it outside the stage area.
@@ -78,6 +84,26 @@ package hungryHero.components.processes
 					}
 				}
 			}
+		}
+		
+		public function set worldBounds( value:WorldBounds2D ):void
+		{
+			if ( _worldBounds ) {
+				_worldBounds.removeEventListener( InvalidationEvent.INVALIDATE, invalidateWorldBoundsHandler );
+			}
+			
+			_worldBounds = value;
+			
+			if ( _worldBounds ) {
+				worldBoundsRect = _worldBounds.getRect();
+				_worldBounds.addEventListener( InvalidationEvent.INVALIDATE, invalidateWorldBoundsHandler );
+			}
+		}
+		public function get worldBounds():WorldBounds2D { return _worldBounds; }
+		
+		private function invalidateWorldBoundsHandler( event:InvalidationEvent ):void
+		{
+			worldBoundsRect = _worldBounds.getRect();
 		}
 		
 		// -------------------------------------------------------------------------------------
@@ -133,8 +159,8 @@ package hungryHero.components.processes
 		{
 			var newSkin:MovieClipSkin = new MovieClipSkin();
 			_particlesContainer.children.addItem(newSkin);
-			
-			newSkin.x = renderer.viewport.stage.stageWidth + newSkin.width * 2;
+	
+			newSkin.x = worldBoundsRect.right;//renderer.viewport.stage.stageWidth + newSkin.width * 2;
 			newSkin.validateNow();
 			
 			var behaviour:ParticleBehaviour = new ParticleBehaviour();

@@ -2,11 +2,13 @@ package model
 {
 	import flash.utils.ByteArray;
 	
+	import cadet.components.processes.SoundProcess;
 	import cadet.components.sounds.SoundComponent;
 	import cadet.core.CadetScene;
 	import cadet.events.RendererEvent;
 	
 	import cadet2D.components.core.Entity;
+	import cadet2D.components.particles.PDParticleSystemComponent;
 	import cadet2D.components.processes.WorldBounds2D;
 	import cadet2D.components.renderers.Renderer2D;
 	import cadet2D.components.skins.AbstractSkin2D;
@@ -47,6 +49,11 @@ package model
 		private var SpriteSheetAsset:Class;
 		[Embed(source="../../bin-debug/files/assets/hungryHero/graphics/mySpriteSheet.xml", mimeType="application/octet-stream")]
 		private var SpriteSheetXML:Class;
+
+		[Embed(source="../../bin-debug/files/assets/hungryHero/particles/particleCoffee.pex", mimeType="application/octet-stream")]
+		private var ParticleCoffeeXML:Class;		
+		[Embed(source="../../bin-debug/files/assets/hungryHero/particles/particleMushroom.pex", mimeType="application/octet-stream")]
+		private var ParticleMushroomXML:Class;
 		
 		// SOUNDS
 		[Embed(source='../../bin-debug/files/assets/hungryHero/sounds/eat.mp3')]
@@ -90,6 +97,9 @@ package model
 		private var heroStartY			:Number;
 		
 		private var shakeBehaviour		:ShakeBehaviour;
+		
+		private var coffeeParticles		:PDParticleSystemComponent;
+		private var mushroomParticles	:PDParticleSystemComponent;
 		
 		public function GameModel_Code()
 		{
@@ -164,10 +174,10 @@ package model
 			
 			addSounds();
 			addBackgrounds();
+			addParticles();
 			addHero();
 			addItems();
 			addObstacles();
-			addParticles();
 			
 			parent.addEventListener( Event.ENTER_FRAME, enterFrameHandler );	
 		}
@@ -177,7 +187,7 @@ package model
 			musicSound = new SoundComponent();
 			musicSound.asset = new MusicSoundClass();
 			musicSound.loops = 999;
-			musicSound.play();
+			//musicSound.play();
 			
 			eatSound = new SoundComponent();
 			eatSound.asset = new EatSoundClass();
@@ -193,6 +203,10 @@ package model
 			
 			hurtSound = new SoundComponent();
 			hurtSound.asset = new HurtSoundClass();
+			
+			var soundProcess:SoundProcess = new SoundProcess();
+			cadetScene.children.addItem(soundProcess);
+			soundProcess.music = musicSound;
 		}
 		
 		private function addBackgrounds():void
@@ -302,6 +316,8 @@ package model
 			imageSkin.texturesPrefix = "item6";
 			var speedUpBehaviour:SpeedUpBehaviour = new SpeedUpBehaviour();
 			speedUpBehaviour.collectSound = coffeeSound;
+			speedUpBehaviour.particleEffect = coffeeParticles;
+			speedUpBehaviour.targetTransform = heroSkin;
 			powerup.children.addItem(speedUpBehaviour);
 			
 			// Add Mushroom powerup
@@ -313,8 +329,9 @@ package model
 			imageSkin.textureAtlas = allSpritesAtlas;
 			imageSkin.texturesPrefix = "item7";
 			var magnetBehaviour:MagnetBehaviour = new MagnetBehaviour();
-			magnetBehaviour.collectSound = mushroomSound;
 			powerup.children.addItem(magnetBehaviour);
+			magnetBehaviour.collectSound = mushroomSound;
+			magnetBehaviour.particleEffect = mushroomParticles;
 			magnetBehaviour.targetTransform = heroSkin;
 			
 			// Add ItemsProcess
@@ -407,30 +424,55 @@ package model
 			var particleSkin:ImageSkin;
 			var particlesEntity:Entity;
 			
-			// Add the particles Entity
+			// Add Eat particles Entity
 			particlesEntity = new Entity();
 			cadetScene.children.addItem(particlesEntity);
 			
+			// Add Eat particle Skin
 			particleSkin = new ImageSkin();
 			particlesEntity.children.addItem(particleSkin);
 			particleSkin.textureAtlas = allSpritesAtlas;
 			particleSkin.texturesPrefix = "particleEat";
 			
+			// Add EatParticlesProcess
 			var eatParticlesProcess:EatParticlesProcess = new EatParticlesProcess();
 			cadetScene.children.addItem(eatParticlesProcess);
 			eatParticlesProcess.particlesContainer = particlesEntity;
 			
+			// Add Wind particles Entity
 			particlesEntity = new Entity();
 			cadetScene.children.addItem(particlesEntity);
 			
+			// Add Wind particle Skin
 			particleSkin = new ImageSkin();
 			particlesEntity.children.addItem(particleSkin);
 			particleSkin.textureAtlas = allSpritesAtlas;
 			particleSkin.texturesPrefix = "particleWindForce";
 			
+			// Add WindParticlesProcess
 			var windParticlesProcess:WindParticlesProcess = new WindParticlesProcess();
 			cadetScene.children.addItem(windParticlesProcess);
 			windParticlesProcess.particlesContainer = particlesEntity;
+			
+			// Add ParticleCoffeeXML
+			var xmlFile:ByteArray = new ParticleCoffeeXML();
+			var xmlStr:String = xmlFile.readUTFBytes( xmlFile.length );
+			var xml:XML = new XML(xmlStr);
+			
+			// Add Coffee ParticleSystemComponent
+			coffeeParticles = new PDParticleSystemComponent(xml);
+//			coffeeParticles.targetSkin = heroSkin;
+			cadetScene.children.addItem(coffeeParticles);
+			
+			// Add ParticleMushroomXML
+			xmlFile = new ParticleMushroomXML();
+			xmlStr = xmlFile.readUTFBytes( xmlFile.length );
+			xml = new XML(xmlStr);
+			
+			// Add Mushroom ParticleSystemComponent
+			mushroomParticles = new PDParticleSystemComponent(xml);
+//			mushroomParticles.targetSkin = heroSkin;
+			cadetScene.children.addItem(mushroomParticles);
 		}
 		
 		// ParallaxBehaviours need to be added after their Skin sibling is validated (before they make a copy of it)

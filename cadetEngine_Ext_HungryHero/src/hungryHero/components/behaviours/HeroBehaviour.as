@@ -186,11 +186,11 @@ package hungryHero.components.behaviours
 		// This should be set FPS
 		public function setHeroAnimationSpeed(speed:int):void 
 		{
-			if ( skin is MovieClipSkin ) {
+/*			if ( skin is MovieClipSkin ) {
 				var mcSkin:MovieClipSkin = MovieClipSkin(skin);
 				if (speed == 0) mcSkin.fps = 20;
 				else mcSkin.fps = 60;
-			}
+			}*/
 		}
 		
 		private function rotateToMouse():void

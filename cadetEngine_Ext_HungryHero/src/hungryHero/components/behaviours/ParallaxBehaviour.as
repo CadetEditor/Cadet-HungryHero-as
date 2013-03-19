@@ -13,14 +13,14 @@
 package hungryHero.components.behaviours
 {
 	import cadet.core.Component;
-	import cadet.core.IInitOnRunComponent;
+	import cadet.core.IInitialisableComponent;
 	import cadet.core.ISteppableComponent;
 	
 	import cadet2D.components.skins.AbstractSkin2D;
 	
 	import hungryHero.components.processes.GlobalsProcess;
 
-	public class ParallaxBehaviour extends Component implements ISteppableComponent, IInitOnRunComponent
+	public class ParallaxBehaviour extends Component implements ISteppableComponent, IInitialisableComponent
 	{
 		public var globals			:GlobalsProcess;
 		public var skin				:AbstractSkin2D;
@@ -46,7 +46,7 @@ package hungryHero.components.behaviours
 			addSiblingReference( AbstractSkin2D, "skin" );
 		}
 		
-		// IInitOnRunComponent
+		// IInitialisableComponent
 		public function init():void
 		{
 			_skin1 = skin;

@@ -1,10 +1,14 @@
 package hungryHero.components.processes
 {
+	import flash.geom.Rectangle;
+	
 	import cadet.core.Component;
 	import cadet.core.IComponentContainer;
-	import cadet.core.IInitOnRunComponent;
+	import cadet.core.IInitialisableComponent;
 	import cadet.core.ISteppableComponent;
+	import cadet.events.InvalidationEvent;
 	
+	import cadet2D.components.processes.WorldBounds2D;
 	import cadet2D.components.renderers.Renderer2D;
 	import cadet2D.components.skins.AbstractSkin2D;
 	import cadet2D.components.skins.ImageSkin;
@@ -12,12 +16,15 @@ package hungryHero.components.processes
 	
 	import hungryHero.pools.Pool;
 	
-	public class WindParticlesProcess extends Component implements ISteppableComponent, IInitOnRunComponent
+	public class WindParticlesProcess extends Component implements ISteppableComponent, IInitialisableComponent
 	{
 		public var globals						:GlobalsProcess;
 		public var renderer						:Renderer2D;
 		
 //		private var _targetSkin					:AbstractSkin2D;
+		
+		private var _worldBounds				:WorldBounds2D;
+		public var worldBoundsRect				:Rectangle = new Rectangle(0, 0, 800, 600);
 		
 		private var _particles					:Vector.<AbstractSkin2D>;
 		private var _particlesContainer			:IComponentContainer;
@@ -51,7 +58,7 @@ package hungryHero.components.processes
 			addSceneReference(GlobalsProcess, "globals");
 		}
 		
-		// IInitOnRunComponent
+		// IInitialisableComponent
 		public function init():void
 		{
 			// Create Wind Particle pool and place it outside the stage area.
@@ -103,6 +110,26 @@ package hungryHero.components.processes
 					}
 				}
 			}
+		}
+		
+		public function set worldBounds( value:WorldBounds2D ):void
+		{
+			if ( _worldBounds ) {
+				_worldBounds.removeEventListener( InvalidationEvent.INVALIDATE, invalidateWorldBoundsHandler );
+			}
+			
+			_worldBounds = value;
+			
+			if ( _worldBounds ) {
+				worldBoundsRect = _worldBounds.getRect();
+				_worldBounds.addEventListener( InvalidationEvent.INVALIDATE, invalidateWorldBoundsHandler );
+			}
+		}
+		public function get worldBounds():WorldBounds2D { return _worldBounds; }
+		
+		private function invalidateWorldBoundsHandler( event:InvalidationEvent ):void
+		{
+			worldBoundsRect = _worldBounds.getRect();
 		}
 		
 		// -------------------------------------------------------------------------------------
@@ -160,7 +187,7 @@ package hungryHero.components.processes
 			var newSkin:MovieClipSkin = new MovieClipSkin();
 			_particlesContainer.children.addItem(newSkin);
 			
-			newSkin.x = renderer.viewport.stage.stageWidth + newSkin.width * 2;
+			newSkin.x = worldBoundsRect.right;//renderer.viewport.stage.stageWidth + newSkin.width * 2;
 			newSkin.validateNow();
 			
 			return newSkin;

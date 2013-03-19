@@ -3,6 +3,7 @@ package hungryHero.components.behaviours
 	import cadet.components.sounds.ISound;
 	import cadet.core.Component;
 	
+	import cadet2D.components.particles.PDParticleSystemComponent;
 	import cadet2D.components.transforms.ITransform2D;
 	
 	import hungryHero.components.processes.GlobalsProcess;
@@ -15,6 +16,8 @@ package hungryHero.components.behaviours
 		
 		// SOUNDS
 		private var _collectSound			:ISound;
+		// PARTICLES
+		private var _particleEffect			:PDParticleSystemComponent;
 		
 		public function MoveBehaviour()
 		{
@@ -51,6 +54,17 @@ package hungryHero.components.behaviours
 			_collectSound = value;
 		}
 		public function get collectSound():ISound { return _collectSound; }
+		
+		// PARTICLES
+		[Serializable][Inspectable( editor="ComponentList", scope="scene", priority="56" )]
+		public function set particleEffect( value:PDParticleSystemComponent ):void
+		{
+			_particleEffect = value;
+		}
+		public function get particleEffect():PDParticleSystemComponent
+		{
+			return _particleEffect;
+		}
 		
 		// -------------------------------------------------------------------------------------
 		

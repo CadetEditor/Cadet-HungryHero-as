@@ -6,6 +6,7 @@ package hungryHero.components.behaviours
 	import cadet.core.Component;
 	import cadet.core.ISteppableComponent;
 	
+	import cadet2D.components.particles.PDParticleSystemComponent;
 	import cadet2D.components.transforms.ITransform2D;
 	
 	import hungryHero.components.processes.GlobalsProcess;
@@ -26,6 +27,8 @@ package hungryHero.components.behaviours
 		
 		// SOUNDS
 		private var _collectSound			:ISound;
+		// PARTICLES
+		private var _particleEffect			:PDParticleSystemComponent;
 		
 		public function MagnetBehaviour()
 		{
@@ -98,17 +101,41 @@ package hungryHero.components.behaviours
 		}
 		public function get collectSound():ISound { return _collectSound; }
 		
+		// PARTICLES
+		[Serializable][Inspectable( editor="ComponentList", scope="scene", priority="56" )]
+		public function set particleEffect( value:PDParticleSystemComponent ):void
+		{
+			_particleEffect = value;
+		}
+		public function get particleEffect():PDParticleSystemComponent
+		{
+			return _particleEffect;
+		}
+		
 		// -------------------------------------------------------------------------------------
 		
 		public function init():void
 		{
 			power = effectLength;
 			notifyComplete = false;
+			
+			if ( _collectSound ) {
+				_collectSound.play();
+			}
+			
+			if ( _particleEffect ) {
+				_particleEffect.start(_effectLength);
+			}
 		}
 		
 		public function execute():void
 		{
-			movePercentageDistanceToTarget(transform, pcDistance);
+			if ( _particleEffect && _targetTransform ) {
+				_particleEffect.emitterX = _targetTransform.x;
+				_particleEffect.emitterY = _targetTransform.y;
+			}
+			
+			movePercentageDistanceToTarget(_transform, _pcDistance);
 		}
 		
 		private function movePercentageDistanceToTarget(transform:ITransform2D, percentage:Number):void

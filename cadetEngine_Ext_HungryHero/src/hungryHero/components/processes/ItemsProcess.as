@@ -8,7 +8,7 @@ package hungryHero.components.processes
 	import cadet.core.Component;
 	import cadet.core.ComponentContainer;
 	import cadet.core.IComponentContainer;
-	import cadet.core.IInitOnRunComponent;
+	import cadet.core.IInitialisableComponent;
 	import cadet.core.ISteppableComponent;
 	import cadet.events.InvalidationEvent;
 	import cadet.util.ComponentUtil;
@@ -24,7 +24,7 @@ package hungryHero.components.processes
 	import hungryHero.components.behaviours.IPowerupBehaviour;
 	import hungryHero.pools.Pool;
 
-	public class ItemsProcess extends ComponentContainer implements ISteppableComponent, IInitOnRunComponent
+	public class ItemsProcess extends ComponentContainer implements ISteppableComponent, IInitialisableComponent
 	{
 		private var _items					:Vector.<AbstractSkin2D>;
 		private var _powerups				:Vector.<AbstractSkin2D>;
@@ -92,7 +92,7 @@ package hungryHero.components.processes
 			addChildReference(IMoveBehaviour, "defaultMoveBehaviour");
 		}
 		
-		// IInitOnRunComponent
+		// IInitialisableComponent
 		public function init():void
 		{
 			createItemsPool();
@@ -536,9 +536,9 @@ package hungryHero.components.processes
 									addActivePowerup(behaviour);
 								}
 								
-								if ( behaviour.collectSound ) {
-									behaviour.collectSound.play();
-								}
+//								if ( behaviour.collectSound ) {
+//									behaviour.collectSound.play();
+//								}
 							} else {
 								if ( _collectSound ) {
 									_collectSound.play();	
