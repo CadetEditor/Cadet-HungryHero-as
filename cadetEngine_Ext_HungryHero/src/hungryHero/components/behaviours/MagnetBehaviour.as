@@ -1,12 +1,14 @@
 package hungryHero.components.behaviours
 {
 	import flash.events.Event;
+	import flash.geom.Point;
 	
 	import cadet.components.sounds.ISound;
 	import cadet.core.Component;
 	import cadet.core.ISteppableComponent;
 	
 	import cadet2D.components.particles.PDParticleSystemComponent;
+	import cadet2D.components.renderers.Renderer2D;
 	import cadet2D.components.transforms.ITransform2D;
 	
 	import hungryHero.components.processes.GlobalsProcess;
@@ -14,6 +16,7 @@ package hungryHero.components.behaviours
 	public class MagnetBehaviour extends Component implements IMoveBehaviour, ISteppableComponent
 	{
 		public var globals					:GlobalsProcess;
+		public var renderer					:Renderer2D;
 		
 		private var _transform				:ITransform2D;
 		private var _targetTransform		:ITransform2D;
@@ -38,6 +41,7 @@ package hungryHero.components.behaviours
 		override protected function addedToScene():void
 		{
 			addSceneReference(GlobalsProcess, "globals");
+			addSceneReference(Renderer2D, "renderer");
 			addSiblingReference(ISound, "collectSound");
 		}
 		
@@ -130,7 +134,11 @@ package hungryHero.components.behaviours
 		
 		public function execute():void
 		{
-			if ( _particleEffect && _targetTransform ) {
+			if ( _particleEffect && _targetTransform ) {// && renderer && renderer.viewport ) {
+//				var point:Point = new Point(_targetTransform.x, _targetTransform.y);
+//				//point = renderer.viewport.localToGlobal(point);
+//				point.x -= renderer.viewportX;
+//				point.y -= renderer.viewportY;
 				_particleEffect.emitterX = _targetTransform.x;
 				_particleEffect.emitterY = _targetTransform.y;
 			}

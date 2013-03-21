@@ -18,9 +18,9 @@ package
 	import cadet2D.components.core.Entity;
 	import cadet2D.resources.ExternalXMLResourceParser;
 	
-	import flox.app.FloxApp;
-	import flox.app.managers.ResourceManager;
-	import flox.app.resources.ExternalResourceParserFactory;
+	import core.app.CoreApp;
+	import core.app.managers.ResourceManager;
+	import core.app.resources.ExternalResourceParserFactory;
 	
 	import hungryHero.components.behaviours.HeroBehaviour;
 	import hungryHero.components.behaviours.MagnetBehaviour;
@@ -40,7 +40,7 @@ package
 	{
 		public function CadetEditor_Ext_HungryHero()
 		{
-			var resourceManager:ResourceManager = FloxApp.resourceManager;
+			var resourceManager:ResourceManager = CoreApp.resourceManager;
 			
 			resourceManager.addResource( new ExternalResourceParserFactory( ExternalXMLResourceParser, "External XML Resource Parser", ["pex"] ) );
 			
