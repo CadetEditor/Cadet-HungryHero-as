@@ -1,5 +1,7 @@
 package model
 {
+	import flash.events.Event;
+	import flash.events.EventDispatcher;
 	import flash.utils.ByteArray;
 	
 	import cadet.components.processes.SoundProcess;
@@ -19,6 +21,8 @@ package model
 	import cadet2D.components.transforms.Transform2D;
 	import cadet2D.events.SkinEvent;
 	
+	import core.app.util.AsynchronousUtil;
+	
 	import hungryHero.components.behaviours.HeroBehaviour;
 	import hungryHero.components.behaviours.MagnetBehaviour;
 	import hungryHero.components.behaviours.MoveBehaviour;
@@ -37,10 +41,12 @@ package model
 	import starling.events.Event;
 
 	// This class constructs a CadetEngine 2D scene using the CadetEngine API
-	public class GameModel_Code
+	public class GameModel_Code extends EventDispatcher implements IGameModel
 	{
-		public var cadetScene	:CadetScene;
-		private var renderer	:Renderer2D;
+		private const LOADED			:String = "loaded";
+		
+		private var _cadetScene			:CadetScene;
+		private var renderer			:Renderer2D;
 		
 		// ASSETS
 		[Embed(source="../../bin-debug/files/assets/hungryHero/graphics/bgLayer1.jpg")]
@@ -103,6 +109,12 @@ package model
 		
 		public function GameModel_Code()
 		{
+			AsynchronousUtil.callLater(onStartUpHandler);
+		}
+		
+		private function onStartUpHandler():void
+		{
+			dispatchEvent( new flash.events.Event(LOADED) );
 		}
 		
 		public function init(parent:starling.display.DisplayObjectContainer):void
@@ -110,14 +122,14 @@ package model
 			this.parent = parent;
 			
 			// Create a CadetScene
-			cadetScene = new CadetScene();
+			_cadetScene = new CadetScene();
 			
 			// Add a 2D Renderer to the scene
 			renderer = new Renderer2D(true);
 			renderer.viewportWidth = parent.stage.stageWidth;
 			renderer.viewportHeight = parent.stage.stageHeight;
 			renderer.addEventListener(RendererEvent.INITIALISED, rendererInitialised);
-			cadetScene.children.addItem(renderer);
+			_cadetScene.children.addItem(renderer);
 			renderer.enableToExisting(parent);
 		}
 		
@@ -134,8 +146,8 @@ package model
 		
 		public function dispose():void
 		{
-			cadetScene.dispose();
-			parent.removeEventListener( Event.ENTER_FRAME, enterFrameHandler );	
+			_cadetScene.dispose();
+			parent.removeEventListener( starling.events.Event.ENTER_FRAME, enterFrameHandler );	
 		}
 		
 		private function rendererInitialised(event:RendererEvent):void
@@ -143,7 +155,7 @@ package model
 			// Add the main texture to the scene
 			allSprites = new TextureComponent();
 			allSprites.bitmapData = new SpriteSheetAsset().bitmapData;
-			cadetScene.children.addItem(allSprites);
+			_cadetScene.children.addItem(allSprites);
 			
 			var xmlFile:ByteArray = new SpriteSheetXML();
 			var xmlStr:String = xmlFile.readUTFBytes( xmlFile.length );
@@ -152,16 +164,16 @@ package model
 			allSpritesAtlas = new TextureAtlasComponent()
 			allSpritesAtlas.texture = allSprites;
 			allSpritesAtlas.xml = new XML( xmlStr );
-			cadetScene.children.addItem(allSpritesAtlas);
+			_cadetScene.children.addItem(allSpritesAtlas);
 			
 			// Add the Global variables
 			globals = new GlobalsProcess();
 			globals.paused = true;
-			cadetScene.children.addItem(globals);
+			_cadetScene.children.addItem(globals);
 			
 			// Define WorldBounds
 			var worldBounds:WorldBounds2D = new WorldBounds2D();
-			cadetScene.children.addItem(worldBounds);
+			_cadetScene.children.addItem(worldBounds);
 			worldBounds.top 	= 100;
 			worldBounds.left 	= 0;
 			worldBounds.right 	= 1024;
@@ -169,7 +181,7 @@ package model
 			
 			// Add ShakeBehaviour
 			shakeBehaviour = new ShakeBehaviour();
-			cadetScene.children.addItem(shakeBehaviour);
+			_cadetScene.children.addItem(shakeBehaviour);
 			shakeBehaviour.target = renderer;
 			
 			addSounds();
@@ -179,7 +191,7 @@ package model
 			addItems();
 			addObstacles();
 			
-			parent.addEventListener( Event.ENTER_FRAME, enterFrameHandler );	
+			parent.addEventListener( starling.events.Event.ENTER_FRAME, enterFrameHandler );	
 		}
 		
 		private function addSounds():void
@@ -205,7 +217,7 @@ package model
 			hurtSound.asset = new HurtSoundClass();
 			
 			var soundProcess:SoundProcess = new SoundProcess();
-			cadetScene.children.addItem(soundProcess);
+			_cadetScene.children.addItem(soundProcess);
 			soundProcess.music = musicSound;
 		}
 		
@@ -214,14 +226,14 @@ package model
 			// Add the sky texture to the scene
 			var skyTexture:TextureComponent = new TextureComponent();
 			skyTexture.bitmapData = new SkyAsset().bitmapData;
-			cadetScene.children.addItem(skyTexture);
+			_cadetScene.children.addItem(skyTexture);
 			
 			var backgroundsProcess:BackgroundsProcess = new BackgroundsProcess();
-			cadetScene.children.addItem(backgroundsProcess);
+			_cadetScene.children.addItem(backgroundsProcess);
 			
 			// Add the sky to the scene
 			var sky:Entity = new Entity();
-			cadetScene.children.addItem(sky);
+			_cadetScene.children.addItem(sky);
 			// Add an ImageSkin to the sky Entity
 			skySkin = new ImageSkin();
 			sky.children.addItem(skySkin);
@@ -230,7 +242,7 @@ package model
 
 			// Add the background hills to the scene
 			var hills:Entity = new Entity();
-			cadetScene.children.addItem(hills);
+			_cadetScene.children.addItem(hills);
 			// Add an ImageSkin to the hills Entity
 			hillsSkin = new ImageSkin();
 			hills.children.addItem(hillsSkin);
@@ -241,7 +253,7 @@ package model
 
 			// Add the midground to the scene
 			var midground:Entity = new Entity();
-			cadetScene.children.addItem(midground);
+			_cadetScene.children.addItem(midground);
 			// Add an ImageSkin to the midground Entity
 			midgroundSkin = new ImageSkin();
 			midground.children.addItem(midgroundSkin);	
@@ -252,7 +264,7 @@ package model
 
 			// Add the foreground to the scene
 			var foreground:Entity = new Entity();
-			cadetScene.children.addItem(foreground);
+			_cadetScene.children.addItem(foreground);
 			// Add an ImageSkin to the foreground Entity
 			foregroundSkin = new ImageSkin();
 			foreground.children.addItem(foregroundSkin);
@@ -270,7 +282,7 @@ package model
 			
 			// Add Hero entity to the scene
 			var hero:Entity = new Entity();
-			cadetScene.children.addItem(hero);
+			_cadetScene.children.addItem(hero);
 			// Add a 2D transform
 			heroTransform2D = new Transform2D();
 			heroTransform2D.x = heroStartX;
@@ -291,7 +303,7 @@ package model
 		{
 			// Add the Items Entity
 			var itemsEntity:Entity = new Entity();
-			cadetScene.children.addItem(itemsEntity);
+			_cadetScene.children.addItem(itemsEntity);
 			
 			for ( var i:uint = 0; i < 5; i ++ ) {
 				// Add an ImageSkin to the itemsEntity
@@ -304,7 +316,7 @@ package model
 			
 			// Add the Powerups Entity
 			var powerupsEntity:Entity = new Entity();
-			cadetScene.children.addItem(powerupsEntity);
+			_cadetScene.children.addItem(powerupsEntity);
 			
 			// Add Coffee powerup
 			var powerup:Entity = new Entity();
@@ -336,7 +348,7 @@ package model
 			
 			// Add ItemsProcess
 			var itemsProcess:ItemsProcess = new ItemsProcess();
-			cadetScene.children.addItem(itemsProcess);
+			_cadetScene.children.addItem(itemsProcess);
 			itemsProcess.collectSound = eatSound;
 			itemsProcess.itemsContainer = itemsEntity;
 			itemsProcess.powerupsContainer = powerupsEntity;
@@ -350,7 +362,7 @@ package model
 		private function addObstacles():void
 		{
 			var warningSkin:MovieClipSkin = new MovieClipSkin();
-			cadetScene.children.addItem(warningSkin);
+			_cadetScene.children.addItem(warningSkin);
 			warningSkin.textureAtlas = allSpritesAtlas;
 			warningSkin.texturesPrefix = "watchOut_";
 			warningSkin.loop = true;
@@ -358,7 +370,7 @@ package model
 			
 			// Add the Obstacles Entity
 			var obstaclesEntity:Entity = new Entity();
-			cadetScene.children.addItem(obstaclesEntity);
+			_cadetScene.children.addItem(obstaclesEntity);
 			
 			for ( var i:uint = 0; i < 3; i ++ ) {
 				var obstacle:Entity = new Entity();
@@ -412,7 +424,7 @@ package model
 			obstaclesEntity.children.addItem(obstacle);
 			
 			var obstaclesProcess:ObstaclesProcess = new ObstaclesProcess();
-			cadetScene.children.addItem(obstaclesProcess);
+			_cadetScene.children.addItem(obstaclesProcess);
 			obstaclesProcess.obstaclesContainer = obstaclesEntity;
 			obstaclesProcess.hitTestSkin = heroSkin;
 			obstaclesProcess.hitSound = hitSound;
@@ -426,7 +438,7 @@ package model
 			
 			// Add Eat particles Entity
 			particlesEntity = new Entity();
-			cadetScene.children.addItem(particlesEntity);
+			_cadetScene.children.addItem(particlesEntity);
 			
 			// Add Eat particle Skin
 			particleSkin = new ImageSkin();
@@ -436,12 +448,12 @@ package model
 			
 			// Add EatParticlesProcess
 			var eatParticlesProcess:EatParticlesProcess = new EatParticlesProcess();
-			cadetScene.children.addItem(eatParticlesProcess);
+			_cadetScene.children.addItem(eatParticlesProcess);
 			eatParticlesProcess.particlesContainer = particlesEntity;
 			
 			// Add Wind particles Entity
 			particlesEntity = new Entity();
-			cadetScene.children.addItem(particlesEntity);
+			_cadetScene.children.addItem(particlesEntity);
 			
 			// Add Wind particle Skin
 			particleSkin = new ImageSkin();
@@ -451,7 +463,7 @@ package model
 			
 			// Add WindParticlesProcess
 			var windParticlesProcess:WindParticlesProcess = new WindParticlesProcess();
-			cadetScene.children.addItem(windParticlesProcess);
+			_cadetScene.children.addItem(windParticlesProcess);
 			windParticlesProcess.particlesContainer = particlesEntity;
 			
 			// Add ParticleCoffeeXML
@@ -461,8 +473,8 @@ package model
 			
 			// Add Coffee ParticleSystemComponent
 			coffeeParticles = new PDParticleSystemComponent(xml);
-//			coffeeParticles.targetSkin = heroSkin;
-			cadetScene.children.addItem(coffeeParticles);
+			coffeeParticles.autoplay = false;
+			_cadetScene.children.addItem(coffeeParticles);
 			
 			// Add ParticleMushroomXML
 			xmlFile = new ParticleMushroomXML();
@@ -471,8 +483,8 @@ package model
 			
 			// Add Mushroom ParticleSystemComponent
 			mushroomParticles = new PDParticleSystemComponent(xml);
-//			mushroomParticles.targetSkin = heroSkin;
-			cadetScene.children.addItem(mushroomParticles);
+			mushroomParticles.autoplay = false;
+			_cadetScene.children.addItem(mushroomParticles);
 		}
 		
 		// ParallaxBehaviours need to be added after their Skin sibling is validated (before they make a copy of it)
@@ -512,10 +524,15 @@ package model
 			}
 		}
 		
-		private function enterFrameHandler( event:Event ):void
+		private function enterFrameHandler( event:starling.events.Event ):void
 		{
-			cadetScene.step();
-		}		
+			_cadetScene.step();
+		}
+		
+		public function get cadetScene():CadetScene
+		{
+			return _cadetScene;
+		}
 	}
 }
 

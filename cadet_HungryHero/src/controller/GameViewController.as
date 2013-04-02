@@ -10,6 +10,8 @@ package controller
 	import hungryHero.components.processes.GlobalsProcess;
 	
 	import model.GameModel_Code;
+	import model.GameModel_XML;
+	import model.IGameModel;
 	
 	import sound.Sounds;
 	
@@ -28,7 +30,7 @@ package controller
 		/** Tween object for game over container. */
 		private var tween_gameOverContainer:Tween;
 		
-		private var gameModel		:GameModel_Code;
+		private var gameModel		:IGameModel;
 		
 		private var globals			:GlobalsProcess;
 		
@@ -40,8 +42,13 @@ package controller
 		{
 			_view	= GameView(view);
 			
-			gameModel = new GameModel_Code();
-			
+			//gameModel = new GameModel_Code();
+			gameModel = new GameModel_XML();
+			gameModel.addEventListener( "loaded", gameModelLoadedHandler );
+		}
+		
+		private function gameModelLoadedHandler( event:flash.events.Event ):void
+		{
 			enable();
 		}
 		

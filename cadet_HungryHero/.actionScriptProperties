@@ -37,8 +37,6 @@
   </compiler>
   <applications>
     <application path="CadetHungryHero.as"/>
-    <application path="HungryHero_XML.as"/>
-    <application path="HungryHero_Code.as"/>
   </applications>
   <modules/>
   <workers/>
