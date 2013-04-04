@@ -1,8 +1,8 @@
 package hungryHero.components.behaviours
 {
 	import flash.events.Event;
-	import flash.geom.Point;
 	
+	import cadet.components.processes.SoundProcess;
 	import cadet.components.sounds.ISound;
 	import cadet.core.Component;
 	import cadet.core.ISteppableComponent;
@@ -27,6 +27,7 @@ package hungryHero.components.behaviours
 		private var notifyComplete			:Boolean;
 		
 		// SOUNDS
+		public var soundProcess				:SoundProcess;
 		private var _collectSound			:ISound;
 		// PARTICLES
 		private var _particleEffect			:PDParticleSystemComponent;
@@ -40,6 +41,7 @@ package hungryHero.components.behaviours
 		{
 			addSceneReference(GlobalsProcess, "globals");
 			addSceneReference(Renderer2D, "renderer");
+			addSceneReference(SoundProcess, "soundProcess");
 			addSiblingReference(ISound, "collectSound");
 		}
 		
@@ -103,8 +105,8 @@ package hungryHero.components.behaviours
 			power = effectLength;
 			notifyComplete = false;
 			
-			if ( _collectSound ) {
-				_collectSound.play();
+			if ( soundProcess && _collectSound ) {
+				soundProcess.playSound(_collectSound);
 			}
 			
 			if ( _particleEffect ) {

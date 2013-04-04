@@ -19,11 +19,8 @@ package view
 	
 	public class WelcomeView extends Sprite
 	{
-		/** Background image. */
-		private var bg:Image;
-		
-		/** Game title. */
-		private var title:Image;
+		private var bg:Image;				// Background image.
+		private var title:Image;			// Game title.
 		
 		public var playBtn:Button;
 		public var aboutBtn:Button;
@@ -31,20 +28,14 @@ package view
 		public var starlingBtn:Button;
 		public var backBtn:Button;
 		
-		/** Hero artwork. */
-		private var hero:Image;
+		private var hero:Image;				// Hero artwork.
+		private var aboutText:TextField;	// About text field.
 		
-		/** About text field. */
-		private var aboutText:TextField;
+		private var _currentDate:Date;		// Current date.
 		
-		/** Current date. */
-		private var _currentDate:Date;
-		
-		/** Font - Regular text. */
-		private var fontRegular:Font;
-		
-		/** Hero art tween object. */
-		private var tween_hero:Tween;
+		private var fontRegular:Font;		// Font - Regular text.
+	
+		private var tween_hero:Tween;		// Hero art tween object.
 		
 		public function WelcomeView()
 		{
@@ -52,11 +43,8 @@ package view
 			this.addEventListener(Event.ADDED_TO_STAGE, onAddedToStage);
 		}
 		
-		/**
-		 * On added to stage. 
-		 * @param event
-		 * 
-		 */
+		// On added to stage. 
+		//  @param event
 		private function onAddedToStage(event:Event):void
 		{
 			this.removeEventListener(Event.ADDED_TO_STAGE, onAddedToStage);
@@ -124,10 +112,7 @@ package view
 			this.addChild(backBtn);
 		}
 
-		/**
-		 * Show about screen.
-		 * 
-		 */
+		// Show about screen.
 		public function showAbout():void	
 		{	
 			hero.visible = false;
@@ -139,11 +124,8 @@ package view
 			starlingBtn.visible = true;
 			backBtn.visible = true;
 		}
-		
-		/**
-		 * Initialize welcome screen. 
-		 * 
-		 */
+	
+		// Initialize welcome screen.
 		public function initialize():void
 		{
 			disposeTemporarily();
@@ -167,11 +149,8 @@ package view
 			this.addEventListener(Event.ENTER_FRAME, floatingAnimation);
 		}
 		
-		/**
-		 * Animate floating objects. 
-		 * @param event
-		 * 
-		 */
+		// Animate floating objects. 
+		// @param event
 		private function floatingAnimation(event:Event):void
 		{
 			_currentDate = new Date();
@@ -181,10 +160,7 @@ package view
 			aboutBtn.y = 460 + (Math.cos(_currentDate.getTime() * 0.002)) * 10;
 		}
 		
-		/**
-		 * Dispose objects temporarily. 
-		 * 
-		 */
+		// Dispose objects temporarily. 
 		public function disposeTemporarily():void
 		{
 			if (this.hasEventListener(Event.ENTER_FRAME)) this.removeEventListener(Event.ENTER_FRAME, floatingAnimation);

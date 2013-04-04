@@ -3,13 +3,14 @@ package model
 	import flash.events.Event;
 	import flash.events.EventDispatcher;
 	
+	import cadet.components.processes.SoundProcess;
 	import cadet.core.CadetScene;
 	import cadet.util.ComponentUtil;
 	
 	import cadet2D.components.renderers.Renderer2D;
-	import cadet2D.components.transforms.Transform2D;
 	import cadet2D.operations.Cadet2DStartUpOperation;
 	
+	import hungryHero.components.behaviours.HeroBehaviour;
 	import hungryHero.components.behaviours.ShakeBehaviour;
 	import hungryHero.components.processes.GlobalsProcess;
 	
@@ -20,23 +21,27 @@ package model
 	{
 		private const LOADED			:String = "loaded";
 		
-		private var parent				:DisplayObjectContainer;
+		private var _parent				:DisplayObjectContainer;
 		private var _cadetScene			:CadetScene;		
-		private var cadetFileURL		:String = "/HungryHero.cdt";
+		private var _cadetFileURL		:String = "/HungryHero.cdt";
 		
-		private var heroTransform2D		:Transform2D;
+		private var _heroBehaviour		:HeroBehaviour;
 		
-		private var heroStartX			:Number;
-		private var heroStartY			:Number;
+		private var _heroStartX			:Number;
+		private var _heroStartY			:Number;
 		
-		private var globals				:GlobalsProcess;
+		private var _globals			:GlobalsProcess;
+		private var _soundProcess		:SoundProcess;
 		
-		private var shakeBehaviour		:ShakeBehaviour;
+		private var _shakeBehaviour		:ShakeBehaviour;
+		
+		private var _initialised		:Boolean;
+		private var _muted				:Boolean;
 		
 		public function GameModel_XML()
 		{
 			// Required when loading data and assets.
-			var startUpOperation:Cadet2DStartUpOperation = new Cadet2DStartUpOperation(cadetFileURL);
+			var startUpOperation:Cadet2DStartUpOperation = new Cadet2DStartUpOperation(_cadetFileURL);
 			//startUpOperation.addManifest( startUpOperation.baseManifestURL + "Cadet2DBox2D.xml");
 			startUpOperation.addEventListener(flash.events.Event.COMPLETE, startUpCompleteHandler);
 			startUpOperation.execute();
@@ -53,34 +58,62 @@ package model
 		
 		public function init(parent:starling.display.DisplayObjectContainer):void
 		{
-			this.parent = parent;
+			_parent = parent;
 			
 			var renderer:Renderer2D = ComponentUtil.getChildOfType(_cadetScene, Renderer2D);
 			renderer.enableToExisting(parent);
 			
-			globals = ComponentUtil.getChildOfType( _cadetScene, GlobalsProcess, true );
-			shakeBehaviour = ComponentUtil.getChildOfType( _cadetScene, ShakeBehaviour, true );
+			_globals = ComponentUtil.getChildOfType( _cadetScene, GlobalsProcess, true );
+			_globals.paused = true;
+			
+			_soundProcess = ComponentUtil.getChildOfType( _cadetScene, SoundProcess, true );
+			
+			_shakeBehaviour = ComponentUtil.getChildOfType( _cadetScene, ShakeBehaviour, true );
+			_heroBehaviour = ComponentUtil.getChildOfType( _cadetScene, HeroBehaviour, true );
+			
+			if (!_initialised) {
+				_heroStartX = _heroBehaviour.transform.x;
+				_heroStartY = _heroBehaviour.transform.y;
+			}
 			
 			_cadetScene.validateNow();
 			
+			reset();
+			
 			parent.addEventListener( starling.events.Event.ENTER_FRAME, enterFrameHandler );
+			
+			_initialised = true;
 		}
 		
 		public function reset():void
 		{
-			globals.reset();
-			globals.paused = true;
+			_globals.reset();
+			_globals.paused = true;
 			
-//			heroTransform2D.x = heroStartX;
-//			heroTransform2D.y = heroStartY;
+			_heroBehaviour.transform.x = _heroStartX;
+			_heroBehaviour.transform.y = _heroStartY;
 			
-			shakeBehaviour.shake = 0;
+			if ( _shakeBehaviour ) {
+				_shakeBehaviour.shake = 0;
+			}
+		}
+		
+		public function get muted():Boolean
+		{
+			return _muted;
+		}
+		public function set muted( value:Boolean ):void
+		{
+			_muted = value;
+			if ( _soundProcess ) {
+				_soundProcess.muted = _muted;
+			}
 		}
 		
 		public function dispose():void
 		{
-			_cadetScene.dispose();
-			parent.removeEventListener( starling.events.Event.ENTER_FRAME, enterFrameHandler );		
+			//_cadetScene.dispose();
+			_parent.removeEventListener( starling.events.Event.ENTER_FRAME, enterFrameHandler );		
 		}
 	
 		private function enterFrameHandler( event:starling.events.Event ):void

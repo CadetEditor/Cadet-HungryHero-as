@@ -27,7 +27,7 @@ package controller
 	{
 		private var _view			:GameView;
 		
-		/** Tween object for game over container. */
+		// Tween object for game over container.
 		private var tween_gameOverContainer:Tween;
 		
 		private var gameModel		:IGameModel;
@@ -42,8 +42,9 @@ package controller
 		{
 			_view	= GameView(view);
 			
-			//gameModel = new GameModel_Code();
-			gameModel = new GameModel_XML();
+			// Comment out either IGameModel to test
+			gameModel = new GameModel_Code();
+			//gameModel = new GameModel_XML();
 			gameModel.addEventListener( "loaded", gameModelLoadedHandler );
 		}
 		
@@ -63,8 +64,11 @@ package controller
 		}
 		
 		public function enable():void
-		{
+		{			
 			gameModel.init(_view.gameWindow);
+			gameModel.muted = Sounds.muted;
+			
+			Sounds.instance.addEventListener( flash.events.Event.CHANGE, toggleMuteHandler );
 			
 			_view.visible = true;
 			
@@ -79,6 +83,8 @@ package controller
 		public function disable():void
 		{
 			gameModel.dispose();
+			
+			Sounds.instance.removeEventListener( flash.events.Event.CHANGE, toggleMuteHandler );
 			
 			SoundMixer.stopAll();
 			
@@ -100,11 +106,13 @@ package controller
 			_view.hud.lives = globals.currentLives;
 		}
 		
-		/**
-		 * On click of pause button. 
-		 * @param event
-		 * 
-		 */
+		private function toggleMuteHandler( event:flash.events.Event ):void
+		{
+			gameModel.muted = Sounds.muted;
+		}
+		
+		// On click of pause button. 
+		// @param event
 		private function onPauseButtonClick(event:starling.events.Event):void
 		{
 			event.stopImmediatePropagation();
@@ -112,11 +120,8 @@ package controller
 			globals.paused = !globals.paused;
 		}
 		
-		/**
-		 * On navigation from different screens. 
-		 * @param event
-		 * 
-		 */
+		// On navigation from different screens. 
+		// @param event
 		private function onInGameNavigation(event:NavigationEvent):void	
 		{
 			if (event.params.id == "playAgain") {
@@ -133,10 +138,7 @@ package controller
 			}
 		}
 		
-		/**
-		 * On game over screen faded out. 
-		 * 
-		 */
+		// On game over screen faded out.
 		private function gameOverFadedOut():void
 		{
 			gameModel.reset();
@@ -145,11 +147,8 @@ package controller
 			_view.initialize();
 		}
 		
-		/**
-		 * On start button click. 
-		 * @param event
-		 * 
-		 */
+		// On start button click. 
+		//  @param event
 		private function onStartButtonClick(event:starling.events.Event):void
 		{
 			// Play coffee sound for button click.
@@ -169,7 +168,6 @@ package controller
 		
 		private function gameEndedHandler(event:flash.events.Event):void
 		{
-			trace("GAME VIEW ENDED");
 			_view.setChildIndex(_view.gameOverContainer, _view.numChildren-1);
 			_view.gameOverContainer.initialize(globals.scoreItems, Math.round(globals.scoreDistance));
 			

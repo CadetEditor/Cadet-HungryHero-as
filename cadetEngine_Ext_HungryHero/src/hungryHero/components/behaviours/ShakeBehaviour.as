@@ -56,8 +56,10 @@ package hungryHero.components.behaviours
 			
 			if ( target is Renderer2D ) {
 				var viewport:DisplayObjectContainer = Renderer2D(target).viewport;
-				viewport.x = xpos;
-				viewport.y = ypos;
+				if ( viewport ) {
+					viewport.x = xpos;
+					viewport.y = ypos;
+				}
 			} else if ( target is ITransform2D ) {
 				var transform:ITransform2D = ITransform2D(target);
 				transform.x = xpos;

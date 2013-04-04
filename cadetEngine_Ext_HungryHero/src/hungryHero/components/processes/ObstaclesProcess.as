@@ -2,6 +2,7 @@ package hungryHero.components.processes
 {
 	import flash.geom.Rectangle;
 	
+	import cadet.components.processes.SoundProcess;
 	import cadet.components.sounds.ISound;
 	import cadet.core.Component;
 	import cadet.core.IComponentContainer;
@@ -47,6 +48,7 @@ package hungryHero.components.processes
 		private var _obstaclesContainer			:IComponentContainer;
 
 		//SOUNDS
+		public var soundProcess					:SoundProcess;				
 		private var _hitSound					:ISound;
 		private var _hurtSound					:ISound;
 	
@@ -63,6 +65,7 @@ package hungryHero.components.processes
 		{
 			addSceneReference(WorldBounds2D, "worldBounds");
 			addSceneReference(GlobalsProcess, "globals");
+			addSceneReference(SoundProcess, "soundProcess");
 		}
 		
 		// IInitialisableComponent
@@ -387,7 +390,7 @@ package hungryHero.components.processes
 				{
 					behaviour.alreadyHit = true;
 					
-					if ( hitSound ) hitSound.play();
+					if ( soundProcess && _hitSound ) soundProcess.playSound(_hitSound);
 					
 					//if (coffee > 0) 
 					if ( globals.playerSpeed > globals.playerMinSpeed )
@@ -417,7 +420,7 @@ package hungryHero.components.processes
 						globals.playerSpeed *= 0.5; 
 										
 						// Play hurt sound.
-						if ( hurtSound ) hurtSound.play();
+						if ( soundProcess && _hurtSound ) soundProcess.playSound(hurtSound);
 					
 						// Update lives.
 						globals.currentLives--;

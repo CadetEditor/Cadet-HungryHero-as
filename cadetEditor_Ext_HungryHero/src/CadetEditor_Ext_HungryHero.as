@@ -50,7 +50,7 @@ package
 			resourceManager.addResource( new ComponentFactory( MoveBehaviour, "Move Behaviour", "Behaviours", CadetEngineIcons.Behaviour ) );
 			resourceManager.addResource( new ComponentFactory( ObstacleBehaviour, "Obstacle Behaviour", "Behaviours", CadetEngineIcons.Behaviour, Entity, 1 ) );
 			resourceManager.addResource( new ComponentFactory( ParallaxBehaviour, "Parallax", "Behaviours",	CadetEngineIcons.Behaviour, Entity,	1 ) );
-			resourceManager.addResource( new ComponentFactory( ShakeBehaviour, "Shake Behaviour", "Behaviours", CadetEngineIcons.Behaviour, Entity, 1 ) );
+			resourceManager.addResource( new ComponentFactory( ShakeBehaviour, "Shake Behaviour", "Behaviours", CadetEngineIcons.Behaviour, null, 1 ) );
 			resourceManager.addResource( new ComponentFactory( SpeedUpBehaviour, "Speed Up Behaviour", "Behaviours", CadetEngineIcons.Behaviour, Entity, 1 ) );
 			// Processes
 			resourceManager.addResource( new ComponentFactory( BackgroundsProcess, "Backgrounds Process", "Processes", CadetEngineIcons.Process ) );

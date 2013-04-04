@@ -1,7 +1,5 @@
 package
-{	
-	import flash.media.SoundMixer;
-	
+{
 	import controller.GameViewController;
 	import controller.WelcomeViewController;
 	
@@ -23,8 +21,8 @@ package
 	{
 		public static var viewManager		:ViewManager;
 		
-		/** Sound / Mute button. */
-		private var soundButton:SoundButton;
+		private var viewContainer:Sprite;		 	// All views are added in here.
+		private var soundButton:SoundButton;		// Sound / Mute button.
 		
 		public function Main()
 		{
@@ -41,7 +39,10 @@ package
 		
 		private function init():void
 		{
-			viewManager	= new ViewManager( this );
+			viewContainer = new Sprite();
+			this.addChild( viewContainer );
+			
+			viewManager	= new ViewManager( viewContainer );
 			
 			viewManager.registerView( GameView, GameViewController );
 			viewManager.registerView( WelcomeView, WelcomeViewController );
@@ -58,34 +59,21 @@ package
 			this.addChild(soundButton);
 		}
 		
-		/**
-		 * On click of the sound/mute button. 
-		 * @param event
-		 * 
-		 */
+		// On click of the sound/mute button. 
+		// @param event
 		private function onSoundButtonClick(event:Event = null):void
 		{
 			if (Sounds.muted) {
 				Sounds.muted = false;
-				
-				if (viewManager.currentView is WelcomeView ) {
-					Sounds.sndBgMain.play(0, 999);
-				}
-				
 				soundButton.showUnmuteState();
 			} else {
-				Sounds.muted = true;
-				SoundMixer.stopAll();
-				
+				Sounds.muted = true;;
 				soundButton.showMuteState();
 			}
 		}
 		
-		/**
-		 * On change of screen. 
-		 * @param event
-		 * 
-		 */	
+		// On change of screen. 
+		//  @param event
 		private function onChangeScreen(event:NavigationEvent):void	
 		{
 			switch (event.params.id)

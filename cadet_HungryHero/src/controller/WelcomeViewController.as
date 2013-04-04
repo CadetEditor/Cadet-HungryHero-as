@@ -1,5 +1,6 @@
 package controller
 {
+	import flash.events.Event;
 	import flash.media.SoundMixer;
 	import flash.net.URLRequest;
 	import flash.net.navigateToURL;
@@ -10,7 +11,7 @@ package controller
 	
 	import starling.display.DisplayObjectContainer;
 	import starling.events.Event;
-
+	
 	import view.WelcomeView;
 
 	public class WelcomeViewController implements IController
@@ -20,7 +21,7 @@ package controller
 		private const ABOUT_SCREEN		:String = "about";
 		private const WELCOME_SCREEN	:String = "welcome";
 		
-		/** Screen mode - "welcome" or "about". */
+		// Screen mode - "welcome" or "about".
 		private var screenMode			:String;
 		
 		public function WelcomeViewController()
@@ -48,13 +49,15 @@ package controller
 		{
 			_view.visible = true;
 			
+			Sounds.instance.addEventListener( flash.events.Event.CHANGE, toggleMuteHandler );
+			
 			initializeView();
 			
-			_view.playBtn.addEventListener(Event.TRIGGERED, onPlayClick);
-			_view.aboutBtn.addEventListener(Event.TRIGGERED, onAboutClick);
-			_view.hsharmaBtn.addEventListener(Event.TRIGGERED, onHsharmaBtnClick);
-			_view.starlingBtn.addEventListener(Event.TRIGGERED, onStarlingBtnClick);
-			_view.backBtn.addEventListener(Event.TRIGGERED, onAboutBackClick);
+			_view.playBtn.addEventListener(starling.events.Event.TRIGGERED, onPlayClick);
+			_view.aboutBtn.addEventListener(starling.events.Event.TRIGGERED, onAboutClick);
+			_view.hsharmaBtn.addEventListener(starling.events.Event.TRIGGERED, onHsharmaBtnClick);
+			_view.starlingBtn.addEventListener(starling.events.Event.TRIGGERED, onStarlingBtnClick);
+			_view.backBtn.addEventListener(starling.events.Event.TRIGGERED, onAboutBackClick);
 		}
 		
 		public function disable():void
@@ -64,63 +67,59 @@ package controller
 			_view.disposeTemporarily();
 			_view.visible = false;
 			
-			_view.playBtn.removeEventListener(Event.TRIGGERED, onPlayClick);
-			_view.aboutBtn.removeEventListener(Event.TRIGGERED, onAboutClick);
-			_view.hsharmaBtn.removeEventListener(Event.TRIGGERED, onHsharmaBtnClick);
-			_view.starlingBtn.removeEventListener(Event.TRIGGERED, onStarlingBtnClick);
-			_view.backBtn.removeEventListener(Event.TRIGGERED, onAboutBackClick);
+			Sounds.instance.removeEventListener( flash.events.Event.CHANGE, toggleMuteHandler );
+			
+			_view.playBtn.removeEventListener(starling.events.Event.TRIGGERED, onPlayClick);
+			_view.aboutBtn.removeEventListener(starling.events.Event.TRIGGERED, onAboutClick);
+			_view.hsharmaBtn.removeEventListener(starling.events.Event.TRIGGERED, onHsharmaBtnClick);
+			_view.starlingBtn.removeEventListener(starling.events.Event.TRIGGERED, onStarlingBtnClick);
+			_view.backBtn.removeEventListener(starling.events.Event.TRIGGERED, onAboutBackClick);
 		}
 		
-		/**
-		 * On back button click from about screen. 
-		 * @param event
-		 * 
-		 */
-		private function onAboutBackClick(event:Event):void
+		private function toggleMuteHandler( event:flash.events.Event ):void
+		{
+			if ( !Sounds.muted ) {
+				Sounds.sndBgMain.play(0, 999);	
+			} else {
+				SoundMixer.stopAll();
+			}
+		}
+	
+		// On back button click from about screen. 
+		// @param event
+		private function onAboutBackClick(event:starling.events.Event):void
 		{
 			if (!Sounds.muted) Sounds.sndCoffee.play();
 			
 			initializeView();
 		}
 		
-		/**
-		 * On credits click on hsharma.com image. 
-		 * @param event
-		 * 
-		 */
-		private function onHsharmaBtnClick(event:Event):void
+		// On credits click on hsharma.com image. 
+		// @param event
+		private function onHsharmaBtnClick(event:starling.events.Event):void
 		{
 			navigateToURL(new URLRequest("http://www.hsharma.com/"), "_blank");
 		}
 		
-		/**
-		 * On credits click on Starling Framework image. 
-		 * @param event
-		 * 
-		 */
-		private function onStarlingBtnClick(event:Event):void
+		// On credits click on Starling Framework image. 
+		// @param event
+		private function onStarlingBtnClick(event:starling.events.Event):void
 		{
 			navigateToURL(new URLRequest("http://www.gamua.com/starling"), "_blank");
 		}
 		
-		/**
-		 * On play button click. 
-		 * @param event
-		 * 
-		 */
-		private function onPlayClick(event:Event):void
+		// On play button click. 
+		// @param event
+		private function onPlayClick(event:starling.events.Event):void
 		{
 			_view.dispatchEvent(new NavigationEvent(NavigationEvent.CHANGE_SCREEN, {id: "play"}, true));
 			
 			if (!Sounds.muted) Sounds.sndCoffee.play();
 		}
 		
-		/**
-		 * On about button click. 
-		 * @param event
-		 * 
-		 */
-		private function onAboutClick(event:Event):void
+		// On about button click. 
+		//  @param event
+		private function onAboutClick(event:starling.events.Event):void
 		{
 			if (!Sounds.muted) Sounds.sndMushroom.play();
 			

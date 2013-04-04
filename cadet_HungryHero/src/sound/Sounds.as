@@ -13,6 +13,8 @@
 
 package sound
 {
+	import flash.events.Event;
+	import flash.events.EventDispatcher;
 	import flash.media.Sound;
 
 	/**
@@ -21,50 +23,47 @@ package sound
 	 * @author hsharma
 	 * 
 	 */
-	public class Sounds
+	public class Sounds extends EventDispatcher
 	{
-		/**
-		 * Embedded sound files. 
-		 */		
-		[Embed(source="../../bin-debug/files/assets/hungryHero/sounds/bgGame.mp3")]
-		public static const SND_BG_GAME:Class;
-		
+		// Embedded sound files. 	
 		[Embed(source="../../bin-debug/files/assets/hungryHero/sounds/bgWelcome.mp3")]
 		public static const SND_BG_MAIN:Class;
-		
-		[Embed(source="../../bin-debug/files/assets/hungryHero/sounds/eat.mp3")]
-		public static const SND_EAT:Class;
-		
+	
 		[Embed(source="../../bin-debug/files/assets/hungryHero/sounds/coffee.mp3")]
 		public static const SND_COFFEE:Class;
 		
 		[Embed(source="../../bin-debug/files/assets/hungryHero/sounds/mushroom.mp3")]
 		public static const SND_MUSHROOM:Class;
-		
-		[Embed(source="../../bin-debug/files/assets/hungryHero/sounds/hit.mp3")]
-		public static const SND_HIT:Class;
-		
-		[Embed(source="../../bin-debug/files/assets/hungryHero/sounds/hurt.mp3")]
-		public static const SND_HURT:Class;
-		
-		[Embed(source="../../bin-debug/files/assets/hungryHero/sounds/lose.mp3")]
-		public static const SND_LOSE:Class;
-		
-		/**
-		 * Initialized Sound objects. 
-		 */		
+
+		// Initialized Sound objects. 	
 		public static var sndBgMain:Sound = new Sounds.SND_BG_MAIN() as Sound;
-		public static var sndBgGame:Sound = new Sounds.SND_BG_GAME() as Sound;
-		public static var sndEat:Sound = new Sounds.SND_EAT() as Sound;
 		public static var sndCoffee:Sound = new Sounds.SND_COFFEE() as Sound;
 		public static var sndMushroom:Sound = new Sounds.SND_MUSHROOM() as Sound;
-		public static var sndHit:Sound = new Sounds.SND_HIT() as Sound;
-		public static var sndHurt:Sound = new Sounds.SND_HURT() as Sound;
-		public static var sndLose:Sound = new Sounds.SND_LOSE() as Sound;
+	
+		// Sound mute status.
+		private static var _muted:Boolean = false;
 		
-		/**
-		 * Sound mute status. 
-		 */
-		public static var muted:Boolean = false;
+		private static var _instance:Sounds;
+		
+		public static function get instance():Sounds
+		{
+			if ( !_instance ) {
+				_instance = new Sounds();
+			}
+			
+			return _instance;
+		}
+		
+		public static function get muted():Boolean
+		{
+			return _muted;
+		}
+		public static function set muted( value:Boolean ):void
+		{
+			if ( _muted != value ) {
+				_muted = value;
+				instance.dispatchEvent( new Event(Event.CHANGE) );
+			}
+		}
 	}
 }

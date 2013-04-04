@@ -13,5 +13,8 @@ package model
 		function dispose():void
 		
 		function get cadetScene():CadetScene
+		
+		function get muted():Boolean
+		function set muted( value:Boolean ):void
 	}
 }

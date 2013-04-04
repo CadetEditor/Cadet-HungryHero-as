@@ -16,7 +16,7 @@ package view
 		// HUD
 		// ------------------------------------------------------------------------------------------------------------
 		
-		/** HUD Container. */		
+		// HUD Container.		
 		public var hud:HUD;
 		
 		// ------------------------------------------------------------------------------------------------------------
@@ -26,10 +26,10 @@ package view
 		public var gameWindow:Sprite;
 		public var gameOverContainer:GameOverContainer;
 		
-		/** Pause button. */
+		// Pause button.
 		public var pauseButton:PauseButton;
 		
-		/** Kick Off button in the beginning of the game .*/
+		// Kick Off button in the beginning of the game
 		public var startButton:Button;
 		
 		public function GameView()
@@ -41,11 +41,8 @@ package view
 			addEventListener(Event.ADDED_TO_STAGE, onAddedToStage);
 		}
 		
-		/**
-		 * On added to stage.  
-		 * @param event
-		 * 
-		 */
+		// On added to stage.  
+		//  @param event
 		private function onAddedToStage(event:Event):void
 		{
 			removeEventListener(Event.ADDED_TO_STAGE, onAddedToStage);
@@ -76,21 +73,12 @@ package view
 			addChild(gameOverContainer);
 		}
 		
-		/**
-		 * Initialize the game. 
-		 * 
-		 */
+		// Initialize the game. 
 		public function initialize():void
 		{
 			// Dispose screen temporarily.
 			disposeTemporarily();
-			
-			// Play screen background music.
-			//if (!Sounds.muted) Sounds.sndBgGame.play(0, 999);
-			
-			// Define lives.
-			//lives = GameConstants.HERO_LIVES;
-
+		
 			// Reset hud values and text fields.
 			hud.foodScore = 0;
 			hud.distance = 0;
@@ -103,10 +91,7 @@ package view
 			startButton.visible = true;
 		}
 		
-		/**
-		 * Dispose screen temporarily. 
-		 * 
-		 */
+		//  Dispose screen temporarily.
 		public function disposeTemporarily():void
 		{			
 			gameOverContainer.visible = false;

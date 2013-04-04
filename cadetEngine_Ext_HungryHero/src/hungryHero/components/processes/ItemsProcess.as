@@ -4,6 +4,7 @@ package hungryHero.components.processes
 	import flash.geom.Rectangle;
 	import flash.utils.Dictionary;
 	
+	import cadet.components.processes.SoundProcess;
 	import cadet.components.sounds.ISound;
 	import cadet.core.Component;
 	import cadet.core.ComponentContainer;
@@ -69,6 +70,7 @@ package hungryHero.components.processes
 		private var _moveBehaviour			:IMoveBehaviour;
 		
 		// SOUNDS
+		public var soundProcess				:SoundProcess;
 		private var _collectSound			:ISound;
 		
 		public function ItemsProcess()
@@ -88,6 +90,7 @@ package hungryHero.components.processes
 		{
 			addSceneReference(WorldBounds2D, "worldBounds");
 			addSceneReference(GlobalsProcess, "globals");
+			addSceneReference(SoundProcess, "soundProcess");
 			addSceneReference(EatParticlesProcess, "eatParticlesProcess");
 			addChildReference(IMoveBehaviour, "defaultMoveBehaviour");
 		}
@@ -535,51 +538,13 @@ package hungryHero.components.processes
 								} else {
 									addActivePowerup(behaviour);
 								}
-								
-//								if ( behaviour.collectSound ) {
-//									behaviour.collectSound.play();
-//								}
 							} else {
-								if ( _collectSound ) {
-									_collectSound.play();	
+								if ( soundProcess && _collectSound ) {
+									soundProcess.playSound(_collectSound);	
 								}
 							}
 							
 							globals.scoreItems ++;
-							
-							// If hero eats an item, add up the score.
-						/*	if (itemToTrack.foodItemType <= GameConstants.ITEM_TYPE_5)
-							{
-								scoreItems += itemToTrack.foodItemType;
-								hud.foodScore = scoreItems;
-								if (!Sounds.muted) Sounds.sndEat.play();
-							}*/
-						/*	else if (itemToTrack.foodItemType == GameConstants.ITEM_TYPE_COFFEE) 
-							{
-								// If hero drinks coffee, add up the score.
-								scoreItems += 1;
-								
-								// How long does coffee power last? (in seconds)
-								coffee = 5;
-								if (isHardwareRendering) particleCoffee.start(coffee);
-								
-								if (!Sounds.muted) Sounds.sndCoffee.play();
-							}
-							else if (itemToTrack.foodItemType == GameConstants.ITEM_TYPE_MUSHROOM) 
-							{
-								// If hero eats a mushroom, add up the score.
-								scoreItems += 1;
-								
-								// How long does mushroom power last? (in seconds)
-								mushroom = 4;
-								if (isHardwareRendering) particleMushroom.start(mushroom);
-								
-								if (!Sounds.muted) Sounds.sndMushroom.play();
-							}
-							
-							// Create an eat particle at the position of the food item that was eaten.
-							createEatParticle(itemToTrack);
-							*/
 							
 							if ( eatParticlesProcess ) {
 								eatParticlesProcess.createParticle(itemToTrack);
@@ -622,8 +587,6 @@ package hungryHero.components.processes
 			var behaviour:IPowerupBehaviour = IPowerupBehaviour(event.target);
 
 			removeActivePowerup(behaviour);
-			
-			trace("activePowerups "+_activePowerups);
 		}
 		
 		private function moveBehaviourCompleterHandler( event:Event ):void
