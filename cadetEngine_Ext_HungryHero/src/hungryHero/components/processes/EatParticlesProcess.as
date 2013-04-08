@@ -37,8 +37,10 @@ package hungryHero.components.processes
 		private var _particlesContainer			:IComponentContainer;
 		private var _behaviours					:Dictionary;
 		
-		public function EatParticlesProcess()
+		public function EatParticlesProcess( name:String = "EatParticlesProcess" )
 		{
+			super( name );
+			
 			// Initialize particles-to-animate vectors.
 			_particlesToAnimate = new Vector.<AbstractSkin2D>()//Particle>();
 			_particlesToAnimateLength = 0;

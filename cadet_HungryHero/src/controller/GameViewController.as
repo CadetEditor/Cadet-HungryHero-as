@@ -5,6 +5,11 @@ package controller
 	
 	import cadet.util.ComponentUtil;
 	
+	import core.app.CoreApp;
+	import core.app.core.serialization.ISerializationPlugin;
+	import core.app.core.serialization.ResourceSerializerPlugin;
+	import core.app.operations.SerializeOperation;
+	
 	import events.NavigationEvent;
 	
 	import hungryHero.components.processes.GlobalsProcess;
@@ -51,6 +56,7 @@ package controller
 		private function gameModelLoadedHandler( event:flash.events.Event ):void
 		{
 			enable();
+			serialize();
 		}
 		
 		public function reInit():void
@@ -174,6 +180,29 @@ package controller
 			tween_gameOverContainer = new Tween(_view.gameOverContainer, 1);
 			tween_gameOverContainer.fadeTo(1);
 			Starling.juggler.add(tween_gameOverContainer);
+		}
+		
+		// Serialization
+		public function serialize():void
+		{
+			if (!CoreApp.initialised) {
+				CoreApp.init();
+			}
+			
+			var plugins:Vector.<ISerializationPlugin> = new Vector.<ISerializationPlugin>();			
+			plugins.push( new ResourceSerializerPlugin( CoreApp.resourceManager ) );
+			
+			var serializeOperation:SerializeOperation = new SerializeOperation( gameModel.cadetScene, plugins );
+			serializeOperation.addEventListener( flash.events.Event.COMPLETE, serializeCompleteHandler );
+//			serializeOperation.addEventListener(OperationProgressEvent.PROGRESS, progressHandler);
+//			serializeOperation.addEventListener(ErrorEvent.ERROR, errorHandler);
+			serializeOperation.execute();
+		}
+		
+		private function serializeCompleteHandler( event:flash.events.Event ):void
+		{
+			var serializeOperation:SerializeOperation = SerializeOperation(event.target);
+			trace(serializeOperation.getResult().toXMLString());
 		}
 	}
 }

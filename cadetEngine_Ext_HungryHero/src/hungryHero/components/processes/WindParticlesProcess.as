@@ -20,9 +20,7 @@ package hungryHero.components.processes
 	{
 		public var globals						:GlobalsProcess;
 		public var renderer						:Renderer2D;
-		
-//		private var _targetSkin					:AbstractSkin2D;
-		
+
 		private var _worldBounds				:WorldBounds2D;
 		public var worldBoundsRect				:Rectangle = new Rectangle(0, 0, 800, 600);
 		
@@ -33,12 +31,6 @@ package hungryHero.components.processes
 		// PARTICLES
 		// ------------------------------------------------------------------------------------------------------------
 		
-//		/** Particles for Coffee. */
-//		public static var particleCoffee:PDParticleSystem;
-//		
-//		/** Particles for Mushroom. */
-//		public static var particleMushroom:PDParticleSystem;
-		
 		private var _particlesPool:Pool;
 		
 		private var _particlesToAnimate:Vector.<AbstractSkin2D>;//Particle>;
@@ -46,9 +38,10 @@ package hungryHero.components.processes
 		
 ///		private var _isHardwareRendering:Boolean = true;
 		
-		public function WindParticlesProcess()
-		{			
-			_particlesToAnimate = new Vector.<AbstractSkin2D>();//Particle>();
+		public function WindParticlesProcess( name:String = "WindParticlesProcess" )
+		{
+			super( name );
+			_particlesToAnimate = new Vector.<AbstractSkin2D>();
 			_particlesToAnimateLength = 0;
 		}
 		
@@ -70,15 +63,6 @@ package hungryHero.components.processes
 		{
 			if ( globals.gameState == GlobalsProcess.GAME_STATE_FLYING )
 			{
-/*				if (_isHardwareRendering)
-				{
-					particleCoffee.emitterX = _targetSkin.x + _targetSkin.width * 0.5 * 0.5;
-					particleCoffee.emitterY = _targetSkin.y;
-					
-					particleMushroom.emitterX = _targetSkin.x + _targetSkin.width * 0.5 * 0.5;
-					particleMushroom.emitterY = _targetSkin.y;
-				}*/
-				
 				// If not hit by obstacle, fly normally.
 				if (globals.hitObstacle <= 0)
 				{
@@ -92,12 +76,6 @@ package hungryHero.components.processes
 				
 				// Animate elements.
 				animateParticles();
-				
-/*				if ( collectedCoffee ) {
-					if (_isHardwareRendering) particleCoffee.start(coffee);
-				} else if ( collectedMushroom ) {
-					if (_isHardwareRendering) particleMushroom.start(mushroom);
-				}*/
 			}
 			else if ( globals.gameState == GlobalsProcess.GAME_STATE_OVER )
 			{
@@ -182,21 +160,15 @@ package hungryHero.components.processes
 		 * @return Eat particle that was created.
 		 * 
 		 */
-		private function particleCreate():AbstractSkin2D//Particle
+		private function particleCreate():AbstractSkin2D
 		{
 			var newSkin:MovieClipSkin = new MovieClipSkin();
 			_particlesContainer.children.addItem(newSkin);
 			
-			newSkin.x = worldBoundsRect.right;//renderer.viewport.stage.stageWidth + newSkin.width * 2;
+			newSkin.x = worldBoundsRect.right;
 			newSkin.validateNow();
 			
 			return newSkin;
-			
-//			var particle:Particle = new Particle(GameConstants.PARTICLE_TYPE_2);
-//			particle.x = stage.stageWidth + particle.width * 2;
-//			this.addChild(particle);
-//			
-//			return particle;
 		}
 		
 		/**
@@ -204,7 +176,7 @@ package hungryHero.components.processes
 		 * @param particle
 		 * 
 		 */
-		private function particleClean(particle:AbstractSkin2D):void//Particle):void
+		private function particleClean(particle:AbstractSkin2D):void
 		{
 			particle.x = renderer.viewport.stage.stageWidth + particle.width * 2;
 		}

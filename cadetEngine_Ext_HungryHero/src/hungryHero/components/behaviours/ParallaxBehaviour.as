@@ -17,6 +17,7 @@ package hungryHero.components.behaviours
 	import cadet.core.ISteppableComponent;
 	
 	import cadet2D.components.skins.AbstractSkin2D;
+	import cadet2D.events.SkinEvent;
 	
 	import hungryHero.components.processes.GlobalsProcess;
 
@@ -33,9 +34,9 @@ package hungryHero.components.behaviours
 
 		private var _initialised	:Boolean = false;
 		
-		public function ParallaxBehaviour()
+		public function ParallaxBehaviour( name:String = "ParallaxBehaviour")
 		{
-			name = "ParallaxBehaviour";
+			super( name );
 		}
 		
 		// "skin" will be replaced each time a new skin sibling is added, hence usage of
@@ -52,7 +53,20 @@ package hungryHero.components.behaviours
 			_skin1 = skin;
 			_skin2 = AbstractSkin2D(_skin1.clone());
 			parentComponent.children.addItem(_skin2);
-			_skin2.x = skin.x + skin.width;			
+			
+			if ( _skin1.width == 0 ) {
+				_skin1.addEventListener(SkinEvent.TEXTURE_VALIDATED, textureValidatedHandler);
+			} else {
+				_skin2.x = _skin1.x + _skin1.width;
+			}
+		}
+		
+		// Wait for the texture to be validated so the width is set
+		private function textureValidatedHandler( event:SkinEvent ):void
+		{
+			var skin:AbstractSkin2D = AbstractSkin2D(event.target);
+			skin.removeEventListener(SkinEvent.TEXTURE_VALIDATED, textureValidatedHandler);
+			_skin2.x = _skin1.x + _skin1.width;
 		}
 		
 		// ISteppableComponent
@@ -67,18 +81,22 @@ package hungryHero.components.behaviours
 			
 			// if direction is left
 			if ( _speed < 0 ) {
+				// Skin 1 has moved off the left of the screen
 				if ( _skin1.x + _skin1.width < 0 ) {
 					_skin1.x = _skin2.x + _skin2.width;
 				}
+				// Skin 2 has moved off the left of the screen
 				if ( _skin2.x + _skin2.width < 0 ) {
 					_skin2.x = _skin1.x + _skin1.width;
 				}
 			} 
 			// if direction is right
 			else {
+				// Skin 1 has moved off the right of the screen
 				if ( _skin1.x > skin.displayObject.stage.stageWidth ) {
 					_skin1.x = _skin2.x - _skin1.width;
 				}
+				// Skin 2 has moved off the right of the screen
 				if ( _skin2.x > skin.displayObject.stage.stageWidth ) {
 					_skin2.x = _skin1.x - _skin2.width;
 				}					

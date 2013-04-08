@@ -1,0 +1,239 @@
+<!--Warning : Cannot find resourceID for object - [object TextureComponent], with property - bitmapData. Check that this property is only set via the ResourceManager.bindResource() method
+Warning : Cannot find resourceID for object - [object TextureAtlasComponent], with property - xml. Check that this property is only set via the ResourceManager.bindResource() method
+Warning : Cannot find resourceID for object - [object SoundComponent], with property - asset. Check that this property is only set via the ResourceManager.bindResource() method
+Warning : Cannot find resourceID for object - [object TextureComponent], with property - bitmapData. Check that this property is only set via the ResourceManager.bindResource() method
+Warning : Cannot find resourceID for object - [object PDParticleSystemComponent], with property - xml. Check that this property is only set via the ResourceManager.bindResource() method
+Warning : Cannot find resourceID for object - [object PDParticleSystemComponent], with property - xml. Check that this property is only set via the ResourceManager.bindResource() method
+Warning : Cannot find resourceID for object - [object SoundComponent], with property - asset. Check that this property is only set via the ResourceManager.bindResource() method
+Warning : Cannot find resourceID for object - [object SoundComponent], with property - asset. Check that this property is only set via the ResourceManager.bindResource() method
+Warning : Cannot find resourceID for object - [object SoundComponent], with property - asset. Check that this property is only set via the ResourceManager.bindResource() method
+Warning : Cannot find resourceID for object - [object SoundComponent], with property - asset. Check that this property is only set via the ResourceManager.bindResource() method
+Warning : Cannot find resourceID for object - [object SoundComponent], with property - asset. Check that this property is only set via the ResourceManager.bindResource() method-->
+<ns0:CadetScene x:id="0" framerate="60" timeScale="1" name="Scene" xmlns:ns0="cadet.core" xmlns:x="core.app.core.serialization.Serializer" xmlns:ns1="core.data" xmlns:ns2="cadet2D.components.renderers" xmlns:ns3="cadet2D.components.textures" xmlns:ns4="hungryHero.components.processes" xmlns:ns5="cadet2D.components.processes" xmlns:ns6="hungryHero.components.behaviours" xmlns:ns7="cadet.components.processes" xmlns:ns8="cadet.components.sounds" xmlns:ns9="cadet2D.components.core" xmlns:ns10="cadet2D.components.skins" xmlns:ns11="cadet2D.components.particles" xmlns:ns12="cadet2D.components.transforms" xmlns:ns13="core.app.managers">
+  <ns1:ArrayCollection x:name="children" x:id="1">
+    <ns2:Renderer2D x:name="0" x:id="2" depthSort="1" name="Starling Renderer"/>
+    <ns3:TextureComponent x:name="1" x:id="3" name="Component"/>
+    <ns3:TextureAtlasComponent x:name="2" x:id="4" name="Component">
+      <x:Ref x:name="texture" x:id="3"/>
+    </ns3:TextureAtlasComponent>
+    <ns4:GlobalsProcess x:name="3" x:id="5" numLives="5" playerSpeed="0" playerMaxSpeed="1400" paused="1" playerMinSpeed="650" currentLives="5" name="Component"/>
+    <ns5:WorldBounds2D x:name="4" x:id="6" bottom="518" name="WorldBounds2D" right="1024" top="100" left="0"/>
+    <ns6:ShakeBehaviour x:name="5" x:id="7" targetX="0" targetY="0" name="Component">
+      <x:Ref x:name="target" x:id="2"/>
+    </ns6:ShakeBehaviour>
+    <ns7:SoundProcess x:name="6" x:id="8" name="Component" muted="0">
+      <ns8:SoundComponent x:name="music" x:id="9" name="Component" startTime="0" loops="999"/>
+    </ns7:SoundProcess>
+    <ns3:TextureComponent x:name="7" x:id="10" name="Component"/>
+    <ns4:BackgroundsProcess x:name="8" x:id="11" xDirection="LEFT" name="Component"/>
+    <ns9:Entity x:name="9" x:id="12" name="Entity">
+      <ns1:ArrayCollection x:name="children" x:id="13">
+        <ns10:ImageSkin x:name="0" x:id="14" height="0" matrix="1,0,0,1,0,0" touchable="1" name="ImageSkin" visible="1" width="0">
+          <x:Ref x:name="texture" x:id="10"/>
+        </ns10:ImageSkin>
+        <ns6:ParallaxBehaviour x:name="1" x:id="15" depth="0.1" name="ParallaxBehaviour" speed="-15"/>
+      </ns1:ArrayCollection>
+    </ns9:Entity>
+    <ns9:Entity x:name="10" x:id="16" name="Entity">
+      <ns1:ArrayCollection x:name="children" x:id="17">
+        <ns10:ImageSkin x:name="0" x:id="18" height="0" matrix="1,0,0,1,0,440" touchable="1" name="ImageSkin" texturesPrefix="bgLayer2" visible="1" width="0">
+          <x:Ref x:name="textureAtlas" x:id="4"/>
+        </ns10:ImageSkin>
+        <ns6:ParallaxBehaviour x:name="1" x:id="19" depth="0.3" name="ParallaxBehaviour" speed="-15"/>
+      </ns1:ArrayCollection>
+    </ns9:Entity>
+    <ns9:Entity x:name="11" x:id="20" name="Entity">
+      <ns1:ArrayCollection x:name="children" x:id="21">
+        <ns10:ImageSkin x:name="0" x:id="22" height="0" matrix="1,0,0,1,0,510" touchable="1" name="ImageSkin" texturesPrefix="bgLayer3" visible="1" width="0">
+          <x:Ref x:name="textureAtlas" x:id="4"/>
+        </ns10:ImageSkin>
+        <ns6:ParallaxBehaviour x:name="1" x:id="23" depth="0.6" name="ParallaxBehaviour" speed="-15"/>
+      </ns1:ArrayCollection>
+    </ns9:Entity>
+    <ns9:Entity x:name="12" x:id="24" name="Entity">
+      <ns1:ArrayCollection x:name="children" x:id="25">
+        <ns10:ImageSkin x:name="0" x:id="26" height="0" matrix="1,0,0,1,0,600" touchable="1" name="ImageSkin" texturesPrefix="bgLayer4" visible="1" width="0">
+          <x:Ref x:name="textureAtlas" x:id="4"/>
+        </ns10:ImageSkin>
+        <ns6:ParallaxBehaviour x:name="1" x:id="27" depth="1" name="ParallaxBehaviour" speed="-15"/>
+      </ns1:ArrayCollection>
+    </ns9:Entity>
+    <ns9:Entity x:name="13" x:id="28" name="Entity">
+      <ns1:ArrayCollection x:name="children" x:id="29">
+        <ns10:ImageSkin x:name="0" x:id="30" height="0" matrix="1,0,0,1,0,0" touchable="1" name="ImageSkin" texturesPrefix="particleEat" visible="1" width="0">
+          <x:Ref x:name="textureAtlas" x:id="4"/>
+        </ns10:ImageSkin>
+      </ns1:ArrayCollection>
+    </ns9:Entity>
+    <ns4:EatParticlesProcess x:name="14" x:id="31" name="Component">
+      <x:Ref x:name="particlesContainer" x:id="28"/>
+    </ns4:EatParticlesProcess>
+    <ns9:Entity x:name="15" x:id="32" name="Entity">
+      <ns1:ArrayCollection x:name="children" x:id="33">
+        <ns10:ImageSkin x:name="0" x:id="34" height="0" matrix="1,0,0,1,0,0" touchable="1" name="ImageSkin" texturesPrefix="particleWindForce" visible="1" width="0">
+          <x:Ref x:name="textureAtlas" x:id="4"/>
+        </ns10:ImageSkin>
+      </ns1:ArrayCollection>
+    </ns9:Entity>
+    <ns4:WindParticlesProcess x:name="16" x:id="35" name="Component">
+      <x:Ref x:name="particlesContainer" x:id="32"/>
+    </ns4:WindParticlesProcess>
+    <ns11:PDParticleSystemComponent x:name="17" x:id="36" autoplay="0" matrix="1,0,0,1,0,0" emitterType="Gravity" startColor="255" endColorAlpha="0" startColorVarAlpha="1" endColorVariance="0" emissionRate="320" startColorAlpha="1" startColorVariance="0" emitterXVariance="0" blendFactorSource="sourceAlpha" endColorVarAlpha="0" maxCapacity="8192" startSizeVariance="0" lifespanVariance="0" emitterX="0" endColor="65535" maxNumParticles="128" emitterYVariance="0" emitAngle="0" endSize="10" blendFactorDest="one" endRotation="0" startRotation="0" endRotationVar="0" lifespan="0.4" emitAngleVariance="0" emitterY="0" startSize="50" startRotationVar="0" gravityY="0" speedVariance="0" radialAcceleration="0" endSizeVariance="0" radialAccelVar="0" tangentialAccel="0" gravityX="0" maxRadius="100" maxRadiusVariance="0" tangentialAccelVar="0" minRadius="20" rotatePerSecond="720" rotatePerSecondVar="0" speed="800" name="Component"/>
+    <ns11:PDParticleSystemComponent x:name="18" x:id="37" autoplay="0" matrix="1,0,0,1,0,0" emitterType="Gravity" startColor="255" endColorAlpha="0" startColorVarAlpha="1" endColorVariance="0" emissionRate="320" startColorAlpha="1" startColorVariance="0" emitterXVariance="0" blendFactorSource="sourceAlpha" endColorVarAlpha="0" maxCapacity="8192" startSizeVariance="0" lifespanVariance="0" emitterX="0" endColor="65535" maxNumParticles="128" emitterYVariance="0" emitAngle="0" endSize="10" blendFactorDest="one" endRotation="0" startRotation="0" endRotationVar="0" lifespan="0.4" emitAngleVariance="0" emitterY="0" startSize="50" startRotationVar="0" gravityY="0" speedVariance="0" radialAcceleration="0" endSizeVariance="0" radialAccelVar="0" tangentialAccel="0" gravityX="0" maxRadius="100" maxRadiusVariance="0" tangentialAccelVar="0" minRadius="20" rotatePerSecond="720" rotatePerSecondVar="0" speed="800" name="Component"/>
+    <ns9:Entity x:name="19" x:id="38" name="Entity">
+      <ns1:ArrayCollection x:name="children" x:id="39">
+        <ns12:Transform2D x:name="0" x:id="40" matrix="1,0,0,1,-200,-200" name="Transform"/>
+        <ns10:MovieClipSkin x:name="1" x:id="41" height="0" loop="1" matrix="1,0,0,1,-200,-200" touchable="1" name="ImageSkin" texturesPrefix="fly_" visible="1" width="0">
+          <x:Ref x:name="transform2D" x:id="40"/>
+          <x:Ref x:name="textureAtlas" x:id="4"/>
+        </ns10:MovieClipSkin>
+        <ns6:HeroBehaviour x:name="2" x:id="42" name="Component"/>
+      </ns1:ArrayCollection>
+    </ns9:Entity>
+    <ns9:Entity x:name="20" x:id="43" name="Entity">
+      <ns1:ArrayCollection x:name="children" x:id="44">
+        <ns10:ImageSkin x:name="0" x:id="45" height="0" matrix="1,0,0,1,-1000,0" touchable="1" name="ImageSkin" texturesPrefix="item1" visible="1" width="0">
+          <x:Ref x:name="textureAtlas" x:id="4"/>
+        </ns10:ImageSkin>
+        <ns10:ImageSkin x:name="1" x:id="46" height="0" matrix="1,0,0,1,-1000,0" touchable="1" name="ImageSkin" texturesPrefix="item2" visible="1" width="0">
+          <x:Ref x:name="textureAtlas" x:id="4"/>
+        </ns10:ImageSkin>
+        <ns10:ImageSkin x:name="2" x:id="47" height="0" matrix="1,0,0,1,-1000,0" touchable="1" name="ImageSkin" texturesPrefix="item3" visible="1" width="0">
+          <x:Ref x:name="textureAtlas" x:id="4"/>
+        </ns10:ImageSkin>
+        <ns10:ImageSkin x:name="3" x:id="48" height="0" matrix="1,0,0,1,-1000,0" touchable="1" name="ImageSkin" texturesPrefix="item4" visible="1" width="0">
+          <x:Ref x:name="textureAtlas" x:id="4"/>
+        </ns10:ImageSkin>
+        <ns10:ImageSkin x:name="4" x:id="49" height="0" matrix="1,0,0,1,-1000,0" touchable="1" name="ImageSkin" texturesPrefix="item5" visible="1" width="0">
+          <x:Ref x:name="textureAtlas" x:id="4"/>
+        </ns10:ImageSkin>
+      </ns1:ArrayCollection>
+    </ns9:Entity>
+    <ns9:Entity x:name="21" x:id="50" name="Entity">
+      <ns1:ArrayCollection x:name="children" x:id="51">
+        <ns9:Entity x:name="0" x:id="52" name="Entity">
+          <ns1:ArrayCollection x:name="children" x:id="53">
+            <ns10:ImageSkin x:name="0" x:id="54" height="0" matrix="1,0,0,1,-1000,0" touchable="1" name="ImageSkin" texturesPrefix="item6" visible="1" width="0">
+              <x:Ref x:name="textureAtlas" x:id="4"/>
+            </ns10:ImageSkin>
+            <ns6:SpeedUpBehaviour x:name="1" x:id="55" name="Component" effectLength="5">
+              <ns8:SoundComponent x:name="collectSound" x:id="56" name="Component" startTime="0" loops="0"/>
+              <x:Ref x:name="targetTransform" x:id="41"/>
+              <x:Ref x:name="particleEffect" x:id="36"/>
+            </ns6:SpeedUpBehaviour>
+          </ns1:ArrayCollection>
+        </ns9:Entity>
+        <ns9:Entity x:name="1" x:id="57" name="Entity">
+          <ns1:ArrayCollection x:name="children" x:id="58">
+            <ns10:ImageSkin x:name="0" x:id="59" height="0" matrix="1,0,0,1,-1000,0" touchable="1" name="ImageSkin" texturesPrefix="item7" visible="1" width="0">
+              <x:Ref x:name="textureAtlas" x:id="4"/>
+            </ns10:ImageSkin>
+            <ns6:MagnetBehaviour x:name="1" x:id="60" name="Component" effectLength="4" pcDistance="0.2">
+              <ns8:SoundComponent x:name="collectSound" x:id="61" name="Component" startTime="0" loops="0"/>
+              <x:Ref x:name="targetTransform" x:id="41"/>
+              <x:Ref x:name="particleEffect" x:id="37"/>
+            </ns6:MagnetBehaviour>
+          </ns1:ArrayCollection>
+        </ns9:Entity>
+      </ns1:ArrayCollection>
+    </ns9:Entity>
+    <ns4:ItemsProcess x:name="22" x:id="62" name="Component">
+      <ns8:SoundComponent x:name="collectSound" x:id="63" name="Component" startTime="0" loops="0"/>
+      <ns1:ArrayCollection x:name="children" x:id="64">
+        <ns6:MoveBehaviour x:name="0" x:id="65" angle="270" name="Component"/>
+      </ns1:ArrayCollection>
+      <x:Ref x:name="defaultMoveBehaviour" x:id="65"/>
+      <x:Ref x:name="itemsContainer" x:id="43"/>
+      <x:Ref x:name="powerupsContainer" x:id="50"/>
+      <x:Ref x:name="hitTestSkin" x:id="41"/>
+    </ns4:ItemsProcess>
+    <ns10:MovieClipSkin x:name="23" x:id="66" height="0" loop="1" matrix="1,0,0,1,-1000,0" touchable="1" name="ImageSkin" texturesPrefix="watchOut_" visible="1" width="0">
+      <x:Ref x:name="textureAtlas" x:id="4"/>
+    </ns10:MovieClipSkin>
+    <ns9:Entity x:name="24" x:id="67" name="Entity">
+      <ns1:ArrayCollection x:name="children" x:id="68">
+        <ns9:Entity x:name="0" x:id="69" name="Entity">
+          <ns1:ArrayCollection x:name="children" x:id="70">
+            <ns10:ImageSkin x:name="0" x:id="71" height="0" matrix="1,0,0,1,-1000,0" touchable="1" name="ImageSkin" texturesPrefix="obstacle1" visible="1" width="0">
+              <ns12:Transform2D x:name="transform2D" x:id="72" matrix="1,0,0,1,-1000,0" name="Transform"/>
+              <x:Ref x:name="textureAtlas" x:id="4"/>
+            </ns10:ImageSkin>
+            <ns10:ImageSkin x:name="1" x:id="73" height="0" matrix="1,0,0,1,-1000,0" touchable="1" name="ImageSkin" texturesPrefix="obstacle1_crash" visible="1" width="0">
+              <x:Ref x:name="transform2D" x:id="72"/>
+              <x:Ref x:name="textureAtlas" x:id="4"/>
+            </ns10:ImageSkin>
+            <x:Ref x:name="2" x:id="72"/>
+            <ns6:ObstacleBehaviour x:name="3" x:id="74" name="Component">
+              <x:Ref x:name="defaultSkin" x:id="71"/>
+              <x:Ref x:name="warningSkin" x:id="66"/>
+              <x:Ref x:name="crashSkin" x:id="73"/>
+            </ns6:ObstacleBehaviour>
+          </ns1:ArrayCollection>
+        </ns9:Entity>
+        <ns9:Entity x:name="1" x:id="75" name="Entity">
+          <ns1:ArrayCollection x:name="children" x:id="76">
+            <ns10:ImageSkin x:name="0" x:id="77" height="0" matrix="1,0,0,1,-1000,0" touchable="1" name="ImageSkin" texturesPrefix="obstacle2" visible="1" width="0">
+              <ns12:Transform2D x:name="transform2D" x:id="78" matrix="1,0,0,1,-1000,0" name="Transform"/>
+              <x:Ref x:name="textureAtlas" x:id="4"/>
+            </ns10:ImageSkin>
+            <ns10:ImageSkin x:name="1" x:id="79" height="0" matrix="1,0,0,1,-1000,0" touchable="1" name="ImageSkin" texturesPrefix="obstacle2_crash" visible="1" width="0">
+              <x:Ref x:name="transform2D" x:id="78"/>
+              <x:Ref x:name="textureAtlas" x:id="4"/>
+            </ns10:ImageSkin>
+            <x:Ref x:name="2" x:id="78"/>
+            <ns6:ObstacleBehaviour x:name="3" x:id="80" name="Component">
+              <x:Ref x:name="defaultSkin" x:id="77"/>
+              <x:Ref x:name="warningSkin" x:id="66"/>
+              <x:Ref x:name="crashSkin" x:id="79"/>
+            </ns6:ObstacleBehaviour>
+          </ns1:ArrayCollection>
+        </ns9:Entity>
+        <ns9:Entity x:name="2" x:id="81" name="Entity">
+          <ns1:ArrayCollection x:name="children" x:id="82">
+            <ns10:ImageSkin x:name="0" x:id="83" height="0" matrix="1,0,0,1,-1000,0" touchable="1" name="ImageSkin" texturesPrefix="obstacle3" visible="1" width="0">
+              <ns12:Transform2D x:name="transform2D" x:id="84" matrix="1,0,0,1,-1000,0" name="Transform"/>
+              <x:Ref x:name="textureAtlas" x:id="4"/>
+            </ns10:ImageSkin>
+            <ns10:ImageSkin x:name="1" x:id="85" height="0" matrix="1,0,0,1,-1000,0" touchable="1" name="ImageSkin" texturesPrefix="obstacle3_crash" visible="1" width="0">
+              <x:Ref x:name="transform2D" x:id="84"/>
+              <x:Ref x:name="textureAtlas" x:id="4"/>
+            </ns10:ImageSkin>
+            <x:Ref x:name="2" x:id="84"/>
+            <ns6:ObstacleBehaviour x:name="3" x:id="86" name="Component">
+              <x:Ref x:name="defaultSkin" x:id="83"/>
+              <x:Ref x:name="warningSkin" x:id="66"/>
+              <x:Ref x:name="crashSkin" x:id="85"/>
+            </ns6:ObstacleBehaviour>
+          </ns1:ArrayCollection>
+        </ns9:Entity>
+        <ns9:Entity x:name="3" x:id="87" name="Entity">
+          <ns1:ArrayCollection x:name="children" x:id="88">
+            <ns10:MovieClipSkin x:name="0" x:id="89" height="0" loop="1" matrix="1,0,0,1,-1000,0" touchable="1" name="ImageSkin" texturesPrefix="obstacle4_0" visible="1" width="0">
+              <ns12:Transform2D x:name="transform2D" x:id="90" matrix="1,0,0,1,-1000,0" name="Transform"/>
+              <x:Ref x:name="textureAtlas" x:id="4"/>
+            </ns10:MovieClipSkin>
+            <ns10:ImageSkin x:name="1" x:id="91" height="0" matrix="1,0,0,1,-1000,0" touchable="1" name="ImageSkin" texturesPrefix="obstacle4_crash" visible="1" width="0">
+              <x:Ref x:name="transform2D" x:id="90"/>
+              <x:Ref x:name="textureAtlas" x:id="4"/>
+            </ns10:ImageSkin>
+            <x:Ref x:name="2" x:id="90"/>
+            <ns6:ObstacleBehaviour x:name="3" x:id="92" name="Component">
+              <x:Ref x:name="defaultSkin" x:id="89"/>
+              <x:Ref x:name="warningSkin" x:id="66"/>
+              <x:Ref x:name="crashSkin" x:id="91"/>
+            </ns6:ObstacleBehaviour>
+          </ns1:ArrayCollection>
+        </ns9:Entity>
+      </ns1:ArrayCollection>
+    </ns9:Entity>
+    <ns4:ObstaclesProcess x:name="25" x:id="93" obstacleSpeed="300" obstacleGap="1200" name="Component">
+      <ns8:SoundComponent x:name="hurtSound" x:id="94" name="Component" startTime="0" loops="0"/>
+      <ns8:SoundComponent x:name="hitSound" x:id="95" name="Component" startTime="0" loops="0"/>
+      <x:Ref x:name="obstaclesContainer" x:id="67"/>
+      <x:Ref x:name="hitTestSkin" x:id="41"/>
+    </ns4:ObstaclesProcess>
+  </ns1:ArrayCollection>
+  <ns13:DependencyManager x:name="dependencyManager" x:id="96">
+    <ns1:ArrayCollection x:name="dependencyNodes" x:id="97"/>
+  </ns13:DependencyManager>
+</ns0:CadetScene>

@@ -22,8 +22,7 @@ package model
 		private const LOADED			:String = "loaded";
 		
 		private var _parent				:DisplayObjectContainer;
-		private var _cadetScene			:CadetScene;		
-		private var _cadetFileURL		:String = "/HungryHero.cdt";
+		private var _cadetScene			:CadetScene;
 		
 		private var _heroBehaviour		:HeroBehaviour;
 		
@@ -40,37 +39,29 @@ package model
 		
 		public function GameModel_XML()
 		{
-			// Required when loading data and assets.
-			var startUpOperation:Cadet2DStartUpOperation = new Cadet2DStartUpOperation(_cadetFileURL);
-			//startUpOperation.addManifest( startUpOperation.baseManifestURL + "Cadet2DBox2D.xml");
-			startUpOperation.addEventListener(flash.events.Event.COMPLETE, startUpCompleteHandler);
-			startUpOperation.execute();
-		}
-		
-		private function startUpCompleteHandler( event:flash.events.Event ):void
-		{
-			var operation:Cadet2DStartUpOperation = Cadet2DStartUpOperation( event.target );
 
-			_cadetScene = CadetScene(operation.getResult());
-				
-			dispatchEvent( new flash.events.Event(LOADED) );
 		}
 		
 		public function init(parent:starling.display.DisplayObjectContainer):void
 		{
 			_parent = parent;
 			
+			// Grab a reference to the Renderer2D and enable it on the existing Starling display list
 			var renderer:Renderer2D = ComponentUtil.getChildOfType(_cadetScene, Renderer2D);
 			renderer.enableToExisting(parent);
 			
+			// Grab a reference to the GlobalsProcess and pause the game on first showing
 			_globals = ComponentUtil.getChildOfType( _cadetScene, GlobalsProcess, true );
 			_globals.paused = true;
 			
+			// Grab a reference to the SoundProcess so we can toggle "muted" via our custom game UI
 			_soundProcess = ComponentUtil.getChildOfType( _cadetScene, SoundProcess, true );
 			
+			// Grab a reference to Components which need to be rest on subsequent turns
 			_shakeBehaviour = ComponentUtil.getChildOfType( _cadetScene, ShakeBehaviour, true );
 			_heroBehaviour = ComponentUtil.getChildOfType( _cadetScene, HeroBehaviour, true );
 			
+			// Store the initial position of the hero so we can reset to it on subsequent turns
 			if (!_initialised) {
 				_heroStartX = _heroBehaviour.transform.x;
 				_heroStartY = _heroBehaviour.transform.y;

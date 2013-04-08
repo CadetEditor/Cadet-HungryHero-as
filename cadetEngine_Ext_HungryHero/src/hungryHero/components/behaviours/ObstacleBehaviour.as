@@ -23,9 +23,9 @@ package hungryHero.components.behaviours
 		
 		public var transform	:Transform2D;
 		
-		public function ObstacleBehaviour()
+		public function ObstacleBehaviour( name:String = "ObstacleBehaviour" )
 		{
-			
+			super( name );
 		}
 		
 		public function init():void

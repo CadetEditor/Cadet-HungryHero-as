@@ -73,8 +73,10 @@ package hungryHero.components.processes
 		public var soundProcess				:SoundProcess;
 		private var _collectSound			:ISound;
 		
-		public function ItemsProcess()
+		public function ItemsProcess( name:String = "ItemsProcess" )
 		{
+			super( name );
+			
 			_items = new Vector.<AbstractSkin2D>();
 			_powerups = new Vector.<AbstractSkin2D>();
 			_allItems = new Vector.<AbstractSkin2D>();

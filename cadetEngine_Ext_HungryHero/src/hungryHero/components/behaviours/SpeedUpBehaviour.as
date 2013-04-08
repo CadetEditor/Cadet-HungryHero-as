@@ -32,9 +32,9 @@ package hungryHero.components.behaviours
 		// PARTICLES
 		private var _particleEffect			:PDParticleSystemComponent;
 		
-		public function SpeedUpBehaviour()
+		public function SpeedUpBehaviour( name:String = "SpeedUpBehaviour" )
 		{
-			super();
+			super( name );
 		}
 		
 		override protected function addedToScene():void

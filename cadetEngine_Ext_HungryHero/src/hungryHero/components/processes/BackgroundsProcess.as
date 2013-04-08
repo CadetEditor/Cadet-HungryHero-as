@@ -24,9 +24,9 @@ package hungryHero.components.processes
 		
 		private var _parallaxTable	:Dictionary;	
 		
-		public function BackgroundsProcess()
+		public function BackgroundsProcess( name:String = "BackgroundsProcess" )
 		{
-			super();
+			super(name);
 			
 			_parallaxTable = new Dictionary();
 		}

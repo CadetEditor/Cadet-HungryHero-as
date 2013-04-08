@@ -22,7 +22,7 @@ package hungryHero.components.behaviours
 		
 		public function ShakeBehaviour()
 		{
-			super();
+			super("ShakeBehaviour");
 		}
 		
 		[Serializable][Inspectable( editor="ComponentList", scope="scene", priority="52" )]

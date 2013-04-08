@@ -52,8 +52,10 @@ package hungryHero.components.processes
 		private var _hitSound					:ISound;
 		private var _hurtSound					:ISound;
 	
-		public function ObstaclesProcess()
+		public function ObstaclesProcess( name:String = "ObstaclesProcess" )
 		{
+			super( name );
+			
 			_obstacles = new Vector.<ObstacleBehaviour>();
 			
 			// Initialize items-to-animate vector.

@@ -1,5 +1,11 @@
 package
 {
+	import flash.events.Event;
+	
+	import cadet.core.CadetScene;
+	
+	import cadet2D.operations.Cadet2DStartUpOperation;
+	
 	import controller.GameViewController;
 	import controller.WelcomeViewController;
 	
@@ -24,14 +30,30 @@ package
 		private var viewContainer:Sprite;		 	// All views are added in here.
 		private var soundButton:SoundButton;		// Sound / Mute button.
 		
+		private var _cadetFileURL		:String = "/HungryHero2.cdt";
+		
 		public function Main()
 		{
-			this.addEventListener(Event.ADDED_TO_STAGE, onAddedToStage);
+			this.addEventListener(starling.events.Event.ADDED_TO_STAGE, onAddedToStage);
 		}
 		
-		private function onAddedToStage(event:Event):void
+		private function onAddedToStage(event:starling.events.Event):void
 		{
-			this.removeEventListener(Event.ADDED_TO_STAGE, onAddedToStage);
+			this.removeEventListener(starling.events.Event.ADDED_TO_STAGE, onAddedToStage);
+			
+			// Required when loading data and assets.
+			var startUpOperation:Cadet2DStartUpOperation = new Cadet2DStartUpOperation();//_cadetFileURL);
+			startUpOperation.addEventListener(flash.events.Event.COMPLETE, startUpCompleteHandler);
+			startUpOperation.execute();
+		}
+		
+		private function startUpCompleteHandler( event:flash.events.Event ):void
+		{
+			var operation:Cadet2DStartUpOperation = Cadet2DStartUpOperation( event.target );
+			
+			//_cadetScene = CadetScene(operation.getResult());
+			
+			//dispatchEvent( new flash.events.Event(LOADED) );
 			
 			// Initialize screens.
 			init();
@@ -55,13 +77,13 @@ package
 			soundButton = new SoundButton();
 			soundButton.x = int(soundButton.width * 0.5);
 			soundButton.y = int(soundButton.height * 0.5);
-			soundButton.addEventListener(Event.TRIGGERED, onSoundButtonClick);
+			soundButton.addEventListener(starling.events.Event.TRIGGERED, onSoundButtonClick);
 			this.addChild(soundButton);
 		}
 		
 		// On click of the sound/mute button. 
 		// @param event
-		private function onSoundButtonClick(event:Event = null):void
+		private function onSoundButtonClick(event:starling.events.Event = null):void
 		{
 			if (Sounds.muted) {
 				Sounds.muted = false;

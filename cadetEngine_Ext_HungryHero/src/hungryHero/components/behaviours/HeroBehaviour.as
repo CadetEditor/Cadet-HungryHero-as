@@ -14,7 +14,6 @@ package hungryHero.components.behaviours
 	import cadet2D.components.renderers.Renderer2D;
 	import cadet2D.components.skins.AbstractSkin2D;
 	import cadet2D.components.skins.ImageSkin;
-	import cadet2D.components.skins.MovieClipSkin;
 	import cadet2D.components.transforms.ITransform2D;
 	import cadet2D.components.transforms.Transform2D;
 	
@@ -48,9 +47,9 @@ package hungryHero.components.behaviours
 		
 		private var startX					:Number = 200;
 		
-		public function HeroBehaviour()
+		public function HeroBehaviour( name:String = "HeroBehaviour" )
 		{
-			
+			super( name );
 		}
 		
 		override protected function addedToScene():void
@@ -141,7 +140,6 @@ package hungryHero.components.behaviours
 			// Game over.
 			else if ( globals.gameState == GlobalsProcess.GAME_STATE_OVER )
 			{
-			
 /*				
 				for(var m:uint = 0; m < eatParticlesToAnimateLength; m++)
 				{

@@ -35,9 +35,9 @@ package hungryHero.components.behaviours
 		// PARTICLES
 		private var _particleEffect			:PDParticleSystemComponent;
 		
-		public function MagnetBehaviour()
+		public function MagnetBehaviour( name:String = "MagnetBehaviour" )
 		{
-			super();
+			super( name );
 		}
 		
 		override protected function addedToScene():void

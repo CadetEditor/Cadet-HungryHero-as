@@ -19,9 +19,9 @@ package hungryHero.components.behaviours
 		// PARTICLES
 		private var _particleEffect			:PDParticleSystemComponent;
 		
-		public function MoveBehaviour()
+		public function MoveBehaviour( name:String = "MoveBehaviour" )
 		{
-			super();
+			super( name );
 		}
 		
 		override protected function addedToScene():void

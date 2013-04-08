@@ -40,9 +40,11 @@ package hungryHero.components.processes
 		public var scoreDistance			:Number = 0;
 		public var scoreItems				:Number = 0;
 		
-		public function GlobalsProcess()
+		public function GlobalsProcess( name:String = "GlobalsProcess" )
 		{
 			gameState = GAME_STATE_IDLE;
+			
+			super(name);
 		}
 		
 		public function reset():void
