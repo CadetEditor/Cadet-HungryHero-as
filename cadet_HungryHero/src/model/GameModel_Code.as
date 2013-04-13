@@ -1,9 +1,5 @@
 package model
 {
-	import flash.events.Event;
-	import flash.events.EventDispatcher;
-	import flash.utils.ByteArray;
-	
 	import cadet.components.processes.SoundProcess;
 	import cadet.components.sounds.SoundComponent;
 	import cadet.core.CadetScene;
@@ -12,15 +8,13 @@ package model
 	import cadet2D.components.particles.PDParticleSystemComponent;
 	import cadet2D.components.processes.WorldBounds2D;
 	import cadet2D.components.renderers.Renderer2D;
-	import cadet2D.components.skins.AbstractSkin2D;
 	import cadet2D.components.skins.ImageSkin;
 	import cadet2D.components.skins.MovieClipSkin;
 	import cadet2D.components.textures.TextureAtlasComponent;
 	import cadet2D.components.textures.TextureComponent;
 	import cadet2D.components.transforms.Transform2D;
-	import cadet2D.events.SkinEvent;
 	
-	import core.app.util.AsynchronousUtil;
+	import core.app.managers.ResourceManager;
 	
 	import hungryHero.components.behaviours.HeroBehaviour;
 	import hungryHero.components.behaviours.MagnetBehaviour;
@@ -40,127 +34,97 @@ package model
 	import starling.events.Event;
 
 	// This class constructs a CadetEngine 2D scene using the CadetEngine API
-	public class GameModel_Code extends EventDispatcher implements IGameModel
+	public class GameModel_Code implements IGameModel
 	{
-		private const LOADED			:String = "loaded";
-		
-		private var _cadetScene			:CadetScene;
-		private var _renderer			:Renderer2D;
+		private var _cadetScene				:CadetScene;
+		private var _renderer				:Renderer2D;
+		private var _resourceManager		:ResourceManager;
 		
 		// ASSETS
-		[Embed(source="../../bin-debug/files/assets/hungryHero/graphics/bgLayer1.jpg")]
-		private var SkyAsset:Class;
-		[Embed(source="../../bin-debug/files/assets/hungryHero/graphics/mySpriteSheet.png")]
-		private var SpriteSheetAsset:Class;
-		[Embed(source="../../bin-debug/files/assets/hungryHero/graphics/mySpriteSheet.xml", mimeType="application/octet-stream")]
-		private var SpriteSheetXML:Class;
-
-		[Embed(source="../../bin-debug/files/assets/hungryHero/particles/particleCoffee.pex", mimeType="application/octet-stream")]
-		private var ParticleCoffeeXML:Class;		
-		[Embed(source="../../bin-debug/files/assets/hungryHero/particles/particleMushroom.pex", mimeType="application/octet-stream")]
-		private var ParticleMushroomXML:Class;
+		private var bgLayerURL				:String = "hungryHero/graphics/bgLayer1.jpg";
+		private var spriteSheetURL			:String = "hungryHero/graphics/mySpritesheet.png";
+		private var spriteSheetXMLURL		:String = "hungryHero/graphics/mySpritesheet.xml";
+		private var particleCoffeeXMLURL	:String = "hungryHero/particles/particleCoffee.pex";
+		private var particleMushroomXMLURL	:String = "hungryHero/particles/particleMushroom.pex";
 		
 		// SOUNDS
-		[Embed(source='../../bin-debug/files/assets/hungryHero/sounds/eat.mp3')]
-		private var EatSoundClass:Class;
-		[Embed(source='../../bin-debug/files/assets/hungryHero/sounds/coffee.mp3')]
-		private var CoffeeSoundClass:Class;
-		[Embed(source='../../bin-debug/files/assets/hungryHero/sounds/mushroom.mp3')]
-		private var MushroomSoundClass:Class;
-		[Embed(source='../../bin-debug/files/assets/hungryHero/sounds/bgGame.mp3')]
-		private var MusicSoundClass:Class;
-		[Embed(source='../../bin-debug/files/assets/hungryHero/sounds/hit.mp3')]
-		private var HitSoundClass:Class;
-		[Embed(source='../../bin-debug/files/assets/hungryHero/sounds/hurt.mp3')]
-		private var HurtSoundClass:Class;
+		private var eatSoundURL				:String = "hungryHero/sounds/eat.mp3";
+		private var coffeeSoundURL			:String = "hungryHero/sounds/coffee.mp3";
+		private var mushroomSoundURL		:String = "hungryHero/sounds/mushroom.mp3";
+		private var bgMusicURL				:String = "hungryHero/sounds/bgGame.mp3";
+		private var hitSoundURL				:String = "hungryHero/sounds/hit.mp3";
+		private var hurtSoundURL			:String = "hungryHero/sounds/hurt.mp3";
 		
-		private var _allSprites			:TextureComponent;
-		private var _allSpritesAtlas	:TextureAtlasComponent;
+		private var _allSprites				:TextureComponent;
+		private var _allSpritesAtlas		:TextureAtlasComponent;
 		
-		private var _parallaxSpeed		:int = -15;
+		private var _worldBounds			:WorldBounds2D;
 		
-		private var _skySkin			:ImageSkin;
-		private var _hillsSkin			:ImageSkin;
-		private var _midgroundSkin		:ImageSkin;
-		private var _foregroundSkin		:ImageSkin;
+		private var _parallaxSpeed			:int = -15;
 		
-		private var _heroSkin			:MovieClipSkin;
-		private var _heroTransform2D	:Transform2D;
+		private var _skySkin				:ImageSkin;
+		private var _hillsSkin				:ImageSkin;
+		private var _midgroundSkin			:ImageSkin;
+		private var _foregroundSkin			:ImageSkin;
 		
-		private var _parent				:starling.display.DisplayObjectContainer;
+		private var _heroSkin				:MovieClipSkin;
+		private var _heroTransform2D		:Transform2D;
 		
-		private var _eatSound			:SoundComponent;
-		private var _mushroomSound		:SoundComponent;
-		private var _coffeeSound		:SoundComponent;
-		private var _musicSound			:SoundComponent;
-		private var _hitSound			:SoundComponent;
-		private var _hurtSound			:SoundComponent;
+		private var _parent					:starling.display.DisplayObjectContainer;
 		
-		private var _globals			:GlobalsProcess;
-		private var _soundProcess		:SoundProcess;
+		private var _eatSound				:SoundComponent;
+		private var _mushroomSound			:SoundComponent;
+		private var _coffeeSound			:SoundComponent;
+		private var _musicSound				:SoundComponent;
+		private var _hitSound				:SoundComponent;
+		private var _hurtSound				:SoundComponent;
 		
-		private var _heroStartX			:Number;
-		private var _heroStartY			:Number;
+		private var _globals				:GlobalsProcess;
+		private var _soundProcess			:SoundProcess;
 		
-		private var _shakeBehaviour		:ShakeBehaviour;
+		private var _heroStartX				:Number;
+		private var _heroStartY				:Number;
 		
-		private var _coffeeParticles	:PDParticleSystemComponent;
-		private var _mushroomParticles	:PDParticleSystemComponent;
+		private var _shakeBehaviour			:ShakeBehaviour;
 		
-		private var _muted				:Boolean;
+		private var _coffeeParticles		:PDParticleSystemComponent;
+		private var _mushroomParticles		:PDParticleSystemComponent;
 		
-		public function GameModel_Code()
+		private var _muted					:Boolean;
+		
+		public function GameModel_Code( resourceManager:ResourceManager )
 		{
-			AsynchronousUtil.callLater(onStartUpHandler);
-		}
-		
-		// Mimics the delayed loading of GameModel_XML so we can switch between both models
-		// without needing to change the implementation in GameViewController.
-		private function onStartUpHandler():void
-		{
-			dispatchEvent( new flash.events.Event(LOADED) );
-		}
-		
-		public function init(parent:starling.display.DisplayObjectContainer):void
-		{
-			_parent = parent;
+			_resourceManager 	= resourceManager;
 			
 			// Create a CadetScene
 			_cadetScene = new CadetScene();
 			
 			// Add a 2D Renderer to the scene
 			_renderer = new Renderer2D(true);
-			_renderer.viewportWidth = _parent.stage.stageWidth;
-			_renderer.viewportHeight = _parent.stage.stageHeight;
 			_cadetScene.children.addItem(_renderer);
-			_renderer.enableToExisting(_parent);
 			
 			// Add the main texture to the scene
 			_allSprites = new TextureComponent("All Sprites");
-			_allSprites.bitmapData = new SpriteSheetAsset().bitmapData;
+			_resourceManager.bindResource(spriteSheetURL, _allSprites, "bitmapData");
 			_cadetScene.children.addItem(_allSprites);
-			
-			var xmlFile:ByteArray = new SpriteSheetXML();
-			var xmlStr:String = xmlFile.readUTFBytes( xmlFile.length );
 			
 			// Add the main texture atlas to the scene
 			_allSpritesAtlas = new TextureAtlasComponent("All Sprites Atlas");
 			_allSpritesAtlas.texture = _allSprites;
-			_allSpritesAtlas.xml = new XML( xmlStr );
+			_resourceManager.bindResource(spriteSheetXMLURL, _allSpritesAtlas, "xml");
 			_cadetScene.children.addItem(_allSpritesAtlas);
 			
 			// Add the Global variables
 			_globals = new GlobalsProcess();
-			_globals.paused = true;
 			_cadetScene.children.addItem(_globals);
 			
 			// Define WorldBounds
-			var worldBounds:WorldBounds2D = new WorldBounds2D();
-			_cadetScene.children.addItem(worldBounds);
-			worldBounds.top 	= 100;
-			worldBounds.left 	= 0;
-			worldBounds.right 	= 1024;
-			worldBounds.bottom 	= 768 - 250;
+			_worldBounds = new WorldBounds2D();
+			_cadetScene.children.addItem(_worldBounds);
+			_worldBounds.top 	= 100;
+			_worldBounds.left 	= 0;
+			_worldBounds.right 	= 1024;
+			_worldBounds.bottom 	= 768 - 250;
 			
 			// Add ShakeBehaviour
 			_shakeBehaviour = new ShakeBehaviour();
@@ -172,10 +136,21 @@ package model
 			addParticles();
 			addHero();
 			addItems();
-			addObstacles();
+			addObstacles();	
+		}
+	
+		public function init(parent:starling.display.DisplayObjectContainer):void
+		{
+			_parent 			= parent;
 			
-			_parent.addEventListener( starling.events.Event.ENTER_FRAME, enterFrameHandler );	
-		}		
+			_renderer.viewportWidth = _parent.stage.stageWidth;
+			_renderer.viewportHeight = _parent.stage.stageHeight;
+			_renderer.enableToExisting(_parent);
+			
+			_globals.paused = true;
+			
+			_parent.addEventListener( starling.events.Event.ENTER_FRAME, enterFrameHandler );
+		}
 		
 		public function reset():void
 		{
@@ -216,26 +191,31 @@ package model
 			return _cadetScene;
 		}
 		
+		public function set cadetScene( value:CadetScene ):void
+		{
+			_cadetScene = value;
+		}
+		
 		private function addSounds():void
 		{
 			_musicSound = new SoundComponent("Music Sound");
-			_musicSound.asset = new MusicSoundClass();
 			_musicSound.loops = 999;
+			_resourceManager.bindResource(bgMusicURL, _musicSound, "asset");			
 			
 			_eatSound = new SoundComponent("Eat Sound");
-			_eatSound.asset = new EatSoundClass();
+			_resourceManager.bindResource(eatSoundURL, _eatSound, "asset");
 			
 			_mushroomSound = new SoundComponent("Collect Mushroom Sound");
-			_mushroomSound.asset = new MushroomSoundClass();
+			_resourceManager.bindResource(mushroomSoundURL, _mushroomSound, "asset");
 			
 			_coffeeSound = new SoundComponent("Collect Coffee Sound");
-			_coffeeSound.asset = new CoffeeSoundClass();
+			_resourceManager.bindResource(coffeeSoundURL, _coffeeSound, "asset");
 			
 			_hitSound = new SoundComponent("Hit Sound");
-			_hitSound.asset = new HitSoundClass();
+			_resourceManager.bindResource(hitSoundURL, _hitSound, "asset");
 			
 			_hurtSound = new SoundComponent("Hurt Sound");
-			_hurtSound.asset = new HurtSoundClass();
+			_resourceManager.bindResource(hurtSoundURL, _hurtSound, "asset");
 			
 			_soundProcess = new SoundProcess();
 			_cadetScene.children.addItem(_soundProcess);
@@ -246,7 +226,8 @@ package model
 		{
 			// Add the sky texture to the scene
 			var skyTexture:TextureComponent = new TextureComponent("Sky Texture");
-			skyTexture.bitmapData = new SkyAsset().bitmapData;
+			// set skyTexture.bitmapData via the ResourceManager
+			_resourceManager.bindResource(bgLayerURL, skyTexture, "bitmapData");
 			_cadetScene.children.addItem(skyTexture);
 			
 			var backgroundsProcess:BackgroundsProcess = new BackgroundsProcess();
@@ -316,7 +297,7 @@ package model
 		private function addHero():void
 		{
 			_heroStartX = -200;
-			_heroStartY = _parent.stage.stageHeight/2;
+			_heroStartY = 300;
 			
 			// Add Hero entity to the scene
 			var hero:Entity = new Entity("Hero");
@@ -324,7 +305,7 @@ package model
 			// Add a 2D transform
 			_heroTransform2D = new Transform2D();
 			_heroTransform2D.x = _heroStartX;
-			_heroTransform2D.y = _heroStartX;
+			_heroTransform2D.y = _heroStartY;
 			hero.children.addItem(_heroTransform2D);
 			// Add an animatable MovieClipSkin
 			_heroSkin = new MovieClipSkin("Hero Skin");
@@ -343,25 +324,39 @@ package model
 			var itemsEntity:Entity = new Entity("Items");
 			_cadetScene.children.addItem(itemsEntity);
 			
+			// Place items to the right of the stage
+			var startXpos:Number = _worldBounds.right + 20;
+			var startYpos:Number = 0;
+			
+			var xpos:Number = startXpos;
+			var ypos:Number = startYpos;
+			
 			for ( var i:uint = 0; i < 5; i ++ ) {
 				// Add an ImageSkin to the itemsEntity
 				var imageSkin:ImageSkin = new ImageSkin("Item "+(i+1));
-				imageSkin.x = -1000;
+				imageSkin.x = xpos;
 				imageSkin.textureAtlas = _allSpritesAtlas;
 				imageSkin.texturesPrefix = "item"+(i+1);
-				itemsEntity.children.addItem(imageSkin);				
+				itemsEntity.children.addItem(imageSkin);
+				// Place all of the items in a line so it looks neat in the editor
+				xpos += 40;
 			}
 			
 			// Add the Powerups Entity
 			var powerupsEntity:Entity = new Entity("Powerups");
 			_cadetScene.children.addItem(powerupsEntity);
 			
+			// Reset position values
+			xpos = startXpos;
+			ypos = startYpos + 50;
+			
 			// Add Coffee powerup
 			var powerup:Entity = new Entity("Coffee");
 			powerupsEntity.children.addItem(powerup);
 			imageSkin = new ImageSkin("Coffee Skin");
 			powerup.children.addItem(imageSkin);
-			imageSkin.x = -1000;
+			imageSkin.x = xpos;
+			imageSkin.y = ypos;
 			imageSkin.textureAtlas = _allSpritesAtlas;
 			imageSkin.texturesPrefix = "item6";
 			var speedUpBehaviour:SpeedUpBehaviour = new SpeedUpBehaviour();
@@ -370,12 +365,16 @@ package model
 			speedUpBehaviour.targetTransform = _heroSkin;
 			powerup.children.addItem(speedUpBehaviour);
 			
+			// Update position values
+			xpos += 60;
+			
 			// Add Mushroom powerup
 			powerup = new Entity("Mushroom");
 			powerupsEntity.children.addItem(powerup);
 			imageSkin = new ImageSkin("Mushroom Skin");
 			powerup.children.addItem(imageSkin);
-			imageSkin.x = -1000;
+			imageSkin.x = xpos;
+			imageSkin.y = ypos;
 			imageSkin.textureAtlas = _allSpritesAtlas;
 			imageSkin.texturesPrefix = "item7";
 			var magnetBehaviour:MagnetBehaviour = new MagnetBehaviour();
@@ -399,12 +398,23 @@ package model
 		
 		private function addObstacles():void
 		{
+			// Place items to the right of the stage
+			var startXpos:Number = _worldBounds.right + 20;
+			var startYpos:Number = 120;
+			
+			var xpos:Number = startXpos;
+			var ypos:Number = startYpos;
+			
 			var warningSkin:MovieClipSkin = new MovieClipSkin("Watch Out Skin");
 			_cadetScene.children.addItem(warningSkin);
 			warningSkin.textureAtlas = _allSpritesAtlas;
 			warningSkin.texturesPrefix = "watchOut_";
 			warningSkin.loop = true;
-			warningSkin.x = -1000;
+			warningSkin.x = xpos;
+			warningSkin.y = ypos
+				
+			// Update position values
+			ypos += 100;
 			
 			// Add the Obstacles Entity
 			var obstaclesEntity:Entity = new Entity("Obstacles");
@@ -425,7 +435,8 @@ package model
 				// Add the Transform2D to the obstacle entity
 				var transform:Transform2D = new Transform2D();
 				obstacle.children.addItem(transform);
-				transform.x = -1000;
+				transform.x = xpos;
+				transform.y = ypos;
 				// Add the ObstacleBehaviour to the obstacle entity
 				var behaviour:ObstacleBehaviour = new ObstacleBehaviour();
 				obstacle.children.addItem(behaviour);
@@ -433,7 +444,9 @@ package model
 				behaviour.crashSkin = crashSkin;
 				behaviour.warningSkin = warningSkin;
 				// Finally, add the obstacle entity to the container entity
-				obstaclesEntity.children.addItem(obstacle);				
+				obstaclesEntity.children.addItem(obstacle);	
+				
+				ypos += 90;
 			}
 			
 			// Helicopter Obstacle
@@ -451,7 +464,8 @@ package model
 			// Add the Transform2D to the obstacle entity
 			transform = new Transform2D();
 			obstacle.children.addItem(transform);
-			transform.x = -1000;
+			transform.x = xpos;
+			transform.y = ypos;
 			// Add the ObstacleBehaviour to the obstacle entity
 			behaviour = new ObstacleBehaviour();
 			obstacle.children.addItem(behaviour);
@@ -471,6 +485,13 @@ package model
 		
 		private function addParticles():void
 		{
+			// Place items to the right of the stage
+			var startXpos:Number = _worldBounds.right + 20;
+			var startYpos:Number = 600;
+			
+			var xpos:Number = startXpos;
+			var ypos:Number = startYpos;
+			
 			var particleSkin:ImageSkin;
 			var particlesEntity:Entity;
 			
@@ -483,6 +504,8 @@ package model
 			particlesEntity.children.addItem(particleSkin);
 			particleSkin.textureAtlas = _allSpritesAtlas;
 			particleSkin.texturesPrefix = "particleEat";
+			particleSkin.x = xpos;
+			particleSkin.y = ypos;
 			
 			// Add EatParticlesProcess
 			var eatParticlesProcess:EatParticlesProcess = new EatParticlesProcess();
@@ -493,34 +516,31 @@ package model
 			particlesEntity = new Entity("Wind Particles");
 			_cadetScene.children.addItem(particlesEntity);
 			
+			// Update positions
+			xpos += 40;
+			
 			// Add Wind particle Skin
 			particleSkin = new ImageSkin("Wind Particles Skin");
 			particlesEntity.children.addItem(particleSkin);
 			particleSkin.textureAtlas = _allSpritesAtlas;
 			particleSkin.texturesPrefix = "particleWindForce";
+			particleSkin.x = xpos;
+			particleSkin.y = ypos;
 			
 			// Add WindParticlesProcess
 			var windParticlesProcess:WindParticlesProcess = new WindParticlesProcess();
 			_cadetScene.children.addItem(windParticlesProcess);
 			windParticlesProcess.particlesContainer = particlesEntity;
 			
-			// Add ParticleCoffeeXML
-			var xmlFile:ByteArray = new ParticleCoffeeXML();
-			var xmlStr:String = xmlFile.readUTFBytes( xmlFile.length );
-			var xml:XML = new XML(xmlStr);
-			
 			// Add Coffee ParticleSystemComponent
-			_coffeeParticles = new PDParticleSystemComponent(xml, null, "Coffee Particles");
+			_coffeeParticles = new PDParticleSystemComponent(null, null, "Coffee Particles");
+			_resourceManager.bindResource(particleCoffeeXMLURL, _coffeeParticles, "xml");
 			_coffeeParticles.autoplay = false;
 			_cadetScene.children.addItem(_coffeeParticles);
 			
-			// Add ParticleMushroomXML
-			xmlFile = new ParticleMushroomXML();
-			xmlStr = xmlFile.readUTFBytes( xmlFile.length );
-			xml = new XML(xmlStr);
-			
 			// Add Mushroom ParticleSystemComponent
-			_mushroomParticles = new PDParticleSystemComponent(xml, null, "Mushroom Particles");
+			_mushroomParticles = new PDParticleSystemComponent(null, null, "Mushroom Particles");
+			_resourceManager.bindResource(particleMushroomXMLURL, _mushroomParticles, "xml");
 			_mushroomParticles.autoplay = false;
 			_cadetScene.children.addItem(_mushroomParticles);
 		}

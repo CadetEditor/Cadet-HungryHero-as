@@ -5,17 +5,10 @@ package controller
 	
 	import cadet.util.ComponentUtil;
 	
-	import core.app.CoreApp;
-	import core.app.core.serialization.ISerializationPlugin;
-	import core.app.core.serialization.ResourceSerializerPlugin;
-	import core.app.operations.SerializeOperation;
-	
 	import events.NavigationEvent;
 	
 	import hungryHero.components.processes.GlobalsProcess;
-	
-	import model.GameModel_Code;
-	import model.GameModel_XML;
+
 	import model.IGameModel;
 	
 	import sound.Sounds;
@@ -35,7 +28,7 @@ package controller
 		// Tween object for game over container.
 		private var tween_gameOverContainer:Tween;
 		
-		private var gameModel		:IGameModel;
+		private var _gameModel		:IGameModel;
 		
 		private var globals			:GlobalsProcess;
 		
@@ -46,17 +39,9 @@ package controller
 		public function init(view:DisplayObjectContainer):void
 		{
 			_view	= GameView(view);
+			_gameModel = Main.gameModel;
 			
-			// Comment out either IGameModel to test
-			gameModel = new GameModel_Code();
-			//gameModel = new GameModel_XML();
-			gameModel.addEventListener( "loaded", gameModelLoadedHandler );
-		}
-		
-		private function gameModelLoadedHandler( event:flash.events.Event ):void
-		{
 			enable();
-			serialize();
 		}
 		
 		public function reInit():void
@@ -71,8 +56,8 @@ package controller
 		
 		public function enable():void
 		{			
-			gameModel.init(_view.gameWindow);
-			gameModel.muted = Sounds.muted;
+			_gameModel.init(_view.gameWindow);
+			_gameModel.muted = Sounds.muted;
 			
 			Sounds.instance.addEventListener( flash.events.Event.CHANGE, toggleMuteHandler );
 			
@@ -88,7 +73,7 @@ package controller
 		
 		public function disable():void
 		{
-			gameModel.dispose();
+			_gameModel.dispose();
 			
 			Sounds.instance.removeEventListener( flash.events.Event.CHANGE, toggleMuteHandler );
 			
@@ -114,7 +99,7 @@ package controller
 		
 		private function toggleMuteHandler( event:flash.events.Event ):void
 		{
-			gameModel.muted = Sounds.muted;
+			_gameModel.muted = Sounds.muted;
 		}
 		
 		// On click of pause button. 
@@ -147,7 +132,7 @@ package controller
 		// On game over screen faded out.
 		private function gameOverFadedOut():void
 		{
-			gameModel.reset();
+			_gameModel.reset();
 			
 			_view.gameOverContainer.visible = false;
 			_view.initialize();
@@ -167,7 +152,7 @@ package controller
 			_view.pauseButton.visible = true;
 			
 			// Launch hero.			
-			globals = ComponentUtil.getChildOfType( gameModel.cadetScene, GlobalsProcess );
+			globals = ComponentUtil.getChildOfType( _gameModel.cadetScene, GlobalsProcess );
 			globals.addEventListener( GlobalsProcess.GAME_STATE_ENDED, gameEndedHandler );
 			globals.paused = false;
 		}
@@ -180,29 +165,6 @@ package controller
 			tween_gameOverContainer = new Tween(_view.gameOverContainer, 1);
 			tween_gameOverContainer.fadeTo(1);
 			Starling.juggler.add(tween_gameOverContainer);
-		}
-		
-		// Serialization
-		public function serialize():void
-		{
-			if (!CoreApp.initialised) {
-				CoreApp.init();
-			}
-			
-			var plugins:Vector.<ISerializationPlugin> = new Vector.<ISerializationPlugin>();			
-			plugins.push( new ResourceSerializerPlugin( CoreApp.resourceManager ) );
-			
-			var serializeOperation:SerializeOperation = new SerializeOperation( gameModel.cadetScene, plugins );
-			serializeOperation.addEventListener( flash.events.Event.COMPLETE, serializeCompleteHandler );
-//			serializeOperation.addEventListener(OperationProgressEvent.PROGRESS, progressHandler);
-//			serializeOperation.addEventListener(ErrorEvent.ERROR, errorHandler);
-			serializeOperation.execute();
-		}
-		
-		private function serializeCompleteHandler( event:flash.events.Event ):void
-		{
-			var serializeOperation:SerializeOperation = SerializeOperation(event.target);
-			trace(serializeOperation.getResult().toXMLString());
 		}
 	}
 }

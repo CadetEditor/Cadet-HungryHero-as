@@ -1,7 +1,6 @@
 package hungryHero.components.behaviours
 {
 	import flash.events.Event;
-	import flash.geom.Point;
 	
 	import cadet.components.processes.SoundProcess;
 	import cadet.components.sounds.ISound;

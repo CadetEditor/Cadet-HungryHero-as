@@ -1,14 +1,10 @@
 package model
 {
-	import flash.events.Event;
-	import flash.events.EventDispatcher;
-	
 	import cadet.components.processes.SoundProcess;
 	import cadet.core.CadetScene;
 	import cadet.util.ComponentUtil;
 	
 	import cadet2D.components.renderers.Renderer2D;
-	import cadet2D.operations.Cadet2DStartUpOperation;
 	
 	import hungryHero.components.behaviours.HeroBehaviour;
 	import hungryHero.components.behaviours.ShakeBehaviour;
@@ -17,10 +13,8 @@ package model
 	import starling.display.DisplayObjectContainer;
 	import starling.events.Event;
 
-	public class GameModel_XML extends EventDispatcher implements IGameModel
+	public class GameModel_XML implements IGameModel
 	{
-		private const LOADED			:String = "loaded";
-		
 		private var _parent				:DisplayObjectContainer;
 		private var _cadetScene			:CadetScene;
 		
@@ -116,5 +110,14 @@ package model
 		{
 			return _cadetScene;
 		}
+		public function set cadetScene( value:CadetScene ):void
+		{
+			_cadetScene = value;
+		}
 	}
 }
+
+
+
+
+

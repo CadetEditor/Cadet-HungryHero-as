@@ -8,7 +8,7 @@ package
 	[SWF( width="1024", height="768", backgroundColor="0x002135", frameRate="60" )]
 	public class CadetHungryHero extends Sprite
 	{
-		/** Starling object. */
+		// Starling object.
 		private var myStarling:Starling;
 		
 		public static var instance:Sprite;
@@ -22,11 +22,8 @@ package
 			instance = this;
 		}
 		
-		/**
-		 * On added to stage. 
-		 * @param event
-		 * 
-		 */
+		// On added to stage. 
+		// @param event
 		protected function onAddedToStage(event:Event):void
 		{
 			this.removeEventListener(Event.ADDED_TO_STAGE, onAddedToStage);

@@ -5,13 +5,24 @@ package
 	import cadet.core.CadetScene;
 	
 	import cadet2D.operations.Cadet2DStartUpOperation;
+	import cadet2D.resources.ExternalXMLResourceParser;
 	
 	import controller.GameViewController;
 	import controller.WelcomeViewController;
 	
+	import core.app.CoreApp;
+	import core.app.core.serialization.ISerializationPlugin;
+	import core.app.core.serialization.ResourceSerializerPlugin;
+	import core.app.operations.SerializeOperation;
+	import core.app.resources.ExternalResourceParserFactory;
+	
 	import events.NavigationEvent;
 	
 	import managers.ViewManager;
+	
+	import model.GameModel_Code;
+	import model.GameModel_XML;
+	import model.IGameModel;
 	
 	import sound.Sounds;
 	
@@ -26,11 +37,15 @@ package
 	public class Main extends Sprite
 	{
 		public static var viewManager		:ViewManager;
+		public static var gameModel			:IGameModel;
 		
 		private var viewContainer:Sprite;		 	// All views are added in here.
 		private var soundButton:SoundButton;		// Sound / Mute button.
 		
-		private var _cadetFileURL		:String = "/HungryHero2.cdt";
+		// Comment out either of the below to switch IGameModels.
+		// URL = GameModle_XML, null = GameModel_Code
+//		private var _cadetFileURL		:String = "/HungryHero.cdt2d";
+		private var _cadetFileURL		:String = null;
 		
 		public function Main()
 		{
@@ -42,7 +57,8 @@ package
 			this.removeEventListener(starling.events.Event.ADDED_TO_STAGE, onAddedToStage);
 			
 			// Required when loading data and assets.
-			var startUpOperation:Cadet2DStartUpOperation = new Cadet2DStartUpOperation();//_cadetFileURL);
+			var startUpOperation:Cadet2DStartUpOperation = new Cadet2DStartUpOperation(_cadetFileURL);
+			startUpOperation.addResource( new ExternalResourceParserFactory( ExternalXMLResourceParser, "External XML Resource Parser", ["pex"] ) );
 			startUpOperation.addEventListener(flash.events.Event.COMPLETE, startUpCompleteHandler);
 			startUpOperation.execute();
 		}
@@ -51,9 +67,15 @@ package
 		{
 			var operation:Cadet2DStartUpOperation = Cadet2DStartUpOperation( event.target );
 			
-			//_cadetScene = CadetScene(operation.getResult());
-			
-			//dispatchEvent( new flash.events.Event(LOADED) );
+			// If a _cadetFileURL is specified, load the external CadetScene from XML
+			// Otherwise, revert to the coded version of the CadetScene.
+			if ( _cadetFileURL ) {
+				gameModel = new GameModel_XML();
+				gameModel.cadetScene = CadetScene(operation.getResult());
+			} else {
+				gameModel = new GameModel_Code( CoreApp.resourceManager );
+				serialize();
+			}
 			
 			// Initialize screens.
 			init();
@@ -104,6 +126,29 @@ package
 					viewManager.changeView( GameView );
 					break;
 			}
+		}
+		
+		// Serialization
+		private function serialize():void
+		{
+			if (!CoreApp.initialised) {
+				CoreApp.init();
+			}
+			
+			var plugins:Vector.<ISerializationPlugin> = new Vector.<ISerializationPlugin>();			
+			plugins.push( new ResourceSerializerPlugin( CoreApp.resourceManager ) );
+			
+			var serializeOperation:SerializeOperation = new SerializeOperation( gameModel.cadetScene, plugins );
+			serializeOperation.addEventListener( flash.events.Event.COMPLETE, serializeCompleteHandler );
+//			serializeOperation.addEventListener(OperationProgressEvent.PROGRESS, progressHandler);
+//			serializeOperation.addEventListener(ErrorEvent.ERROR, errorHandler);
+			serializeOperation.execute();
+		}
+		
+		private function serializeCompleteHandler( event:flash.events.Event ):void
+		{
+			var serializeOperation:SerializeOperation = SerializeOperation(event.target);
+			trace(serializeOperation.getResult().toXMLString());
 		}
 	}
 }
