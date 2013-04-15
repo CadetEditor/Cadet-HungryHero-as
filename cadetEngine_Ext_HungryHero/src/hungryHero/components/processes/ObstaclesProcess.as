@@ -8,15 +8,15 @@ package hungryHero.components.processes
 	import cadet.core.IComponentContainer;
 	import cadet.core.IInitialisableComponent;
 	import cadet.core.ISteppableComponent;
-	import cadet.events.InvalidationEvent;
+	import cadet.events.ValidationEvent;
 	import cadet.util.ComponentUtil;
 	import cadet.util.deg2rad;
 	
 	import cadet2D.components.core.Entity;
 	import cadet2D.components.processes.WorldBounds2D;
-	import cadet2D.components.skins.AbstractSkin2D;
 	import cadet2D.components.skins.ImageSkin;
 	import cadet2D.components.skins.MovieClipSkin;
+	import cadet2D.components.skins.TransformableSkin;
 	import cadet2D.components.transforms.Transform2D;
 	
 	import hungryHero.components.behaviours.ObstacleBehaviour;
@@ -44,7 +44,7 @@ package hungryHero.components.processes
 		private var _hitTestX:int;
 		private var _hitTestY:int;
 		
-		private var _hitTestSkin				:AbstractSkin2D;
+		private var _hitTestSkin				:TransformableSkin;
 		private var _obstaclesContainer			:IComponentContainer;
 
 		//SOUNDS
@@ -110,19 +110,19 @@ package hungryHero.components.processes
 		public function set worldBounds( value:WorldBounds2D ):void
 		{
 			if ( _worldBounds ) {
-				_worldBounds.removeEventListener( InvalidationEvent.INVALIDATE, invalidateWorldBoundsHandler );
+				_worldBounds.removeEventListener( ValidationEvent.INVALIDATE, invalidateWorldBoundsHandler );
 			}
 			
 			_worldBounds = value;
 			
 			if ( _worldBounds ) {
 				worldBoundsRect = _worldBounds.getRect();
-				_worldBounds.addEventListener( InvalidationEvent.INVALIDATE, invalidateWorldBoundsHandler );
+				_worldBounds.addEventListener( ValidationEvent.INVALIDATE, invalidateWorldBoundsHandler );
 			}
 		}
 		public function get worldBounds():WorldBounds2D { return _worldBounds; }
 		
-		private function invalidateWorldBoundsHandler( event:InvalidationEvent ):void
+		private function invalidateWorldBoundsHandler( event:ValidationEvent ):void
 		{
 			worldBoundsRect = _worldBounds.getRect();
 		}
@@ -132,11 +132,11 @@ package hungryHero.components.processes
 		// -------------------------------------------------------------------------------------
 		
 		[Serializable][Inspectable( editor="ComponentList", scope="scene", priority="50" )]
-		public function set hitTestSkin( value:AbstractSkin2D ):void
+		public function set hitTestSkin( value:TransformableSkin ):void
 		{
 			_hitTestSkin = value;
 		}
-		public function get hitTestSkin():AbstractSkin2D { return _hitTestSkin; }
+		public function get hitTestSkin():TransformableSkin { return _hitTestSkin; }
 		
 		[Serializable][Inspectable( editor="ComponentList", scope="scene", priority="51" )]
 		public function set obstaclesContainer( value:IComponentContainer ):void

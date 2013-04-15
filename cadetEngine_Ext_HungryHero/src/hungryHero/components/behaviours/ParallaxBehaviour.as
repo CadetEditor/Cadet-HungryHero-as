@@ -16,7 +16,7 @@ package hungryHero.components.behaviours
 	import cadet.core.IInitialisableComponent;
 	import cadet.core.ISteppableComponent;
 	
-	import cadet2D.components.skins.AbstractSkin2D;
+	import cadet2D.components.skins.TransformableSkin;
 	import cadet2D.events.SkinEvent;
 	
 	import hungryHero.components.processes.GlobalsProcess;
@@ -24,10 +24,10 @@ package hungryHero.components.behaviours
 	public class ParallaxBehaviour extends Component implements ISteppableComponent, IInitialisableComponent
 	{
 		public var globals			:GlobalsProcess;
-		public var skin				:AbstractSkin2D;
+		public var skin				:TransformableSkin;
 		
-		private var _skin1			:AbstractSkin2D;
-		private var _skin2			:AbstractSkin2D;
+		private var _skin1			:TransformableSkin;
+		private var _skin2			:TransformableSkin;
 		
 		private var _speed			:Number;
 		private var _depth			:Number;
@@ -44,14 +44,14 @@ package hungryHero.components.behaviours
 		override protected function addedToScene():void
 		{
 			addSceneReference( GlobalsProcess, "globals" );
-			addSiblingReference( AbstractSkin2D, "skin" );
+			addSiblingReference( TransformableSkin, "skin" );
 		}
 		
 		// IInitialisableComponent
 		public function init():void
 		{
 			_skin1 = skin;
-			_skin2 = AbstractSkin2D(_skin1.clone());
+			_skin2 = TransformableSkin(_skin1.clone());
 			parentComponent.children.addItem(_skin2);
 			
 			if ( _skin1.width == 0 ) {
@@ -64,7 +64,7 @@ package hungryHero.components.behaviours
 		// Wait for the texture to be validated so the width is set
 		private function textureValidatedHandler( event:SkinEvent ):void
 		{
-			var skin:AbstractSkin2D = AbstractSkin2D(event.target);
+			var skin:TransformableSkin = TransformableSkin(event.target);
 			skin.removeEventListener(SkinEvent.TEXTURE_VALIDATED, textureValidatedHandler);
 			_skin2.x = _skin1.x + _skin1.width;
 		}

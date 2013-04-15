@@ -5,7 +5,7 @@ package hungryHero.components.behaviours
 	import cadet.core.Component;
 	import cadet.core.IRenderer;
 	import cadet.core.ISteppableComponent;
-	import cadet.events.InvalidationEvent;
+	import cadet.events.ValidationEvent;
 	import cadet.events.RendererEvent;
 	import cadet.util.deg2rad;
 	import cadet.util.rad2deg;
@@ -236,19 +236,19 @@ package hungryHero.components.behaviours
 		public function set worldBounds( value:WorldBounds2D ):void
 		{
 			if ( _worldBounds ) {
-				_worldBounds.removeEventListener( InvalidationEvent.INVALIDATE, invalidateWorldBoundsHandler );
+				_worldBounds.removeEventListener( ValidationEvent.INVALIDATE, invalidateWorldBoundsHandler );
 			}
 			
 			_worldBounds = value;
 			
 			if ( _worldBounds ) {
 				worldBoundsRect = _worldBounds.getRect();
-				_worldBounds.addEventListener( InvalidationEvent.INVALIDATE, invalidateWorldBoundsHandler );
+				_worldBounds.addEventListener( ValidationEvent.INVALIDATE, invalidateWorldBoundsHandler );
 			}
 		}
 		public function get worldBounds():WorldBounds2D { return _worldBounds; }
 		
-		private function invalidateWorldBoundsHandler( event:InvalidationEvent ):void
+		private function invalidateWorldBoundsHandler( event:ValidationEvent ):void
 		{
 			worldBoundsRect = _worldBounds.getRect();
 		}

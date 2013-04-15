@@ -6,13 +6,14 @@ package hungryHero.components.processes
 	import cadet.core.IComponentContainer;
 	import cadet.core.IInitialisableComponent;
 	import cadet.core.ISteppableComponent;
-	import cadet.events.InvalidationEvent;
+	import cadet.events.ValidationEvent;
 	
 	import cadet2D.components.processes.WorldBounds2D;
 	import cadet2D.components.renderers.Renderer2D;
 	import cadet2D.components.skins.AbstractSkin2D;
 	import cadet2D.components.skins.ImageSkin;
 	import cadet2D.components.skins.MovieClipSkin;
+	import cadet2D.components.skins.TransformableSkin;
 	
 	import hungryHero.pools.Pool;
 	
@@ -93,19 +94,19 @@ package hungryHero.components.processes
 		public function set worldBounds( value:WorldBounds2D ):void
 		{
 			if ( _worldBounds ) {
-				_worldBounds.removeEventListener( InvalidationEvent.INVALIDATE, invalidateWorldBoundsHandler );
+				_worldBounds.removeEventListener( ValidationEvent.INVALIDATE, invalidateWorldBoundsHandler );
 			}
 			
 			_worldBounds = value;
 			
 			if ( _worldBounds ) {
 				worldBoundsRect = _worldBounds.getRect();
-				_worldBounds.addEventListener( InvalidationEvent.INVALIDATE, invalidateWorldBoundsHandler );
+				_worldBounds.addEventListener( ValidationEvent.INVALIDATE, invalidateWorldBoundsHandler );
 			}
 		}
 		public function get worldBounds():WorldBounds2D { return _worldBounds; }
 		
-		private function invalidateWorldBoundsHandler( event:InvalidationEvent ):void
+		private function invalidateWorldBoundsHandler( event:ValidationEvent ):void
 		{
 			worldBoundsRect = _worldBounds.getRect();
 		}
@@ -176,7 +177,7 @@ package hungryHero.components.processes
 		 * @param particle
 		 * 
 		 */
-		private function particleClean(particle:AbstractSkin2D):void
+		private function particleClean(particle:TransformableSkin):void
 		{
 			particle.x = renderer.viewport.stage.stageWidth + particle.width * 2;
 		}
@@ -228,7 +229,7 @@ package hungryHero.components.processes
 		 */
 		private function animateParticles():void
 		{
-			var itemToTrack:AbstractSkin2D;//Particle;
+			var itemToTrack:TransformableSkin;//Particle;
 			
 			for(var i:uint = 0;i < _particlesToAnimateLength;i++)
 			{

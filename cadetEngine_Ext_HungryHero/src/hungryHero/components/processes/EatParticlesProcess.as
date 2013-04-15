@@ -7,12 +7,12 @@ package hungryHero.components.processes
 	import cadet.core.IComponentContainer;
 	import cadet.core.IInitialisableComponent;
 	import cadet.core.ISteppableComponent;
-	import cadet.events.InvalidationEvent;
+	import cadet.events.ValidationEvent;
 	import cadet.util.deg2rad;
 	
 	import cadet2D.components.processes.WorldBounds2D;
 	import cadet2D.components.renderers.Renderer2D;
-	import cadet2D.components.skins.AbstractSkin2D;
+	import cadet2D.components.skins.TransformableSkin;
 	import cadet2D.components.skins.ImageSkin;
 	import cadet2D.components.skins.MovieClipSkin;
 	import cadet2D.components.transforms.ITransform2D;
@@ -25,7 +25,7 @@ package hungryHero.components.processes
 		public var globals						:GlobalsProcess;
 		public var renderer						:Renderer2D;
 		
-		private var _particlesToAnimate			:Vector.<AbstractSkin2D>//Particle>;
+		private var _particlesToAnimate			:Vector.<TransformableSkin>//Particle>;
 		private var _particlesToAnimateLength	:uint;
 		
 		private var _particlesPool				:Pool;
@@ -33,7 +33,7 @@ package hungryHero.components.processes
 		private var _worldBounds				:WorldBounds2D;
 		public var worldBoundsRect				:Rectangle = new Rectangle(0, 0, 800, 600);
 		
-		private var _particles					:Vector.<AbstractSkin2D>;
+		private var _particles					:Vector.<TransformableSkin>;
 		private var _particlesContainer			:IComponentContainer;
 		private var _behaviours					:Dictionary;
 		
@@ -42,7 +42,7 @@ package hungryHero.components.processes
 			super( name );
 			
 			// Initialize particles-to-animate vectors.
-			_particlesToAnimate = new Vector.<AbstractSkin2D>()//Particle>();
+			_particlesToAnimate = new Vector.<TransformableSkin>()//Particle>();
 			_particlesToAnimateLength = 0;
 			
 			_behaviours = new Dictionary();
@@ -91,19 +91,19 @@ package hungryHero.components.processes
 		public function set worldBounds( value:WorldBounds2D ):void
 		{
 			if ( _worldBounds ) {
-				_worldBounds.removeEventListener( InvalidationEvent.INVALIDATE, invalidateWorldBoundsHandler );
+				_worldBounds.removeEventListener( ValidationEvent.INVALIDATE, invalidateWorldBoundsHandler );
 			}
 			
 			_worldBounds = value;
 			
 			if ( _worldBounds ) {
 				worldBoundsRect = _worldBounds.getRect();
-				_worldBounds.addEventListener( InvalidationEvent.INVALIDATE, invalidateWorldBoundsHandler );
+				_worldBounds.addEventListener( ValidationEvent.INVALIDATE, invalidateWorldBoundsHandler );
 			}
 		}
 		public function get worldBounds():WorldBounds2D { return _worldBounds; }
 		
-		private function invalidateWorldBoundsHandler( event:InvalidationEvent ):void
+		private function invalidateWorldBoundsHandler( event:ValidationEvent ):void
 		{
 			worldBoundsRect = _worldBounds.getRect();
 		}
@@ -127,7 +127,7 @@ package hungryHero.components.processes
 		 */
 		private function createParticlePool():void
 		{
-			_particles = new Vector.<AbstractSkin2D>();
+			_particles = new Vector.<TransformableSkin>();
 			
 			if (!_particlesContainer) {
 				_particlesContainer = parentComponent;
@@ -137,7 +137,7 @@ package hungryHero.components.processes
 			for ( var i:uint = 0; i < _particlesContainer.children.length; i ++ ) 
 			{
 				var child:Component = _particlesContainer.children[i];
-				if ( child is AbstractSkin2D ) {	
+				if ( child is TransformableSkin ) {	
 					_particles.push( child );
 				}
 			}
@@ -157,7 +157,7 @@ package hungryHero.components.processes
 		 * @return Eat particle that was created.
 		 * 
 		 */
-		private function particleCreate():AbstractSkin2D//Particle
+		private function particleCreate():TransformableSkin//Particle
 		{
 			var newSkin:MovieClipSkin = new MovieClipSkin();
 			_particlesContainer.children.addItem(newSkin);
@@ -183,7 +183,7 @@ package hungryHero.components.processes
 		 * @param particle
 		 * 
 		 */
-		private function particleClean(particle:AbstractSkin2D):void//Particle):void
+		private function particleClean(particle:TransformableSkin):void//Particle):void
 		{
 			particle.x = renderer.viewport.stage.stageWidth + particle.width * 2;
 		}
@@ -194,7 +194,7 @@ package hungryHero.components.processes
 		 * @param particle
 		 * 
 		 */
-		private function disposeParticleTemporarily(animateId:uint, particle:AbstractSkin2D):void//Particle):void
+		private function disposeParticleTemporarily(animateId:uint, particle:TransformableSkin):void//Particle):void
 		{
 			_particlesToAnimate.splice(animateId, 1);
 			_particlesToAnimateLength--;
@@ -211,7 +211,7 @@ package hungryHero.components.processes
 		{
 			var particleToTrack:MovieClipSkin;//Particle;
 			
-			var randItem:AbstractSkin2D = _particles[Math.round(Math.random() * (_particles.length-1))];
+			var randItem:TransformableSkin = _particles[Math.round(Math.random() * (_particles.length-1))];
 			var randImgSkin:ImageSkin = ImageSkin(randItem);
 			
 			while (count > 0)
@@ -254,7 +254,7 @@ package hungryHero.components.processes
 		 */
 		private function animateParticles():void
 		{
-			var particleToTrack:AbstractSkin2D;//Particle;
+			var particleToTrack:TransformableSkin;//Particle;
 			
 			for(var i:uint = 0;i < _particlesToAnimateLength;i++)
 			{
