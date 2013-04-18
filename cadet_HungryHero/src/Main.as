@@ -1,6 +1,7 @@
 package
 {
 	import flash.events.Event;
+	import flash.events.EventDispatcher;
 	
 	import cadet.core.CadetScene;
 	
@@ -11,10 +12,9 @@ package
 	import controller.WelcomeViewController;
 	
 	import core.app.CoreApp;
-	import core.app.core.serialization.ISerializationPlugin;
-	import core.app.core.serialization.ResourceSerializerPlugin;
-	import core.app.operations.SerializeOperation;
 	import core.app.resources.ExternalResourceParserFactory;
+	import core.app.util.AsynchronousUtil;
+	import core.app.util.SerializationUtil;
 	
 	import events.NavigationEvent;
 	
@@ -43,9 +43,9 @@ package
 		private var soundButton:SoundButton;		// Sound / Mute button.
 		
 		// Comment out either of the below to switch IGameModels.
-		// URL = GameModle_XML, null = GameModel_Code
-//		private var _cadetFileURL		:String = "/HungryHero.cdt2d";
-		private var _cadetFileURL		:String = null;
+		// URL = GameModel_XML, null = GameModel_Code
+		private var _cadetFileURL		:String = "/HungryHero.cdt2d";
+//		private var _cadetFileURL		:String = null;
 		
 		public function Main()
 		{
@@ -74,15 +74,28 @@ package
 				gameModel.cadetScene = CadetScene(operation.getResult());
 			} else {
 				gameModel = new GameModel_Code( CoreApp.resourceManager );
-				serialize();
+				
+				// Need to wait for the next frame to serialize, otherwise the manifests aren't ready
+				AsynchronousUtil.callLater(serialize);
 			}
-			
+
 			// Initialize screens.
 			init();
 		}
 		
-		private function init():void
+		private function serialize():void
 		{
+			var eventDispatcher:EventDispatcher = SerializationUtil.serialize(gameModel.cadetScene);
+			eventDispatcher.addEventListener(flash.events.Event.COMPLETE, serializationCompleteHandler);
+		}
+		
+		private function serializationCompleteHandler( event:flash.events.Event ):void
+		{
+			trace(SerializationUtil.getResult().toXMLString());
+		}
+		
+		private function init():void
+		{			
 			viewContainer = new Sprite();
 			this.addChild( viewContainer );
 			
@@ -126,29 +139,6 @@ package
 					viewManager.changeView( GameView );
 					break;
 			}
-		}
-		
-		// Serialization
-		private function serialize():void
-		{
-			if (!CoreApp.initialised) {
-				CoreApp.init();
-			}
-			
-			var plugins:Vector.<ISerializationPlugin> = new Vector.<ISerializationPlugin>();			
-			plugins.push( new ResourceSerializerPlugin( CoreApp.resourceManager ) );
-			
-			var serializeOperation:SerializeOperation = new SerializeOperation( gameModel.cadetScene, plugins );
-			serializeOperation.addEventListener( flash.events.Event.COMPLETE, serializeCompleteHandler );
-//			serializeOperation.addEventListener(OperationProgressEvent.PROGRESS, progressHandler);
-//			serializeOperation.addEventListener(ErrorEvent.ERROR, errorHandler);
-			serializeOperation.execute();
-		}
-		
-		private function serializeCompleteHandler( event:flash.events.Event ):void
-		{
-			var serializeOperation:SerializeOperation = SerializeOperation(event.target);
-			trace(serializeOperation.getResult().toXMLString());
 		}
 	}
 }

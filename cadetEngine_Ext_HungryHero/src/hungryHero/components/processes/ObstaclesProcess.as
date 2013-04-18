@@ -244,6 +244,14 @@ package hungryHero.components.processes
 			var randBehaviour:ObstacleBehaviour = _obstacles[Math.round(Math.random() * (_obstacles.length-1))];
 			
 			var behaviour:ObstacleBehaviour = ComponentUtil.getChildOfType(itemToTrack, ObstacleBehaviour);
+			
+			// resetting the width & height allows it to default to the size of the quad
+			behaviour.defaultSkin.width = 0;
+			behaviour.defaultSkin.height = 0
+			behaviour.crashSkin.width = 0;
+			behaviour.crashSkin.height = 0
+			behaviour.warningSkin.width = 0;
+			behaviour.warningSkin.height = 0;
 			// Apply skins
 			behaviour.defaultSkin.textureAtlas = randBehaviour.defaultSkin.textureAtlas;
 			behaviour.defaultSkin.texturesPrefix = randBehaviour.defaultSkin.texturesPrefix;
@@ -255,7 +263,7 @@ package hungryHero.components.processes
 			if ( randBehaviour.crashSkin is MovieClipSkin ) {
 				MovieClipSkin(behaviour.crashSkin).loop = MovieClipSkin(randBehaviour.crashSkin).loop;
 			}
-			
+	
 			behaviour.crashSkin.textureAtlas = randBehaviour.crashSkin.textureAtlas;
 			behaviour.crashSkin.texturesPrefix = randBehaviour.crashSkin.texturesPrefix;
 			behaviour.warningSkin.textureAtlas = randBehaviour.warningSkin.textureAtlas;

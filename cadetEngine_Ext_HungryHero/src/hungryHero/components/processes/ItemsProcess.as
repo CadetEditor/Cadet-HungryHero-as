@@ -384,10 +384,13 @@ package hungryHero.components.processes
 			
 			// randItem is either MovieClipSkin or ImageSkin (MovieClipSkin extends ImageSkin)
 			var randImgSkin:ImageSkin = ImageSkin(randItem);
-			var imgSkin:MovieClipSkin = MovieClipSkin(itemToTrack);
-			imgSkin.texture = randImgSkin.texture;
-			imgSkin.textureAtlas = randImgSkin.textureAtlas;
-			imgSkin.texturesPrefix = randImgSkin.texturesPrefix;
+			var mcSkin:MovieClipSkin = MovieClipSkin(itemToTrack);
+			// resetting the width & height allows it to default to the size of the quad
+			mcSkin.width = 0;
+			mcSkin.height = 0;
+			mcSkin.texture = randImgSkin.texture;
+			mcSkin.textureAtlas = randImgSkin.textureAtlas;
+			mcSkin.texturesPrefix = randImgSkin.texturesPrefix;
 			
 			// Reset position of item.
 			itemToTrack.x = worldBoundsRect.right;

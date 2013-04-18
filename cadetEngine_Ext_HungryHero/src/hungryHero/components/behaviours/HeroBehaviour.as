@@ -7,8 +7,6 @@ package hungryHero.components.behaviours
 	import cadet.core.ISteppableComponent;
 	import cadet.events.ValidationEvent;
 	import cadet.events.RendererEvent;
-	import cadet.util.deg2rad;
-	import cadet.util.rad2deg;
 	
 	import cadet2D.components.processes.WorldBounds2D;
 	import cadet2D.components.renderers.Renderer2D;
@@ -122,9 +120,9 @@ package hungryHero.components.behaviours
 						
 						// Spin the hero.
 						if (transform.y > _renderer.viewport.stage.stageHeight * 0.5) {
-							transform.rotation -= deg2rad(globals.hitObstacle * 2);
+							transform.rotation -= globals.hitObstacle * 2;
 						} else {
-							transform.rotation += deg2rad(globals.hitObstacle * 2);
+							transform.rotation += globals.hitObstacle * 2;
 						}
 					}
 					
@@ -160,7 +158,7 @@ package hungryHero.components.behaviours
 				}*/
 			
 				// Spin the hero.
-				transform.rotation -= deg2rad(30);
+				transform.rotation -= 30;
 				
 				// Make the hero fall.
 				
@@ -206,12 +204,12 @@ package hungryHero.components.behaviours
 			// Rotate hero based on mouse position.
 			var touchDiff:Number = -(transform.y - touchY) * 0.2;
 			if ( touchDiff > -30 && touchDiff < 30 ) {
-				rotation = deg2rad(touchDiff);
+				rotation = touchDiff;
 			}
 			
 			// Limit the hero's rotation to < 30.
-			if (rad2deg(transform.rotation) > 30 ) rotation = deg2rad(30);
-			if (rad2deg(transform.rotation) < -30 ) rotation = -deg2rad(30);
+			if ((transform.rotation) > 30 ) rotation = 30;
+			if ((transform.rotation) < -30 ) rotation = -30;
 			
 			transform.rotation = rotation;
 		}
@@ -224,12 +222,12 @@ package hungryHero.components.behaviours
 			if (transform.y > worldBoundsRect.bottom - halfSkinHeight)    
 			{
 				transform.y = worldBoundsRect.bottom - halfSkinHeight;
-				transform.rotation = deg2rad(0);
+				transform.rotation = 0;
 			}
 			if (transform.y < worldBoundsRect.top + halfSkinHeight)    
 			{
 				transform.y = worldBoundsRect.top + halfSkinHeight;
-				transform.rotation = deg2rad(0);
+				transform.rotation = 0;
 			}
 		}
 		
