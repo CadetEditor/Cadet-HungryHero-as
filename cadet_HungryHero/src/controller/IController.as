@@ -4,10 +4,10 @@ package controller
 
 	public interface IController
 	{
-		function init(view:DisplayObjectContainer):void
-		function reInit():void
-		function dispose():void
-		function enable():void
-		function disable():void
+		function init(view:DisplayObjectContainer):void;
+		function reInit():void;
+		function dispose():void;
+		function enable():void;
+		function disable():void;
 	}
 }

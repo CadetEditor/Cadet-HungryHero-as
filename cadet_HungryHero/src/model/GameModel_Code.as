@@ -411,7 +411,7 @@ package model
 			warningSkin.texturesPrefix = "watchOut_";
 			warningSkin.loop = true;
 			warningSkin.x = xpos;
-			warningSkin.y = ypos
+			warningSkin.y = ypos;
 				
 			// Update position values
 			ypos += 100;
