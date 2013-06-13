@@ -302,6 +302,7 @@ package hungryHero.components.processes
 			// Set look out mode to true, during which, a look out text appears.
 			behaviour.lookOut = true;
 			
+			behaviour.warningSkin.validateNow();
 			var xpos:Number = behaviour.transform.x - behaviour.warningSkin.width;
 			if ( behaviour.warningSkin.width ) xpos -= 20;
 			
