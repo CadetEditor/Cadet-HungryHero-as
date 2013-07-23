@@ -192,8 +192,12 @@ package hungryHero.components.processes
 				behaviour = _obstacles[i];
 				var defaultSkin:ImageSkin = behaviour.defaultSkin;
 				var crashSkin:ImageSkin = behaviour.crashSkin;
-				behaviour.parentComponent.children.removeItem(defaultSkin);
-				behaviour.parentComponent.children.removeItem(crashSkin);
+				if ( behaviour.parentComponent.children.contains(defaultSkin) ) {
+					behaviour.parentComponent.children.removeItem(defaultSkin);
+				}
+				if ( behaviour.parentComponent.children.contains(crashSkin) ) {
+					behaviour.parentComponent.children.removeItem(crashSkin);
+				}
 			}
 			
 			_obstaclesPool = new Pool(obstacleCreate, obstacleClean, 4, 10);

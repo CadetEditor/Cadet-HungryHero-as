@@ -1,0 +1,228 @@
+<cadet:CadetScene x:id="0" name="Scene" framerate="60" timeScale="1" xmlns:cadet="www.unwrong.com/cadet/1.0.0" xmlns:x="core.app.core.serialization.Serializer" xmlns:core="www.unwrong.com/core/1.0.0" xmlns:cadet2D="www.unwrong.com/cadet2D/1.0.0" xmlns:ns0="cadet2D.components.textures" xmlns:ns1="hungryHero.components.processes" xmlns:ns2="hungryHero.components.behaviours" xmlns:ns3="cadet.components.processes" xmlns:ns4="cadet.components.sounds" xmlns:ns5="cadet2D.components.particles">
+  <core:DependencyManager x:name="dependencyManager" x:id="1">
+    <core:ArrayCollection x:name="dependencyNodes" x:id="2"/>
+  </core:DependencyManager>
+  <core:ArrayCollection x:name="children" x:id="3">
+    <cadet2D:Renderer2D x:name="0" x:id="4" depthSort="1" name="Starling Renderer"/>
+    <ns0:TextureComponent x:name="1" x:id="5" name="All Sprites" bitmapData="hungryHero/graphics/mySpritesheet.png"/>
+    <ns0:TextureAtlasComponent x:name="2" x:id="6" name="All Sprites Atlas" xml="hungryHero/graphics/mySpritesheet.xml">
+      <x:Ref x:name="texture" x:id="5"/>
+    </ns0:TextureAtlasComponent>
+    <ns1:GlobalsProcess x:name="3" x:id="7" playerMinSpeed="650" numLives="5" playerMaxSpeed="1400" paused="0" playerSpeed="0" name="GlobalsProcess" currentLives="5"/>
+    <cadet2D:WorldBounds2D x:name="4" x:id="8" left="0" right="1024" name="WorldBounds2D" bottom="518" top="100"/>
+    <ns2:ShakeBehaviour x:name="5" x:id="9" targetX="0" targetY="0" name="ShakeBehaviour">
+      <x:Ref x:name="target" x:id="4"/>
+    </ns2:ShakeBehaviour>
+    <ns3:SoundProcess x:name="6" x:id="10" name="SoundProcess" muted="0">
+      <ns4:SoundComponent x:name="music" x:id="11" startTime="0" loops="999" name="Music Sound" asset="hungryHero/sounds/bgGame.mp3"/>
+    </ns3:SoundProcess>
+    <ns0:TextureComponent x:name="7" x:id="12" name="Sky Texture" bitmapData="hungryHero/graphics/bgLayer1.jpg"/>
+    <ns1:BackgroundsProcess x:name="8" x:id="13" xDirection="LEFT" name="BackgroundsProcess"/>
+    <cadet2D:Entity x:name="9" x:id="14" name="Sky">
+      <core:ArrayCollection x:name="children" x:id="15">
+        <cadet2D:ImageSkin x:name="0" x:id="16" width="0" height="0" name="Sky Skin" touchable="1" visible="1" matrix="1,0,0,1,0,0">
+          <x:Ref x:name="texture" x:id="12"/>
+        </cadet2D:ImageSkin>
+        <ns2:ParallaxBehaviour x:name="1" x:id="17" speed="-15" name="ParallaxBehaviour" depth="0.1"/>
+      </core:ArrayCollection>
+    </cadet2D:Entity>
+    <cadet2D:Entity x:name="10" x:id="18" name="Hills">
+      <core:ArrayCollection x:name="children" x:id="19">
+        <cadet2D:ImageSkin x:name="0" x:id="20" width="0" height="0" name="Hills Skin" touchable="1" visible="1" matrix="1,0,0,1,0,440" texturesPrefix="bgLayer2">
+          <x:Ref x:name="textureAtlas" x:id="6"/>
+        </cadet2D:ImageSkin>
+        <ns2:ParallaxBehaviour x:name="1" x:id="21" speed="-15" name="ParallaxBehaviour" depth="0.3"/>
+      </core:ArrayCollection>
+    </cadet2D:Entity>
+    <cadet2D:Entity x:name="11" x:id="22" name="Midground">
+      <core:ArrayCollection x:name="children" x:id="23">
+        <cadet2D:ImageSkin x:name="0" x:id="24" width="0" height="0" name="Midground Skin" touchable="1" visible="1" matrix="1,0,0,1,0,510" texturesPrefix="bgLayer3">
+          <x:Ref x:name="textureAtlas" x:id="6"/>
+        </cadet2D:ImageSkin>
+        <ns2:ParallaxBehaviour x:name="1" x:id="25" speed="-15" name="ParallaxBehaviour" depth="0.6"/>
+      </core:ArrayCollection>
+    </cadet2D:Entity>
+    <cadet2D:Entity x:name="12" x:id="26" name="Foreground">
+      <core:ArrayCollection x:name="children" x:id="27">
+        <cadet2D:ImageSkin x:name="0" x:id="28" width="0" height="0" name="Foreground Skin" touchable="1" visible="1" matrix="1,0,0,1,0,600" texturesPrefix="bgLayer4">
+          <x:Ref x:name="textureAtlas" x:id="6"/>
+        </cadet2D:ImageSkin>
+        <ns2:ParallaxBehaviour x:name="1" x:id="29" speed="-15" name="ParallaxBehaviour" depth="1"/>
+      </core:ArrayCollection>
+    </cadet2D:Entity>
+    <cadet2D:Entity x:name="13" x:id="30" name="Eat Particles">
+      <core:ArrayCollection x:name="children" x:id="31">
+        <cadet2D:ImageSkin x:name="0" x:id="32" width="0" height="0" name="Eat Particles Skin" touchable="1" visible="1" matrix="1,0,0,1,1044,600" texturesPrefix="particleEat">
+          <x:Ref x:name="textureAtlas" x:id="6"/>
+        </cadet2D:ImageSkin>
+      </core:ArrayCollection>
+    </cadet2D:Entity>
+    <ns1:EatParticlesProcess x:name="14" x:id="33" name="EatParticlesProcess">
+      <x:Ref x:name="particlesContainer" x:id="30"/>
+    </ns1:EatParticlesProcess>
+    <cadet2D:Entity x:name="15" x:id="34" name="Wind Particles">
+      <core:ArrayCollection x:name="children" x:id="35">
+        <cadet2D:ImageSkin x:name="0" x:id="36" width="0" height="0" name="Wind Particles Skin" touchable="1" visible="1" matrix="1,0,0,1,1084,600" texturesPrefix="particleWindForce">
+          <x:Ref x:name="textureAtlas" x:id="6"/>
+        </cadet2D:ImageSkin>
+      </core:ArrayCollection>
+    </cadet2D:Entity>
+    <ns1:WindParticlesProcess x:name="16" x:id="37" name="WindParticlesProcess">
+      <x:Ref x:name="particlesContainer" x:id="34"/>
+    </ns1:WindParticlesProcess>
+    <ns5:PDParticleSystemComponent x:name="17" x:id="38" xml="hungryHero/particles/particleCoffee.pex" autoplay="0" matrix="1,0,0,1,0,0" emitterType="Gravity" startColor="255" startColorVariance="0" endColor="65535" endColorVarAlpha="0" endColorAlpha="0" maxCapacity="8192" startColorAlpha="1" emitterX="0" startColorVarAlpha="1" emissionRate="320" emitterYVariance="0" emitterY="0" blendFactorSource="sourceAlpha" speed="800" maxNumParticles="128" blendFactorDest="one" lifespanVariance="0" emitAngle="0" startSize="50" endSize="10" emitAngleVariance="0" endRotation="0" startRotation="0" startSizeVariance="0" lifespan="0.4" endColorVariance="0" endSizeVariance="0" endRotationVar="0" emitterXVariance="0" gravityY="0" speedVariance="0" radialAcceleration="0" gravityX="0" radialAccelVar="0" tangentialAccel="0" maxRadius="100" startRotationVar="0" maxRadiusVariance="0" minRadius="20" rotatePerSecond="720" tangentialAccelVar="0" rotatePerSecondVar="0" name="Coffee Particles"/>
+    <ns5:PDParticleSystemComponent x:name="18" x:id="39" xml="hungryHero/particles/particleMushroom.pex" autoplay="0" matrix="1,0,0,1,0,0" emitterType="Gravity" startColor="255" startColorVariance="0" endColor="65535" endColorVarAlpha="0" endColorAlpha="0" maxCapacity="8192" startColorAlpha="1" emitterX="0" startColorVarAlpha="1" emissionRate="320" emitterYVariance="0" emitterY="0" blendFactorSource="sourceAlpha" speed="800" maxNumParticles="128" blendFactorDest="one" lifespanVariance="0" emitAngle="0" startSize="50" endSize="10" emitAngleVariance="0" endRotation="0" startRotation="0" startSizeVariance="0" lifespan="0.4" endColorVariance="0" endSizeVariance="0" endRotationVar="0" emitterXVariance="0" gravityY="0" speedVariance="0" radialAcceleration="0" gravityX="0" radialAccelVar="0" tangentialAccel="0" maxRadius="100" startRotationVar="0" maxRadiusVariance="0" minRadius="20" rotatePerSecond="720" tangentialAccelVar="0" rotatePerSecondVar="0" name="Mushroom Particles"/>
+    <cadet2D:Entity x:name="19" x:id="40" name="Hero">
+      <core:ArrayCollection x:name="children" x:id="41">
+        <cadet2D:Transform2D x:name="0" x:id="42" name="Transform2D" matrix="1,0,0,1,-200,300"/>
+        <cadet2D:MovieClipSkin x:name="1" x:id="43" width="0" height="0" loop="1" visible="1" matrix="1,0,0,1,-200,300" texturesPrefix="fly_" name="Hero Skin" touchable="1">
+          <x:Ref x:name="textureAtlas" x:id="6"/>
+          <x:Ref x:name="transform2D" x:id="42"/>
+        </cadet2D:MovieClipSkin>
+        <ns2:HeroBehaviour x:name="2" x:id="44" name="HeroBehaviour"/>
+      </core:ArrayCollection>
+    </cadet2D:Entity>
+    <cadet2D:Entity x:name="20" x:id="45" name="Items">
+      <core:ArrayCollection x:name="children" x:id="46">
+        <cadet2D:ImageSkin x:name="0" x:id="47" width="0" height="0" name="Item 1" touchable="1" visible="1" matrix="1,0,0,1,1044,0" texturesPrefix="item1">
+          <x:Ref x:name="textureAtlas" x:id="6"/>
+        </cadet2D:ImageSkin>
+        <cadet2D:ImageSkin x:name="1" x:id="48" width="0" height="0" name="Item 2" touchable="1" visible="1" matrix="1,0,0,1,1084,0" texturesPrefix="item2">
+          <x:Ref x:name="textureAtlas" x:id="6"/>
+        </cadet2D:ImageSkin>
+        <cadet2D:ImageSkin x:name="2" x:id="49" width="0" height="0" name="Item 3" touchable="1" visible="1" matrix="1,0,0,1,1124,0" texturesPrefix="item3">
+          <x:Ref x:name="textureAtlas" x:id="6"/>
+        </cadet2D:ImageSkin>
+        <cadet2D:ImageSkin x:name="3" x:id="50" width="0" height="0" name="Item 4" touchable="1" visible="1" matrix="1,0,0,1,1164,0" texturesPrefix="item4">
+          <x:Ref x:name="textureAtlas" x:id="6"/>
+        </cadet2D:ImageSkin>
+        <cadet2D:ImageSkin x:name="4" x:id="51" width="0" height="0" name="Item 5" touchable="1" visible="1" matrix="1,0,0,1,1204,0" texturesPrefix="item5">
+          <x:Ref x:name="textureAtlas" x:id="6"/>
+        </cadet2D:ImageSkin>
+      </core:ArrayCollection>
+    </cadet2D:Entity>
+    <cadet2D:Entity x:name="21" x:id="52" name="Powerups">
+      <core:ArrayCollection x:name="children" x:id="53">
+        <cadet2D:Entity x:name="0" x:id="54" name="Coffee">
+          <core:ArrayCollection x:name="children" x:id="55">
+            <cadet2D:ImageSkin x:name="0" x:id="56" width="0" height="0" name="Coffee Skin" touchable="1" visible="1" matrix="1,0,0,1,1044,50" texturesPrefix="item6">
+              <x:Ref x:name="textureAtlas" x:id="6"/>
+            </cadet2D:ImageSkin>
+            <ns2:SpeedUpBehaviour x:name="1" x:id="57" name="SpeedUpBehaviour" effectLength="5">
+              <x:Ref x:name="targetTransform" x:id="43"/>
+              <ns4:SoundComponent x:name="collectSound" x:id="58" startTime="0" loops="0" name="Collect Coffee Sound" asset="hungryHero/sounds/coffee.mp3"/>
+              <x:Ref x:name="particleEffect" x:id="38"/>
+            </ns2:SpeedUpBehaviour>
+          </core:ArrayCollection>
+        </cadet2D:Entity>
+        <cadet2D:Entity x:name="1" x:id="59" name="Mushroom">
+          <core:ArrayCollection x:name="children" x:id="60">
+            <cadet2D:ImageSkin x:name="0" x:id="61" width="0" height="0" name="Mushroom Skin" touchable="1" visible="1" matrix="1,0,0,1,1104,50" texturesPrefix="item7">
+              <x:Ref x:name="textureAtlas" x:id="6"/>
+            </cadet2D:ImageSkin>
+            <ns2:MagnetBehaviour x:name="1" x:id="62" name="MagnetBehaviour" effectLength="4" pcDistance="0.2">
+              <x:Ref x:name="targetTransform" x:id="43"/>
+              <ns4:SoundComponent x:name="collectSound" x:id="63" startTime="0" loops="0" name="Collect Mushroom Sound" asset="hungryHero/sounds/mushroom.mp3"/>
+              <x:Ref x:name="particleEffect" x:id="39"/>
+            </ns2:MagnetBehaviour>
+          </core:ArrayCollection>
+        </cadet2D:Entity>
+      </core:ArrayCollection>
+    </cadet2D:Entity>
+    <ns1:ItemsProcess x:name="22" x:id="64" name="ItemsProcess">
+      <core:ArrayCollection x:name="children" x:id="65">
+        <ns2:MoveBehaviour x:name="0" x:id="66" name="MoveBehaviour" angle="270"/>
+      </core:ArrayCollection>
+      <ns4:SoundComponent x:name="collectSound" x:id="67" startTime="0" loops="0" name="Eat Sound" asset="hungryHero/sounds/eat.mp3"/>
+      <x:Ref x:name="defaultMoveBehaviour" x:id="66"/>
+      <x:Ref x:name="powerupsContainer" x:id="52"/>
+      <x:Ref x:name="itemsContainer" x:id="45"/>
+      <x:Ref x:name="hitTestSkin" x:id="43"/>
+    </ns1:ItemsProcess>
+    <cadet2D:MovieClipSkin x:name="23" x:id="68" width="0" height="0" loop="1" visible="1" matrix="1,0,0,1,1044,120" texturesPrefix="watchOut_" name="Watch Out Skin" touchable="1">
+      <x:Ref x:name="textureAtlas" x:id="6"/>
+    </cadet2D:MovieClipSkin>
+    <cadet2D:Entity x:name="24" x:id="69" name="Obstacles">
+      <core:ArrayCollection x:name="children" x:id="70">
+        <cadet2D:Entity x:name="0" x:id="71" name="Obstacle 1">
+          <core:ArrayCollection x:name="children" x:id="72">
+            <cadet2D:ImageSkin x:name="0" x:id="73" width="0" height="0" name="Default Skin" touchable="1" visible="1" matrix="1,0,0,1,1044,220" texturesPrefix="obstacle1">
+              <cadet2D:Transform2D x:name="transform2D" x:id="74" name="Transform2D" matrix="1,0,0,1,1044,220"/>
+              <x:Ref x:name="textureAtlas" x:id="6"/>
+            </cadet2D:ImageSkin>
+            <cadet2D:ImageSkin x:name="1" x:id="75" width="0" height="0" name="Crash Skin" touchable="1" visible="1" matrix="1,0,0,1,1044,220" texturesPrefix="obstacle1_crash">
+              <x:Ref x:name="transform2D" x:id="74"/>
+              <x:Ref x:name="textureAtlas" x:id="6"/>
+            </cadet2D:ImageSkin>
+            <x:Ref x:name="2" x:id="74"/>
+            <ns2:ObstacleBehaviour x:name="3" x:id="76" name="ObstacleBehaviour">
+              <x:Ref x:name="crashSkin" x:id="75"/>
+              <x:Ref x:name="defaultSkin" x:id="73"/>
+              <x:Ref x:name="warningSkin" x:id="68"/>
+            </ns2:ObstacleBehaviour>
+          </core:ArrayCollection>
+        </cadet2D:Entity>
+        <cadet2D:Entity x:name="1" x:id="77" name="Obstacle 2">
+          <core:ArrayCollection x:name="children" x:id="78">
+            <cadet2D:ImageSkin x:name="0" x:id="79" width="0" height="0" name="Default Skin" touchable="1" visible="1" matrix="1,0,0,1,1044,310" texturesPrefix="obstacle2">
+              <cadet2D:Transform2D x:name="transform2D" x:id="80" name="Transform2D" matrix="1,0,0,1,1044,310"/>
+              <x:Ref x:name="textureAtlas" x:id="6"/>
+            </cadet2D:ImageSkin>
+            <cadet2D:ImageSkin x:name="1" x:id="81" width="0" height="0" name="Crash Skin" touchable="1" visible="1" matrix="1,0,0,1,1044,310" texturesPrefix="obstacle2_crash">
+              <x:Ref x:name="transform2D" x:id="80"/>
+              <x:Ref x:name="textureAtlas" x:id="6"/>
+            </cadet2D:ImageSkin>
+            <x:Ref x:name="2" x:id="80"/>
+            <ns2:ObstacleBehaviour x:name="3" x:id="82" name="ObstacleBehaviour">
+              <x:Ref x:name="crashSkin" x:id="81"/>
+              <x:Ref x:name="defaultSkin" x:id="79"/>
+              <x:Ref x:name="warningSkin" x:id="68"/>
+            </ns2:ObstacleBehaviour>
+          </core:ArrayCollection>
+        </cadet2D:Entity>
+        <cadet2D:Entity x:name="2" x:id="83" name="Obstacle 3">
+          <core:ArrayCollection x:name="children" x:id="84">
+            <cadet2D:ImageSkin x:name="0" x:id="85" width="0" height="0" name="Default Skin" touchable="1" visible="1" matrix="1,0,0,1,1044,400" texturesPrefix="obstacle3">
+              <cadet2D:Transform2D x:name="transform2D" x:id="86" name="Transform2D" matrix="1,0,0,1,1044,400"/>
+              <x:Ref x:name="textureAtlas" x:id="6"/>
+            </cadet2D:ImageSkin>
+            <cadet2D:ImageSkin x:name="1" x:id="87" width="0" height="0" name="Crash Skin" touchable="1" visible="1" matrix="1,0,0,1,1044,400" texturesPrefix="obstacle3_crash">
+              <x:Ref x:name="transform2D" x:id="86"/>
+              <x:Ref x:name="textureAtlas" x:id="6"/>
+            </cadet2D:ImageSkin>
+            <x:Ref x:name="2" x:id="86"/>
+            <ns2:ObstacleBehaviour x:name="3" x:id="88" name="ObstacleBehaviour">
+              <x:Ref x:name="crashSkin" x:id="87"/>
+              <x:Ref x:name="defaultSkin" x:id="85"/>
+              <x:Ref x:name="warningSkin" x:id="68"/>
+            </ns2:ObstacleBehaviour>
+          </core:ArrayCollection>
+        </cadet2D:Entity>
+        <cadet2D:Entity x:name="3" x:id="89" name="Obstacle 4">
+          <core:ArrayCollection x:name="children" x:id="90">
+            <cadet2D:MovieClipSkin x:name="0" x:id="91" width="0" height="0" loop="1" visible="1" matrix="1,0,0,1,1044,490" texturesPrefix="obstacle4_0" name="Default Skin" touchable="1">
+              <x:Ref x:name="textureAtlas" x:id="6"/>
+              <cadet2D:Transform2D x:name="transform2D" x:id="92" name="Transform2D" matrix="1,0,0,1,1044,490"/>
+            </cadet2D:MovieClipSkin>
+            <cadet2D:ImageSkin x:name="1" x:id="93" width="0" height="0" name="Crash Skin" touchable="1" visible="1" matrix="1,0,0,1,1044,490" texturesPrefix="obstacle4_crash">
+              <x:Ref x:name="transform2D" x:id="92"/>
+              <x:Ref x:name="textureAtlas" x:id="6"/>
+            </cadet2D:ImageSkin>
+            <x:Ref x:name="2" x:id="92"/>
+            <ns2:ObstacleBehaviour x:name="3" x:id="94" name="ObstacleBehaviour">
+              <x:Ref x:name="crashSkin" x:id="93"/>
+              <x:Ref x:name="defaultSkin" x:id="91"/>
+              <x:Ref x:name="warningSkin" x:id="68"/>
+            </ns2:ObstacleBehaviour>
+          </core:ArrayCollection>
+        </cadet2D:Entity>
+      </core:ArrayCollection>
+    </cadet2D:Entity>
+    <ns1:ObstaclesProcess x:name="25" x:id="95" obstacleSpeed="300" obstacleGap="1200" name="ObstaclesProcess">
+      <ns4:SoundComponent x:name="hurtSound" x:id="96" startTime="0" loops="0" name="Hurt Sound" asset="hungryHero/sounds/hurt.mp3"/>
+      <ns4:SoundComponent x:name="hitSound" x:id="97" startTime="0" loops="0" name="Hit Sound" asset="hungryHero/sounds/hit.mp3"/>
+      <x:Ref x:name="obstaclesContainer" x:id="69"/>
+      <x:Ref x:name="hitTestSkin" x:id="43"/>
+    </ns1:ObstaclesProcess>
+  </core:ArrayCollection>
+</cadet:CadetScene>

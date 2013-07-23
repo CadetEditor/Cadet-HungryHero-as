@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<flexLibProperties includeAllClasses="true" useMultiPlatformConfig="false" version="3">
+  <includeClasses>
+    <classEntry path="hungryHero.ui.HUD"/>
+    <classEntry path="hungryHero.controller.GameViewController"/>
+    <classEntry path="hungryHero.events.ViewManagerEvent"/>
+    <classEntry path="hungryHero.events.NavigationEvent"/>
+    <classEntry path="hungryHero.view.WelcomeView"/>
+    <classEntry path="hungryHero.model.GameModel_Code"/>
+    <classEntry path="hungryHero.font.Font"/>
+    <classEntry path="hungryHero.controller.IController"/>
+    <classEntry path="hungryHero.managers.ViewManager"/>
+    <classEntry path="hungryHero.view.GameView"/>
+    <classEntry path="hungryHero.ui.SoundButton"/>
+    <classEntry path="hungryHero.ui.PauseButton"/>
+    <classEntry path="hungryHero.ui.GameOverContainer"/>
+    <classEntry path="hungryHero.controller.WelcomeViewController"/>
+    <classEntry path="hungryHero.model.IGameModel"/>
+    <classEntry path="hungryHero.model.GameModel_XML"/>
+    <classEntry path="hungryHero.Main"/>
+    <classEntry path="hungryHero.font.Fonts"/>
+    <classEntry path="hungryHero.sound.Sounds"/>
+    <classEntry path="hungryHero.assets.Assets"/>
+  </includeClasses>
+  <includeResources/>
+  <namespaceManifests/>
+</flexLibProperties>

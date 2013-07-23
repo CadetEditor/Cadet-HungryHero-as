@@ -192,6 +192,8 @@ package hungryHero.components.processes
 			//var itemToTrack:Particle = _particlesPool.checkOut();
 			var itemToTrack:MovieClipSkin = MovieClipSkin(_particlesPool.checkOut());
 			
+			if (!itemToTrack) return;
+			
 			// Place the object randomly along hte screen.
 			itemToTrack.x = renderer.viewport.stage.stageWidth;
 			itemToTrack.y = Math.random() * renderer.viewport.stage.stageHeight;
