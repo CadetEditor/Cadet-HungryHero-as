@@ -6,22 +6,19 @@ package
 	import flash.events.Event;
 	import flash.geom.Rectangle;
 	
-	import cadet.util.ComponentUtil;
 	import cadet.util.deg2rad;
 	import cadet.util.rad2deg;
 	
-	import cadet2D.components.renderers.Renderer2D;
+	import core.app.util.FileSystemTypes;
 	
-	import hungryHero.model.IGameModel;
+	import hungryHero.Main;
 	
 	import starling.core.Starling;
 	import starling.events.ResizeEvent;
-	import hungryHero.Main;
 	
 	[SWF( width="1024", height="768", backgroundColor="0x389cd1", frameRate="60" )]
 	public class C2D_HungryHero_Mobile extends Sprite
 	{
-		// Starling object.
 		private var myStarling:Starling;
 		
 		public static var instance:Sprite;
@@ -35,6 +32,11 @@ package
 			stage.scaleMode = StageScaleMode.NO_SCALE;
 			
 			this.addEventListener(Event.ADDED_TO_STAGE, onAddedToStage);
+			
+			// Comment out cadetFileURL to switch IGameModels.
+			// URL = GameModel_XML, null = GameModel_Code
+			Main.cadetFileURL = "/HungryHero.cdt2d";
+			//Main.fileSystemType = FileSystemTypes.LOCAL;
 			
 			instance = this;
 			

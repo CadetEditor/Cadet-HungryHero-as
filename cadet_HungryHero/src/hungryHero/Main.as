@@ -4,33 +4,28 @@ package hungryHero
 	import flash.events.EventDispatcher;
 	
 	import cadet.core.CadetScene;
+	
 	import cadet2D.operations.Cadet2DStartUpOperation;
 	import cadet2D.resources.ExternalXMLResourceParser;
-	
-	import hungryHero.controller.GameViewController;
-	import hungryHero.controller.WelcomeViewController;
 	
 	import core.app.CoreApp;
 	import core.app.resources.ExternalResourceParserFactory;
 	import core.app.util.SerializationUtil;
 	
+	import hungryHero.controller.GameViewController;
+	import hungryHero.controller.WelcomeViewController;
 	import hungryHero.events.NavigationEvent;
-	
 	import hungryHero.managers.ViewManager;
-	
 	import hungryHero.model.GameModel_Code;
 	import hungryHero.model.GameModel_XML;
 	import hungryHero.model.IGameModel;
-	
 	import hungryHero.sound.Sounds;
+	import hungryHero.ui.SoundButton;
+	import hungryHero.view.GameView;
+	import hungryHero.view.WelcomeView;
 	
 	import starling.display.Sprite;
 	import starling.events.Event;
-	
-	import hungryHero.ui.SoundButton;
-	
-	import hungryHero.view.GameView;
-	import hungryHero.view.WelcomeView;
 
 	public class Main extends Sprite
 	{
@@ -39,11 +34,9 @@ package hungryHero
 		
 		private var viewContainer:Sprite;		 	// All views are added in here.
 		private var soundButton:SoundButton;		// Sound / Mute button.
-		
-		// Comment out either of the below to switch IGameModels.
-		// URL = GameModel_XML, null = GameModel_Code
-//		private var _cadetFileURL		:String = "/HungryHero.cdt2d";
-		private var _cadetFileURL		:String = null;
+
+		public static var cadetFileURL		:String = null;
+		public static var fileSystemType	:String = "url";
 		
 		public function Main()
 		{
@@ -55,7 +48,7 @@ package hungryHero
 			this.removeEventListener(starling.events.Event.ADDED_TO_STAGE, onAddedToStage);
 			
 			// Required when loading data and assets.
-			var startUpOperation:Cadet2DStartUpOperation = new Cadet2DStartUpOperation(_cadetFileURL);
+			var startUpOperation:Cadet2DStartUpOperation = new Cadet2DStartUpOperation(cadetFileURL, fileSystemType);
 			startUpOperation.addResource( new ExternalResourceParserFactory( ExternalXMLResourceParser, "External XML Resource Parser", ["pex"] ) );
 			startUpOperation.addEventListener(flash.events.Event.COMPLETE, startUpCompleteHandler);
 			startUpOperation.execute();
@@ -67,7 +60,7 @@ package hungryHero
 			
 			// If a _cadetFileURL is specified, load the external CadetScene from XML
 			// Otherwise, revert to the coded version of the CadetScene.
-			if ( _cadetFileURL ) {
+			if ( cadetFileURL ) {
 				gameModel = new GameModel_XML();
 				gameModel.cadetScene = CadetScene(operation.getResult());
 			} else {

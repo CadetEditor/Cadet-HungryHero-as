@@ -1,8 +1,14 @@
 package
 {
 	import flash.display.Sprite;
+	import flash.display.StageAlign;
+	import flash.display.StageScaleMode;
 	import flash.events.Event;
 	import flash.geom.Rectangle;
+	
+	import core.app.util.FileSystemTypes;
+	import cadet.util.deg2rad;
+	import cadet.util.rad2deg;
 	
 	import hungryHero.Main;
 	
@@ -10,24 +16,32 @@ package
 	import starling.events.ResizeEvent;
 	
 	[SWF( width="1024", height="768", backgroundColor="0x389cd1", frameRate="60" )]
-	public class CadetHungryHero extends Sprite
+	public class C2D_HungryHero_AIR extends Sprite
 	{
-		// Starling object.
 		private var myStarling:Starling;
 		
 		public static var instance:Sprite;
 		
-		public function CadetHungryHero()
+		public function C2D_HungryHero_AIR()
 		{
 			super();
+			
+			// support autoOrients
+			stage.align = StageAlign.TOP_LEFT;
+			stage.scaleMode = StageScaleMode.NO_SCALE;
 			
 			this.addEventListener(Event.ADDED_TO_STAGE, onAddedToStage);
 			
 			// Comment out cadetFileURL to switch IGameModels.
 			// URL = GameModel_XML, null = GameModel_Code
 			//Main.cadetFileURL = "/HungryHero.cdt2d";
+			Main.fileSystemType = FileSystemTypes.LOCAL;
 			
 			instance = this;
+			
+			Starling.handleLostContext = true;
+			
+		//	trace("app dir "+File.applicationDirectory.nativePath+" storageDir "+File.applicationStorageDirectory.nativePath+" cacheDir "+File.cacheDirectory.nativePath+" desktopDir "+File.desktopDirectory.nativePath+" docs "+File.documentsDirectory.nativePath); 
 		}
 		
 		// On added to stage. 
@@ -64,15 +78,26 @@ package
 			// resize the viewport:
 			myStarling.viewPort = viewPortRectangle;
 			
-			// assign the new stage width and height:
-			//myStarling.stage.stageWidth = viewPortRectangle.width;
-			//myStarling.stage.stageHeight = viewPortRectangle.height;
+			// no scale
+//			myStarling.stage.stageWidth = e.width;
+//			myStarling.stage.stageHeight = e.height;
 			
-			//Starling.current.viewPort.width = e.width;
-			//Starling.current.viewPort.height = e.height;
-						
+			if ( myStarling.root ) {
+				if ( e.height > e.width ) {
+					// sideways
+					myStarling.root.rotation = deg2rad(90);
+					myStarling.root.x = e.width;
+				} else {
+					// normal
+					myStarling.root.rotation = deg2rad(0);
+					myStarling.root.x = 0;
+				}
+				
+				trace("root x "+myStarling.root.x+" y "+myStarling.root.y+" r "+rad2deg(myStarling.root.rotation));
+			}
+			
 			trace("Resize w "+e.width+" h "+e.height+" vP.w "+Starling.current.viewPort.width+" vP.h "+Starling.current.viewPort.height);//+" renderer "+renderer);
-
+			
 		}
 	}
 }
