@@ -17,6 +17,7 @@ package hungryHero.model
 	{
 		private var _parent				:DisplayObjectContainer;
 		private var _cadetScene			:CadetScene;
+		private var _renderer			:Renderer2D;
 		
 		private var _heroBehaviour		:HeroBehaviour;
 		
@@ -41,8 +42,8 @@ package hungryHero.model
 			_parent = parent;
 			
 			// Grab a reference to the Renderer2D and enable it on the existing Starling display list
-			var renderer:Renderer2D = ComponentUtil.getChildOfType(_cadetScene, Renderer2D);
-			renderer.enableToExisting(parent);
+			_renderer = ComponentUtil.getChildOfType(_cadetScene, Renderer2D);
+			_renderer.enableToExisting(parent);
 			
 			// Grab a reference to the GlobalsProcess and pause the game on first showing
 			_globals = ComponentUtil.getChildOfType( _cadetScene, GlobalsProcess, true );
@@ -118,6 +119,11 @@ package hungryHero.model
 		public function set cadetScene( value:CadetScene ):void
 		{
 			_cadetScene = value;
+		}
+		
+		public function get renderer():Renderer2D
+		{
+			return _renderer;
 		}
 	}
 }

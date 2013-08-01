@@ -143,16 +143,8 @@ package hungryHero.model
 		public function init(parent:starling.display.DisplayObjectContainer):void
 		{
 			_parent 			= parent;
-		
-//			_renderer.viewportWidth = _parent.stage.stageWidth;
-//			_renderer.viewportHeight = _parent.stage.stageHeight;
+			
 			_renderer.enableToExisting(_parent);
-			
-			_renderer.allowScale = true;
-			_renderer.viewportWidth = Starling.current.viewPort.width;
-			_renderer.viewportHeight = Starling.current.viewPort.height;
-			
-			//Starling.current.viewPort = new Rectangle(0, 0, 100, 100);
 		}
 		
 		public function reset():void
@@ -185,6 +177,11 @@ package hungryHero.model
 			if ( _soundProcess ) {
 				_soundProcess.muted = _muted;
 			}
+		}
+		
+		public function get renderer():Renderer2D
+		{
+			return _renderer;
 		}
 		
 		public function dispose():void

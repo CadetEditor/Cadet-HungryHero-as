@@ -2,6 +2,8 @@ package hungryHero.model
 {
 	import cadet.core.CadetScene;
 	
+	import cadet2D.components.renderers.Renderer2D;
+	
 	import starling.display.DisplayObjectContainer;
 
 	public interface IGameModel
@@ -17,5 +19,7 @@ package hungryHero.model
 		
 		function get muted():Boolean;
 		function set muted( value:Boolean ):void;
+		
+		function get renderer():Renderer2D;
 	}
 }

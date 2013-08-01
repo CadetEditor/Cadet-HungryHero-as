@@ -24,6 +24,7 @@ package hungryHero
 	import hungryHero.view.GameView;
 	import hungryHero.view.WelcomeView;
 	
+	import starling.core.Starling;
 	import starling.display.Sprite;
 	import starling.events.Event;
 
@@ -38,6 +39,9 @@ package hungryHero
 		public static var cadetFileURL		:String = null;
 		public static var fileSystemType	:String = "url";
 		
+		public static var originalStageWidth:Number;
+		public static var originalStageHeight:Number;
+		
 		public function Main()
 		{
 			this.addEventListener(starling.events.Event.ADDED_TO_STAGE, onAddedToStage);
@@ -46,6 +50,13 @@ package hungryHero
 		private function onAddedToStage(event:starling.events.Event):void
 		{
 			this.removeEventListener(starling.events.Event.ADDED_TO_STAGE, onAddedToStage);
+			
+			var star:Starling = Starling.current;
+			var xScalar:Number = star.stage.stageWidth / originalStageWidth;
+			var yScalar:Number = star.stage.stageHeight / originalStageHeight;
+			
+			star.stage.stageWidth /= xScalar;
+			star.stage.stageHeight /= yScalar;
 			
 			// Required when loading data and assets.
 			var startUpOperation:Cadet2DStartUpOperation = new Cadet2DStartUpOperation(cadetFileURL, fileSystemType);

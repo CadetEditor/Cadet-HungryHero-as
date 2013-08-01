@@ -2,12 +2,10 @@ package
 {
 	import flash.display.Sprite;
 	import flash.events.Event;
-	import flash.geom.Rectangle;
 	
 	import hungryHero.Main;
 	
 	import starling.core.Starling;
-	import starling.events.ResizeEvent;
 	
 	[SWF( width="1024", height="768", backgroundColor="0x389cd1", frameRate="60" )]
 	public class CadetHungryHero extends Sprite
@@ -21,10 +19,12 @@ package
 		{
 			super();
 			
+			Main.originalStageWidth = stage.stageWidth;
+			Main.originalStageHeight = stage.stageHeight;
+			
 			this.addEventListener(Event.ADDED_TO_STAGE, onAddedToStage);
 			
-			// Comment out cadetFileURL to switch IGameModels.
-			// URL = GameModel_XML, null = GameModel_Code
+			// Comment out cadetFileURL to switch IGameModels. URL = GameModel_XML, null = GameModel_Code
 			//Main.cadetFileURL = "/HungryHero.cdt2d";
 			
 			instance = this;
@@ -50,29 +50,6 @@ package
 			
 			// Start Starling Framework.
 			myStarling.start();
-			
-			myStarling.stage.addEventListener(ResizeEvent.RESIZE, onResize);
-		}
-		
-		private function onResize(e:ResizeEvent):void
-		{
-			// set rectangle dimensions for viewPort:
-			var viewPortRectangle:Rectangle = new Rectangle();
-			viewPortRectangle.width = e.width; 
-			viewPortRectangle.height = e.height;
-			
-			// resize the viewport:
-			myStarling.viewPort = viewPortRectangle;
-			
-			// assign the new stage width and height:
-			//myStarling.stage.stageWidth = viewPortRectangle.width;
-			//myStarling.stage.stageHeight = viewPortRectangle.height;
-			
-			//Starling.current.viewPort.width = e.width;
-			//Starling.current.viewPort.height = e.height;
-						
-			trace("Resize w "+e.width+" h "+e.height+" vP.w "+Starling.current.viewPort.width+" vP.h "+Starling.current.viewPort.height);//+" renderer "+renderer);
-
 		}
 	}
 }
