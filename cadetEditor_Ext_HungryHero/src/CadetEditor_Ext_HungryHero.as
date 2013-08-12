@@ -13,9 +13,9 @@ package
 	import flash.display.Sprite;
 	
 	import cadet.assets.CadetEngineIcons;
+	import cadet.core.ComponentContainer;
 	import cadet.entities.ComponentFactory;
 	
-	import cadet2D.components.core.Entity;
 	import cadet2D.resources.ExternalXMLResourceParser;
 	
 	import core.app.CoreApp;
@@ -45,13 +45,13 @@ package
 			resourceManager.addResource( new ExternalResourceParserFactory( ExternalXMLResourceParser, "External XML Resource Parser", ["pex"] ) );
 			
 			// Behaviours
-			resourceManager.addResource( new ComponentFactory( HeroBehaviour, "Hero Behaviour", "Behaviours", CadetEngineIcons.Behaviour, Entity, 1 ) );
+			resourceManager.addResource( new ComponentFactory( HeroBehaviour, "Hero Behaviour", "Behaviours", CadetEngineIcons.Behaviour, ComponentContainer, 1 ) );
 			resourceManager.addResource( new ComponentFactory( MagnetBehaviour, "Magnet Behaviour", "Behaviours", CadetEngineIcons.Behaviour ) );
 			resourceManager.addResource( new ComponentFactory( MoveBehaviour, "Move Behaviour", "Behaviours", CadetEngineIcons.Behaviour ) );
-			resourceManager.addResource( new ComponentFactory( ObstacleBehaviour, "Obstacle Behaviour", "Behaviours", CadetEngineIcons.Behaviour, Entity, 1 ) );
-			resourceManager.addResource( new ComponentFactory( ParallaxBehaviour, "Parallax", "Behaviours",	CadetEngineIcons.Behaviour, Entity,	1 ) );
+			resourceManager.addResource( new ComponentFactory( ObstacleBehaviour, "Obstacle Behaviour", "Behaviours", CadetEngineIcons.Behaviour, ComponentContainer, 1 ) );
+			resourceManager.addResource( new ComponentFactory( ParallaxBehaviour, "Parallax", "Behaviours",	CadetEngineIcons.Behaviour, ComponentContainer,	1 ) );
 			resourceManager.addResource( new ComponentFactory( ShakeBehaviour, "Shake Behaviour", "Behaviours", CadetEngineIcons.Behaviour, null, 1 ) );
-			resourceManager.addResource( new ComponentFactory( SpeedUpBehaviour, "Speed Up Behaviour", "Behaviours", CadetEngineIcons.Behaviour, Entity, 1 ) );
+			resourceManager.addResource( new ComponentFactory( SpeedUpBehaviour, "Speed Up Behaviour", "Behaviours", CadetEngineIcons.Behaviour, ComponentContainer, 1 ) );
 			// Processes
 			resourceManager.addResource( new ComponentFactory( BackgroundsProcess, "Backgrounds Process", "Processes", CadetEngineIcons.Process ) );
 			resourceManager.addResource( new ComponentFactory( GlobalsProcess, "Globals Process", "Processes", CadetEngineIcons.Process ) );

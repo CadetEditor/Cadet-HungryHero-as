@@ -32,7 +32,7 @@ package
 			this.addEventListener(Event.ADDED_TO_STAGE, onAddedToStage);
 			
 			// Comment out cadetFileURL to switch IGameModels. URL = GameModel_XML, null = GameModel_Code
-			//Main.cadetFileURL = "/HungryHero.cdt2d";
+			Main.cadetFileURL = "/HungryHero.cdt2d";
 			//Main.fileSystemType = FileSystemTypes.LOCAL;
 			
 			instance = this;

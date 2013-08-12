@@ -3,8 +3,8 @@ package hungryHero.model
 	import cadet.components.processes.SoundProcess;
 	import cadet.components.sounds.SoundComponent;
 	import cadet.core.CadetScene;
+	import cadet.core.ComponentContainer;
 	
-	import cadet2D.components.core.Entity;
 	import cadet2D.components.particles.PDParticleSystemComponent;
 	import cadet2D.components.processes.WorldBounds2D;
 	import cadet2D.components.renderers.Renderer2D;
@@ -244,7 +244,7 @@ package hungryHero.model
 			var parallax:ParallaxBehaviour;
 			
 			// Add the sky to the scene
-			var sky:Entity = new Entity("Sky");
+			var sky:ComponentContainer = new ComponentContainer("Sky");
 			_cadetScene.children.addItem(sky);
 			// Add an ImageSkin to the sky Entity
 			_skySkin = new ImageSkin("Sky Skin");
@@ -257,7 +257,7 @@ package hungryHero.model
 			_skySkin.parentComponent.children.addItem(parallax);
 			
 			// Add the background hills to the scene
-			var hills:Entity = new Entity("Hills");
+			var hills:ComponentContainer = new ComponentContainer("Hills");
 			_cadetScene.children.addItem(hills);
 			// Add an ImageSkin to the hills Entity
 			_hillsSkin = new ImageSkin("Hills Skin");
@@ -272,7 +272,7 @@ package hungryHero.model
 			_hillsSkin.parentComponent.children.addItem(parallax);
 			
 			// Add the midground to the scene
-			var midground:Entity = new Entity("Midground");
+			var midground:ComponentContainer = new ComponentContainer("Midground");
 			_cadetScene.children.addItem(midground);
 			// Add an ImageSkin to the midground Entity
 			_midgroundSkin = new ImageSkin("Midground Skin");
@@ -287,7 +287,7 @@ package hungryHero.model
 			_midgroundSkin.parentComponent.children.addItem(parallax);
 			
 			// Add the foreground to the scene
-			var foreground:Entity = new Entity("Foreground");
+			var foreground:ComponentContainer = new ComponentContainer("Foreground");
 			_cadetScene.children.addItem(foreground);
 			// Add an ImageSkin to the foreground Entity
 			_foregroundSkin = new ImageSkin("Foreground Skin");
@@ -308,7 +308,7 @@ package hungryHero.model
 			_heroStartY = 300;
 			
 			// Add Hero entity to the scene
-			var hero:Entity = new Entity("Hero");
+			var hero:ComponentContainer = new ComponentContainer("Hero");
 			_cadetScene.children.addItem(hero);
 			// Add a 2D transform
 			_heroTransform2D = new Transform2D();
@@ -329,7 +329,7 @@ package hungryHero.model
 		private function addItems():void
 		{
 			// Add the Items Entity
-			var itemsEntity:Entity = new Entity("Items");
+			var itemsEntity:ComponentContainer = new ComponentContainer("Items");
 			_cadetScene.children.addItem(itemsEntity);
 			
 			// Place items to the right of the stage
@@ -351,7 +351,7 @@ package hungryHero.model
 			}
 			
 			// Add the Powerups Entity
-			var powerupsEntity:Entity = new Entity("Powerups");
+			var powerupsEntity:ComponentContainer = new ComponentContainer("Powerups");
 			_cadetScene.children.addItem(powerupsEntity);
 			
 			// Reset position values
@@ -359,7 +359,7 @@ package hungryHero.model
 			ypos = startYpos + 50;
 			
 			// Add Coffee powerup
-			var powerup:Entity = new Entity("Coffee");
+			var powerup:ComponentContainer = new ComponentContainer("Coffee");
 			powerupsEntity.children.addItem(powerup);
 			imageSkin = new ImageSkin("Coffee Skin");
 			powerup.children.addItem(imageSkin);
@@ -377,7 +377,7 @@ package hungryHero.model
 			xpos += 60;
 			
 			// Add Mushroom powerup
-			powerup = new Entity("Mushroom");
+			powerup = new ComponentContainer("Mushroom");
 			powerupsEntity.children.addItem(powerup);
 			imageSkin = new ImageSkin("Mushroom Skin");
 			powerup.children.addItem(imageSkin);
@@ -425,11 +425,11 @@ package hungryHero.model
 			ypos += 100;
 			
 			// Add the Obstacles Entity
-			var obstaclesEntity:Entity = new Entity("Obstacles");
+			var obstaclesEntity:ComponentContainer = new ComponentContainer("Obstacles");
 			_cadetScene.children.addItem(obstaclesEntity);
 			
 			for ( var i:uint = 0; i < 3; i ++ ) {
-				var obstacle:Entity = new Entity("Obstacle "+(i+1));
+				var obstacle:ComponentContainer = new ComponentContainer("Obstacle "+(i+1));
 				// Add the default ImageSkin to the obstacle entity
 				var defaultSkin:ImageSkin = new ImageSkin("Default Skin");
 				obstacle.children.addItem(defaultSkin);
@@ -458,7 +458,7 @@ package hungryHero.model
 			}
 			
 			// Helicopter Obstacle
-			obstacle = new Entity("Obstacle 4");
+			obstacle = new ComponentContainer("Obstacle 4");
 			var defaultMcSkin:MovieClipSkin = new MovieClipSkin("Default Skin");
 			obstacle.children.addItem(defaultMcSkin);
 			defaultMcSkin.textureAtlas = _allSpritesAtlas;
@@ -501,10 +501,10 @@ package hungryHero.model
 			var ypos:Number = startYpos;
 			
 			var particleSkin:ImageSkin;
-			var particlesEntity:Entity;
+			var particlesEntity:ComponentContainer;
 			
 			// Add Eat particles Entity
-			particlesEntity = new Entity("Eat Particles");
+			particlesEntity = new ComponentContainer("Eat Particles");
 			_cadetScene.children.addItem(particlesEntity);
 			
 			// Add Eat particle Skin
@@ -521,7 +521,7 @@ package hungryHero.model
 			eatParticlesProcess.particlesContainer = particlesEntity;
 			
 			// Add Wind particles Entity
-			particlesEntity = new Entity("Wind Particles");
+			particlesEntity = new ComponentContainer("Wind Particles");
 			_cadetScene.children.addItem(particlesEntity);
 			
 			// Update positions

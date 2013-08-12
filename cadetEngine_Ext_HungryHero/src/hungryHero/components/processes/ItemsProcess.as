@@ -14,7 +14,6 @@ package hungryHero.components.processes
 	import cadet.events.ValidationEvent;
 	import cadet.util.ComponentUtil;
 	
-	import cadet2D.components.core.Entity;
 	import cadet2D.components.processes.WorldBounds2D;
 	import cadet2D.components.skins.AbstractSkin2D;
 	import cadet2D.components.skins.ImageSkin;
@@ -272,10 +271,10 @@ package hungryHero.components.processes
 			{
 				var child:Component = _powerupsContainer.children[i];
 				
-				if (child is Entity) {
-					var entity:Entity = Entity(child);
-					var skin:ImageSkin = ComponentUtil.getChildOfType(entity, ImageSkin);
-					var behaviour:IPowerupBehaviour = ComponentUtil.getChildOfType(entity, IPowerupBehaviour);
+				if (child is ComponentContainer) {
+					var container:ComponentContainer = ComponentContainer(child);
+					var skin:ImageSkin = ComponentUtil.getChildOfType(container, ImageSkin);
+					var behaviour:IPowerupBehaviour = ComponentUtil.getChildOfType(container, IPowerupBehaviour);
 					if ( skin && behaviour ) {	
 						_powerups.push( skin );
 						// Presumes texturesPrefix is unique

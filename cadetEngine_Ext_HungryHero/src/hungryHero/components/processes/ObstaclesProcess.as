@@ -5,6 +5,7 @@ package hungryHero.components.processes
 	import cadet.components.processes.SoundProcess;
 	import cadet.components.sounds.ISound;
 	import cadet.core.Component;
+	import cadet.core.ComponentContainer;
 	import cadet.core.IComponentContainer;
 	import cadet.core.IInitialisableComponent;
 	import cadet.core.ISteppableComponent;
@@ -12,7 +13,6 @@ package hungryHero.components.processes
 	import cadet.util.ComponentUtil;
 	import cadet.util.deg2rad;
 	
-	import cadet2D.components.core.Entity;
 	import cadet2D.components.processes.WorldBounds2D;
 	import cadet2D.components.skins.ImageSkin;
 	import cadet2D.components.skins.MovieClipSkin;
@@ -38,7 +38,7 @@ package hungryHero.components.processes
 			
 		private var _obstaclesPool				:Pool; 				// Obstacles pool with a maximum cap for reuse of items.
 		private var _obstacleGapCount			:Number = 0; 		// Obstacle count - to track the frequency of obstacles.
-		private var _obstaclesToAnimate			:Vector.<Entity>;	// Obstacles to animate.
+		private var _obstaclesToAnimate			:Vector.<ComponentContainer>;	// Obstacles to animate.
 		private var _obstaclesToAnimateLength	:uint = 0;			// Obstacles to animate - array length.
 		
 		private var _hitTestX:int;
@@ -59,7 +59,7 @@ package hungryHero.components.processes
 			_obstacles = new Vector.<ObstacleBehaviour>();
 			
 			// Initialize items-to-animate vector.
-			_obstaclesToAnimate = new Vector.<Entity>();
+			_obstaclesToAnimate = new Vector.<ComponentContainer>();
 			_obstaclesToAnimateLength = 0;
 		}
 		
@@ -178,9 +178,9 @@ package hungryHero.components.processes
 			{
 				var child:Component = _obstaclesContainer.children[i];
 				
-				if (child is Entity) {
-					var entity:Entity = Entity(child);
-					behaviour = ComponentUtil.getChildOfType(entity, ObstacleBehaviour);
+				if (child is ComponentContainer) {
+					var container:ComponentContainer = ComponentContainer(child);
+					behaviour = ComponentUtil.getChildOfType(container, ObstacleBehaviour);
 					if ( behaviour ) {	
 						_obstacles.push( behaviour );
 					}
@@ -203,9 +203,9 @@ package hungryHero.components.processes
 			_obstaclesPool = new Pool(obstacleCreate, obstacleClean, 4, 10);
 		}
 		
-		private function obstacleCreate():Entity
+		private function obstacleCreate():ComponentContainer
 		{
-			var obstacle:Entity = new Entity();
+			var obstacle:ComponentContainer = new ComponentContainer();
 			_obstaclesContainer.children.addItem(obstacle);
 			// Add the default ImageSkin to the obstacle entity
 			var defaultSkin:MovieClipSkin = new MovieClipSkin();
@@ -231,16 +231,16 @@ package hungryHero.components.processes
 			return obstacle;
 		}
 		
-		private function obstacleClean(obstacle:Entity):void
+		private function obstacleClean(obstacle:ComponentContainer):void
 		{
 			var transform2D:Transform2D = ComponentUtil.getChildOfType(obstacle, Transform2D);
 			//transform2D.x = stage.stageWidth + obstacle.width * 2;
 			transform2D.x = worldBoundsRect.width * 2;
 		}
 		
-		private function checkOutItem(distance:Number):Entity
+		private function checkOutItem(distance:Number):ComponentContainer
 		{
-			var itemToTrack:Entity = Entity(_obstaclesPool.checkOut());
+			var itemToTrack:ComponentContainer = ComponentContainer(_obstaclesPool.checkOut());
 			
 			if (!itemToTrack || _obstacles.length == 0) return null;
 			
@@ -366,7 +366,7 @@ package hungryHero.components.processes
 			
 			for (var i:uint = 0; i < _obstaclesToAnimateLength; i ++)
 			{
-				var obstacleToTrack:Entity = _obstaclesToAnimate[i];
+				var obstacleToTrack:ComponentContainer = _obstaclesToAnimate[i];
 				var behaviour:ObstacleBehaviour = ComponentUtil.getChildOfType(obstacleToTrack, ObstacleBehaviour); 
 				
 				// If the distance is still more than 0, keep reducing its value, without moving the obstacle.
@@ -444,7 +444,7 @@ package hungryHero.components.processes
 			}
 		}		
 		
-		private function disposeObstacleTemporarily(animateId:uint, obstacle:Entity):void
+		private function disposeObstacleTemporarily(animateId:uint, obstacle:ComponentContainer):void
 		{
 			_obstaclesToAnimate.splice(animateId, 1);
 			_obstaclesToAnimateLength--;
