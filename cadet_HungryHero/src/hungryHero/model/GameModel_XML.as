@@ -30,7 +30,6 @@ package hungryHero.model
 		private var _shakeBehaviour		:ShakeBehaviour;
 		
 		private var _initialised		:Boolean;
-		private var _muted				:Boolean;
 		
 		public function GameModel_XML()
 		{
@@ -90,18 +89,6 @@ package hungryHero.model
 			_parent.removeEventListener( starling.events.Event.ENTER_FRAME, enterFrameHandler );
 		}
 		
-		public function get muted():Boolean
-		{
-			return _muted;
-		}
-		public function set muted( value:Boolean ):void
-		{
-			_muted = value;
-			if ( _soundProcess ) {
-				_soundProcess.muted = _muted;
-			}
-		}
-		
 		public function dispose():void
 		{
 			_cadetScene.dispose();		
@@ -124,6 +111,15 @@ package hungryHero.model
 		public function get renderer():Renderer2D
 		{
 			return _renderer;
+		}
+		
+		public function get soundProcess():SoundProcess
+		{
+			return _soundProcess;
+		}
+		public function get globalsProcess():GlobalsProcess
+		{
+			return _globals;
 		}
 	}
 }

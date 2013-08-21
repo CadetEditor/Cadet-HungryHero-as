@@ -1,8 +1,11 @@
 package hungryHero.model
 {
+	import cadet.components.processes.SoundProcess;
 	import cadet.core.CadetScene;
 	
 	import cadet2D.components.renderers.Renderer2D;
+	
+	import hungryHero.components.processes.GlobalsProcess;
 	
 	import starling.display.DisplayObjectContainer;
 
@@ -17,9 +20,9 @@ package hungryHero.model
 		function get cadetScene():CadetScene;
 		function set cadetScene( value:CadetScene ):void;
 		
-		function get muted():Boolean;
-		function set muted( value:Boolean ):void;
-		
 		function get renderer():Renderer2D;
+		
+		function get soundProcess():SoundProcess;
+		function get globalsProcess():GlobalsProcess;
 	}
 }

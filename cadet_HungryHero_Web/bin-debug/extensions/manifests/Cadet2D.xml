@@ -2,7 +2,6 @@
 
 	<!-- Core -->
 	<classMap name="Renderer2D" class="cadet2D.components.renderers.Renderer2D" />
-	<classMap name="Entity" class="cadet2D.components.core.Entity"/>
 
 	<!-- Core Processes -->
 	<classMap name="InputProcess2D" class="cadet2D.components.processes.InputProcess2D" />

@@ -42,6 +42,8 @@ package hungryHero
 		public static var originalStageWidth:Number;
 		public static var originalStageHeight:Number;
 		
+		public static var gameWindow		:Sprite;	
+		
 		public function Main()
 		{
 			this.addEventListener(starling.events.Event.ADDED_TO_STAGE, onAddedToStage);
@@ -51,12 +53,36 @@ package hungryHero
 		{
 			this.removeEventListener(starling.events.Event.ADDED_TO_STAGE, onAddedToStage);
 			
-			var star:Starling = Starling.current;
-			var xScalar:Number = star.stage.stageWidth / originalStageWidth;
-			var yScalar:Number = star.stage.stageHeight / originalStageHeight;
+			/* 	Starling stage scaling:
+			*	If star.stage.stageWidth & star.stage.stageHeight are equal to
+			*	star.viewPort.width & star.viewPort.height, the stage content is not scaled.
+			*	Else, stage is scaled, e.g.
+			*
+			*	originalStageWidth = 1024
+			*	originalStageHeight = 768
+			*	stageWidth (onAdded - Nexus 10) = 2560
+			*	stageHeight (onAdded - Nexus 10) = 1454
+			*	xScalar = 0.4
+			*	yScalar = 0.52
+			*	minScalar = xScalar
+			*	stageWidth (final) = 1024		
+			*	stageHeight (final)  = 581.6
+			*	
+			*	(Larger numbers = scaled down more)
+			*/
 			
-			star.stage.stageWidth /= xScalar;
-			star.stage.stageHeight /= yScalar;
+			var star:Starling = Starling.current;
+			var xScalar:Number = originalStageWidth / star.stage.stageWidth;
+			var yScalar:Number = originalStageHeight / star.stage.stageHeight;
+			var scalar:Number = Math.min(xScalar, yScalar);
+			trace("Original sW "+originalStageWidth+" sH "+originalStageHeight);
+			trace("Current sW "+star.stage.stageWidth+" sH "+star.stage.stageHeight);
+			trace("xScalar "+xScalar+" yScalar "+yScalar);
+			
+			star.stage.stageWidth *= scalar;
+			star.stage.stageHeight *= scalar;
+			
+			trace("Final sW "+star.stage.stageWidth+" sH "+star.stage.stageHeight);
 			
 			// Required when loading data and assets.
 			var startUpOperation:Cadet2DStartUpOperation = new Cadet2DStartUpOperation(cadetFileURL, fileSystemType);
@@ -80,7 +106,7 @@ package hungryHero
 				// Need to wait for the next frame to serialize, otherwise the manifests aren't ready
 				//AsynchronousUtil.callLater(serialize);
 			}
-
+			
 			// Initialize screens.
 			init();
 		}
@@ -101,6 +127,9 @@ package hungryHero
 			viewContainer = new Sprite();
 			this.addChild( viewContainer );
 			
+			gameWindow	= new Sprite();
+			viewContainer.addChild(gameWindow);
+			
 			viewManager	= new ViewManager( viewContainer );
 			
 			viewManager.registerView( GameView, GameViewController );
@@ -116,6 +145,12 @@ package hungryHero
 			soundButton.y = int(soundButton.height * 0.5);
 			soundButton.addEventListener(starling.events.Event.TRIGGERED, onSoundButtonClick);
 			this.addChild(soundButton);
+			
+			gameModel.init(gameWindow);
+			gameModel.enable();
+			
+			gameModel.globalsProcess.paused = true;
+			gameModel.soundProcess.muted = true;
 		}
 		
 		// On click of the sound/mute button. 

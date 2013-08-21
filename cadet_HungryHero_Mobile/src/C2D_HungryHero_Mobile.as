@@ -11,7 +11,7 @@ package
 	
 	import starling.core.Starling;
 	
-	[SWF( width="1024", height="768", backgroundColor="0x389cd1", frameRate="60" )]
+	[SWF( width="1024", height="768", backgroundColor="0x000000", frameRate="60" )]
 	public class C2D_HungryHero_Mobile extends Sprite
 	{
 		private var myStarling:Starling;

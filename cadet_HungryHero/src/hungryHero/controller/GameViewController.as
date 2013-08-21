@@ -2,9 +2,6 @@ package hungryHero.controller
 {
 	import flash.events.Event;
 	
-	import cadet.components.processes.SoundProcess;
-	import cadet.util.ComponentUtil;
-	
 	import hungryHero.Main;
 	import hungryHero.components.processes.GlobalsProcess;
 	import hungryHero.events.NavigationEvent;
@@ -27,9 +24,6 @@ package hungryHero.controller
 		
 		private var _gameModel		:IGameModel;
 		
-		private var _globals		:GlobalsProcess;
-		private var _soundProcess	:SoundProcess;
-		
 		public function GameViewController()
 		{
 		}
@@ -38,13 +32,9 @@ package hungryHero.controller
 		{
 			_view	= GameView(view);
 			_gameModel = Main.gameModel;
-			_gameModel.init(_view.gameWindow);
 			
-			_globals = ComponentUtil.getChildOfType(_gameModel.cadetScene, GlobalsProcess, true);
-			_globals.addEventListener( GlobalsProcess.GAME_STATE_ENDED, gameEndedHandler );
+			_gameModel.globalsProcess.addEventListener( GlobalsProcess.GAME_STATE_ENDED, gameEndedHandler );
 			
-			_soundProcess = ComponentUtil.getChildOfType(_gameModel.cadetScene, SoundProcess, true);
-				
 			enable();
 		}
 		
@@ -59,13 +49,11 @@ package hungryHero.controller
 		}
 		
 		public function enable():void
-		{		
-			_soundProcess.playSound(_soundProcess.music);
-			
-			_gameModel.muted = Sounds.muted;
-			_gameModel.enable();
-			
-			_globals.paused = true;
+		{
+			_gameModel.soundProcess.muted = Sounds.muted;
+			_gameModel.soundProcess.playSound(_gameModel.soundProcess.music);
+
+			_gameModel.globalsProcess.paused = true;
 			
 			Sounds.instance.addEventListener( flash.events.Event.CHANGE, toggleMuteHandler );
 			
@@ -81,11 +69,11 @@ package hungryHero.controller
 		
 		public function disable():void
 		{
-			_gameModel.disable();
+			_gameModel.globalsProcess.paused = true;
 			
 			Sounds.instance.removeEventListener( flash.events.Event.CHANGE, toggleMuteHandler );
 			
-			_soundProcess.stopSound(_soundProcess.music);
+			_gameModel.soundProcess.stopSound(_gameModel.soundProcess.music);
 			
 			_view.visible = false;
 			
@@ -99,15 +87,15 @@ package hungryHero.controller
 		
 		private function enterFrameHandler( event:starling.events.Event ):void
 		{
-			if (!_globals) return;
-			_view.hud.distance = Math.round(_globals.scoreDistance);
-			_view.hud.foodScore = _globals.scoreItems;
-			_view.hud.lives = _globals.currentLives;
+			if (!_gameModel.globalsProcess) return;
+			_view.hud.distance = Math.round(_gameModel.globalsProcess.scoreDistance);
+			_view.hud.foodScore = _gameModel.globalsProcess.scoreItems;
+			_view.hud.lives = _gameModel.globalsProcess.currentLives;
 		}
 		
 		private function toggleMuteHandler( event:flash.events.Event ):void
 		{
-			_gameModel.muted = Sounds.muted;
+			_gameModel.soundProcess.muted = Sounds.muted;
 		}
 		
 		// On click of pause button. 
@@ -116,7 +104,7 @@ package hungryHero.controller
 		{
 			event.stopImmediatePropagation();
 			
-			_globals.paused = !_globals.paused;
+			_gameModel.globalsProcess.paused = ! _gameModel.globalsProcess.paused;
 		}
 		
 		// On navigation from different screens. 
@@ -140,7 +128,7 @@ package hungryHero.controller
 		// On game over screen faded out.
 		private function gameOverFadedOut():void
 		{
-			_globals.paused = true;
+			_gameModel.globalsProcess.paused = true;
 			_gameModel.reset();
 			
 			_view.gameOverContainer.visible = false;
@@ -160,14 +148,14 @@ package hungryHero.controller
 			// Show pause button since the game is started.
 			_view.pauseButton.visible = true;
 			
-			_globals.paused = false;
+			_gameModel.globalsProcess.paused = false;
 			_gameModel.reset();
 		}
 		
 		private function gameEndedHandler(event:flash.events.Event):void
 		{
 			_view.setChildIndex(_view.gameOverContainer, _view.numChildren-1);
-			_view.gameOverContainer.initialize(_globals.scoreItems, Math.round(_globals.scoreDistance));
+			_view.gameOverContainer.initialize(_gameModel.globalsProcess.scoreItems, Math.round(_gameModel.globalsProcess.scoreDistance));
 			
 			tween_gameOverContainer = new Tween(_view.gameOverContainer, 1);
 			tween_gameOverContainer.fadeTo(1);

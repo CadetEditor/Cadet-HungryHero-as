@@ -22,8 +22,7 @@ package hungryHero.view
 		// ------------------------------------------------------------------------------------------------------------
 		// INTERFACE OBJECTS
 		// ------------------------------------------------------------------------------------------------------------
-		
-		public var gameWindow:Sprite;
+
 		public var gameOverContainer:GameOverContainer;
 		
 		// Pause button.
@@ -46,10 +45,6 @@ package hungryHero.view
 		private function onAddedToStage(event:Event):void
 		{
 			removeEventListener(Event.ADDED_TO_STAGE, onAddedToStage);
-			
-			// Draw Screen
-			gameWindow	= new Sprite();
-			addChild(gameWindow);
 			
 			// Pause button.
 			pauseButton = new PauseButton();

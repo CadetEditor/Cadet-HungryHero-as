@@ -30,7 +30,6 @@ package hungryHero.model
 	import hungryHero.components.processes.ObstaclesProcess;
 	import hungryHero.components.processes.WindParticlesProcess;
 	
-	import starling.core.Starling;
 	import starling.display.DisplayObjectContainer;
 	import starling.events.Event;
 
@@ -91,8 +90,6 @@ package hungryHero.model
 		private var _coffeeParticles		:PDParticleSystemComponent;
 		private var _mushroomParticles		:PDParticleSystemComponent;
 		
-		private var _muted					:Boolean;
-		
 		public function GameModel_Code( resourceManager:ResourceManager )
 		{
 			_resourceManager 	= resourceManager;
@@ -125,7 +122,7 @@ package hungryHero.model
 			_worldBounds.top 	= 100;
 			_worldBounds.left 	= 0;
 			_worldBounds.right 	= 1024;
-			_worldBounds.bottom 	= 768 - 250;
+			_worldBounds.bottom = 768 - 250;
 			
 			// Add ShakeBehaviour
 			_shakeBehaviour = new ShakeBehaviour();
@@ -167,21 +164,18 @@ package hungryHero.model
 			_parent.removeEventListener( starling.events.Event.ENTER_FRAME, enterFrameHandler );
 		}
 		
-		public function get muted():Boolean
-		{
-			return _muted;
-		}
-		public function set muted( value:Boolean ):void
-		{
-			_muted = value;
-			if ( _soundProcess ) {
-				_soundProcess.muted = _muted;
-			}
-		}
-		
 		public function get renderer():Renderer2D
 		{
 			return _renderer;
+		}
+		
+		public function get soundProcess():SoundProcess
+		{
+			return _soundProcess;
+		}
+		public function get globalsProcess():GlobalsProcess
+		{
+			return _globals;
 		}
 		
 		public function dispose():void
@@ -250,12 +244,12 @@ package hungryHero.model
 			_skySkin = new ImageSkin("Sky Skin");
 			sky.children.addItem(_skySkin);
 			_skySkin.texture = skyTexture;
+			
 			// Add a ParallaxBehaviour to the sky Entity
 			parallax = new ParallaxBehaviour();
 			parallax.depth = 0.1;
 			parallax.speed = _parallaxSpeed;
 			_skySkin.parentComponent.children.addItem(parallax);
-			
 			// Add the background hills to the scene
 			var hills:ComponentContainer = new ComponentContainer("Hills");
 			_cadetScene.children.addItem(hills);
